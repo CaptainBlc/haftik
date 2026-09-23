@@ -614,6 +614,11 @@ testlerde saat dilimi sabitlenir; kartta ham sayı/tutar/konum asla yok.>`
 - (2026-09-23, S10 SEC) **Batuhan kararı bekleyenler (DEĞİŞTİRİLMEDİ):** I-3
   paket adı, I-5 gizlilik politikası/KVKK, I-6 Health apps beyanı, N-9 uygulama
   kilidi/FLAG_SECURE, INTERNET izni, N-7 placeholder migration sütunu.
+- (2026-09-23, S12 hazırlık) `site/` (statik gizlilik + tanıtım) **TASLAK**;
+  eslint/tsc/jest kapsamı dışındadır (yalnızca `.html/.css/.md`; oraya `.ts`/
+  `.js` eklenirse tsconfig `include`'una girer, eklenmemeli). **Yayın kapısı K10**
+  (KVKK/hukuki görüş); yer tutucular ve yayınlama adımları `site/README.md`'de.
+  Metinde deneme raporu "anonim" değil, "kimlik/içerik yok, takma adlı olabilir".
 
 ## Doğrulama ("done" ne demek)
 
