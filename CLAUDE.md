@@ -506,13 +506,22 @@ testlerde saat dilimi sabitlenir; kartta ham sayı/tutar/konum asla yok.>`
   `docs/uygulama-adi-onerileri*.md`). Uygulandı: `src/config/constants.ts`
   (`APP_DISPLAY_NAME`, kart damgası bundan türer), `app.json` (`name`,
   `slug: haftik`, `scheme: haftik`), deneme raporu başlığı, `CardView.test.tsx`
-  damga beklentisi (bilinçli ad değişikliği, Batuhan onaylı). **Açık:**
-  `android.package` hâlâ yer tutucu `com.anonymous.hhkscaffold` ve
-  `ios.bundleIdentifier` yok — `<geliştirici>` kısmını Batuhan seçince
-  `com.<geliştirici>.haftik` yapılır; Play'de paket adı ilk yüklemeden sonra
-  DEĞİŞTİRİLEMEZ, bu yüzden ilk yüklemeden (kapalı test dahil) önce yapılmalı.
+  damga beklentisi (bilinçli ad değişikliği, Batuhan onaylı).
+  **Paket adı KESİNLEŞTİ (2026-09-23, Batuhan): `com.batuhan.haftik`**
+  (`app.json` `android.package` + `ios.bundleIdentifier`). Play'de ilk
+  yüklemeden sonra DEĞİŞTİRİLEMEZ; başka bir ad istenirse ilk yüklemeden
+  (kapalı test dahil) önce yapılmalı. `docs/s10-*`/`docs/s12-*` belgelerindeki
+  `com.anonymous.hhkscaffold` geçişleri tarihsel/eski durumdur.
   Mağaza/alan adı/sosyal medya/TÜRKPATENT çakışma kontrolü Batuhan'da (web
-  taraması yetersiz). Belgelerin (spec/plan/PLAYBOOK başlıkları) "Haftalık Hayat
+  taraması yetersiz).
+- (2026-09-23, S12 kararları, Batuhan) (1) Check-in ekranındaki "Uyku" etiketi
+  KALIR; Google Health apps beyanı dürüst doldurulur (hareket/uyku beyanı, tıbbi
+  iddia yok), mağaza metni sağlık sözcüklerinden uzak durur. (2) Hedef yaş 18+
+  (Families Policy dışı). Kapalı denemede paylaşım çağrısı iki dönemli: ilk
+  dönem nötr (E1 %25 eşiğine yalnızca bu dönem sayılır), sonraki dönem "kartını
+  paylaş" çağrılı. (3) Dağıtım: önce EAS `preview` APK ile arkadaş çevresi
+  (Play hesabı ve politika URL'si şartı yok), gerçek cihaz testi ve ilk geri
+  bildirimden sonra Play kapalı test (>=12 testçi, 14 gün). Belgelerin (spec/plan/PLAYBOOK başlıkları) "Haftalık Hayat
   Karnesi" çalışma adı tarihsel kayıt olarak bırakıldı.
 
 - (2026-09-23, K8) **İçerik tonu geçişi yapıldı:** `src/domain/content/tr.ts`'te

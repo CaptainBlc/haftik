@@ -115,7 +115,7 @@ Son güncelleme: 2026-09-23 (S10 güvenlik düzeltmeleri, MOB).
 |---|---|
 | I-1 | **Düzeltildi (kod + Jest).** `shareCard` kullanılabilirlik kontrolü `try/finally` içine alındı (her hata dalında PNG silinir); `src/card/temp-cleanup.ts` `sweepSnapshotFiles()` açılışta (`_layout.tsx`) ve `deleteAllData` sonunda yalnızca `ReactNative-snapshot-image*.png` dosyalarını `cacheDirectory` altından siler (desen react-native-view-shot Android kaynağından doğrulandı). Açık: iOS'ta dosyalar `NSTemporaryDirectory()/ReactNative/` altında, expo-file-system erişimi yok (S11); Android harici cache'e yazılırsa view-shot'ın kendi CleanTask'ı temizler. Cihaz kanıtı: checklist P-08. |
 | I-2 | Kısmen: `blockedPermissions` artık READ/WRITE_EXTERNAL_STORAGE + `SYSTEM_ALERT_WINDOW` (taze prebuild'de ana manifestte `tools:node="remove"` doğrulandı; dev client yok). Açık: `INTERNET` kararı (Batuhan), release AAB/APK merged manifest (checklist G-09). |
-| I-3 | Batuhan kararı bekliyor: paket adı (`<geliştirici>`) |
+| I-3 | KAPANDI: paket adı `com.batuhan.haftik` (Batuhan, 2026-09-23); `app.json` `android.package` + `ios.bundleIdentifier` |
 | I-4 | **Düzeltildi.** `docs/manual-checklist.md` K-07/K-08 `haftik://` oldu; paket adı satırlarına "yer tutucu, değişince güncelle" notu; bölüm 5 ek maddeleri checklist'e eklendi (K-09, P-08, P-09, G-08, G-09, G-10). `docs/uygulama-adi-onerileri.md` tarihsel öneri belgesi, oradaki "şu an" ifadeleri olduğu gibi bırakıldı. |
 | I-5, I-6 | Batuhan kararı, S12 (değiştirilmedi) |
 | N-2 | **Düzeltildi.** Kanıtlanmış ölü şablon bileşenleri/varlıkları silindi; `expo-web-browser`, `expo-symbols` (transitif kalır), `expo-image` kaldırıldı. |
