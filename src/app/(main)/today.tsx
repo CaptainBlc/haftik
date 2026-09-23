@@ -1,0 +1,108 @@
+/**
+ * Bugün ekranı (Ekran 2, `docs/ux/ekran-akisi.md`) — rota katmanı. Veri ve
+ * zamanı çekip sunum bileşenine (`CheckinForm`) props olarak geçirir.
+ *
+ * **K3 "Kaydet sonrası otomatik devam" (`docs/ux/pazar-akisi.md`):** bu
+ * ekran `returnToCardWeekStart` query param'ıyla (kart açılış ekranının
+ * "Bugünü de ekleyelim" ara ekranından, bkz. `src/app/card/[weekStart].tsx`)
+ * tetiklenmişse, Kaydet başarılı olduğunda normal davranışına EK olarak
+ * doğrudan o haftanın kart açılış ekranına geri döner — ekstra bir "şimdi
+ * kartı aç" dokunuşu istenmez (pazar-akisi.md: "Kaydet'ten sonra ayrı bir
+ * tıklama istemek, çözülmüş bir sorunu tekrar kullanıcıya sormak olur").
+ */
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
+
+import { CheckinForm } from '@/components/checkin-form';
+import { LoadingView } from '@/components/loading-view';
+import { getCheckins, saveCheckin } from '@/data/checkin-repo';
+import type { Category, CategoryValue } from '@/domain/types';
+import { addLocalDays, toLocalDateString } from '@/domain/week';
+import {
+  checkinToSelection,
+  isSelectionComplete,
+  selectionToCheckin,
+  type CategorySelection,
+} from '@/lib/checkin-form';
+import { formatTurkishDateLabel } from '@/lib/date-format';
+import { useNow } from '@/lib/now';
+import { isValidWeekStartParam } from '@/lib/week-param';
+import { trackEvent } from '@/metrics/track';
+import { syncNotificationsNow } from '@/notify/wiring';
+
+export default function TodayScreen() {
+  const router = useRouter();
+  const { returnToCardWeekStart } = useLocalSearchParams<{ returnToCardWeekStart?: string }>();
+  const now = useNow();
+  const today = useMemo(() => toLocalDateString(now), [now]);
+  /** 0 = bugün, 1 = dün (spec: düzenleme penceresi yalnızca bugün/dün). */
+  const [dayOffset, setDayOffset] = useState<0 | 1>(0);
+  const selectedDate = useMemo(() => addLocalDays(today, -dayOffset), [today, dayOffset]);
+
+  const [selection, setSelection] = useState<CategorySelection>({});
+  /**
+   * Hangi tarih için veri yüklendiğini tutar (bir `loaded: boolean` yerine)
+   * — `loadedFor !== selectedDate` iken "henüz yüklenmedi" anlamına gelir.
+   * Bilerek bu şekilde: `react-hooks/set-state-in-effect` kuralı, effect
+   * gövdesinde async çağrıdan ÖNCE doğrudan bir `setState(false)` çağrısını
+   * (cascading render riski) engelliyor; bu desen o senkron sıfırlama
+   * çağrısına hiç ihtiyaç bırakmıyor.
+   */
+  const [loadedFor, setLoadedFor] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const loaded = loadedFor === selectedDate;
+
+  useEffect(() => {
+    let cancelled = false;
+    getCheckins(selectedDate, selectedDate).then((rows) => {
+      if (cancelled) {
+        return;
+      }
+      setSelection(checkinToSelection(rows[0] ?? null));
+      setLoadedFor(selectedDate);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedDate]);
+
+  function handleSelect(category: Category, value: CategoryValue) {
+    setSelection((prev) => ({ ...prev, [category]: value }));
+  }
+
+  async function handleSave() {
+    if (!isSelectionComplete(selection)) {
+      return;
+    }
+    setSaving(true);
+    try {
+      await saveCheckin(selectionToCheckin(selectedDate, selection));
+      void trackEvent('check_in_saved'); // S9: en iyi çaba, akışı bozmaz
+      // Bugünkü hatırlatmayı iptal / kart eşiğini yeniden değerlendir (S8).
+      void syncNotificationsNow();
+      if (isValidWeekStartParam(returnToCardWeekStart, today)) {
+        router.replace({ pathname: '/card/[weekStart]', params: { weekStart: returnToCardWeekStart } });
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (!loaded) {
+    return <LoadingView />;
+  }
+
+  return (
+    <CheckinForm
+      dateLabel={formatTurkishDateLabel(selectedDate)}
+      canGoToYesterday={dayOffset === 0}
+      canGoToToday={dayOffset === 1}
+      onGoToYesterday={() => setDayOffset(1)}
+      onGoToToday={() => setDayOffset(0)}
+      selection={selection}
+      onSelect={handleSelect}
+      onSave={handleSave}
+      disabledExtra={saving}
+    />
+  );
+}

@@ -1,0 +1,179 @@
+/**
+ * `expo-notifications` sarmalayıcısı (`plan.md` S8). YALNIZCA YEREL
+ * planlama: push token / uzak push / FCM-APNs kaydı YOK (yasak API'ler
+ * bu klasörde geçmez; statik tarama testi var).
+ *
+ * `expo-notifications` yalnızca `getDefaultNotifications()` içinde (tembel
+ * `require`) çözülür; `domain/` ve `data/` içine sızmaz, testler sahte
+ * `ExpoNotificationsLike` enjekte eder.
+ *
+ * `replaceAll` = önce hepsini iptal, sonra deterministik `identifier` ile
+ * kur (idempotent). Uygulamanın başka bildirimi olmadığı için "hepsini
+ * iptal" güvenlidir. Çağrılar tek bir kuyrukta seri çalışır (son çağrı kazanır).
+ */
+import { Platform } from 'react-native';
+
+import { NOTIFICATION_TEXTS } from '@/domain/content/notification-texts';
+import type { PlannedNotification } from '@/domain/notify-plan';
+
+export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
+
+export const NOTIFICATION_CHANNEL_ID = 'hhk-reminders';
+
+/** Kullandığımız `expo-notifications` yüzeyinin dar, mock'lanabilir hali. */
+export interface ExpoNotificationsLike {
+  getPermissionsAsync(): Promise<{ status: string }>;
+  requestPermissionsAsync(): Promise<{ status: string }>;
+  scheduleNotificationAsync(request: {
+    identifier?: string;
+    content: { title: string; body: string; data?: Record<string, unknown> };
+    trigger: { type: unknown; date: Date; channelId?: string };
+  }): Promise<string>;
+  cancelAllScheduledNotificationsAsync(): Promise<void>;
+  getAllScheduledNotificationsAsync(): Promise<
+    { identifier: string; content: { data?: Record<string, unknown> }; trigger: unknown }[]
+  >;
+  setNotificationChannelAsync(channelId: string, channel: Record<string, unknown>): Promise<unknown>;
+  SchedulableTriggerInputTypes: { DATE: unknown };
+  AndroidImportance: { DEFAULT: unknown };
+}
+
+export interface PendingNotification {
+  id: string;
+  kind: string;
+  fireAt: Date;
+}
+
+export interface NotificationScheduler {
+  getPermission(): Promise<PermissionStatus>;
+  /** Yalnızca kullanıcı akışından (onboarding / ayar anahtarı) çağrılır. */
+  requestPermission(): Promise<PermissionStatus>;
+  /** Android kanalı; iOS'ta no-op. İlk planlamadan ÖNCE çağrılmalı. */
+  ensureChannel(): Promise<void>;
+  replaceAll(plan: PlannedNotification[]): Promise<{ scheduled: number; failed: number }>;
+  cancelAll(): Promise<void>;
+  listPending(): Promise<PendingNotification[]>;
+}
+
+function toPermissionStatus(status: string): PermissionStatus {
+  if (status === 'granted') return 'granted';
+  if (status === 'denied') return 'denied';
+  return 'undetermined';
+}
+
+export function createScheduler(deps: {
+  notifications: ExpoNotificationsLike;
+  /** Varsayılan: `Platform.OS`. */
+  platform?: string;
+}): NotificationScheduler {
+  const { notifications } = deps;
+  const platform = deps.platform ?? Platform.OS;
+  let queue: Promise<unknown> = Promise.resolve();
+
+  function enqueue<T>(task: () => Promise<T>): Promise<T> {
+    const run = queue.then(task, task);
+    queue = run.catch(() => undefined);
+    return run;
+  }
+
+  return {
+    async getPermission() {
+      const result = await notifications.getPermissionsAsync();
+      return toPermissionStatus(result.status);
+    },
+    async requestPermission() {
+      const result = await notifications.requestPermissionsAsync();
+      return toPermissionStatus(result.status);
+    },
+    async ensureChannel() {
+      if (platform !== 'android') {
+        return;
+      }
+      await notifications.setNotificationChannelAsync(NOTIFICATION_CHANNEL_ID, {
+        name: 'Hatırlatmalar',
+        importance: notifications.AndroidImportance.DEFAULT,
+      });
+    },
+    replaceAll(plan) {
+      return enqueue(async () => {
+        await notifications.cancelAllScheduledNotificationsAsync();
+        let scheduled = 0;
+        let failed = 0;
+        for (const item of plan) {
+          const text = NOTIFICATION_TEXTS[item.kind];
+          try {
+            await notifications.scheduleNotificationAsync({
+              identifier: item.id,
+              content: {
+                title: text.title,
+                body: text.body,
+                data: { kind: item.kind },
+              },
+              trigger: {
+                type: notifications.SchedulableTriggerInputTypes.DATE,
+                date: item.fireAt,
+                channelId: NOTIFICATION_CHANNEL_ID,
+              },
+            });
+            scheduled++;
+          } catch {
+            // Tek bildirim hatası kalanları durdurmaz; log sabit metin (veri yok).
+            failed++;
+            console.warn('[notify] bildirim planlanamadi');
+          }
+        }
+        return { scheduled, failed };
+      });
+    },
+    cancelAll() {
+      return enqueue(() => notifications.cancelAllScheduledNotificationsAsync());
+    },
+    async listPending() {
+      const all = await notifications.getAllScheduledNotificationsAsync();
+      return all.map((n) => {
+        const trigger = n.trigger as {
+          value?: number | string | Date;
+          date?: number | string | Date;
+        } | null;
+        const raw = trigger?.date ?? trigger?.value ?? 0;
+        return {
+          id: n.identifier,
+          kind: String(n.content.data?.kind ?? ''),
+          fireAt: new Date(raw),
+        };
+      });
+    },
+  };
+}
+
+/** Gerçek `expo-notifications` modülünü tembel çözer (yalnızca üretim yolu). */
+export function getDefaultNotifications(): ExpoNotificationsLike {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require('expo-notifications') as ExpoNotificationsLike;
+}
+
+let defaultScheduler: NotificationScheduler | null = null;
+
+export function getDefaultScheduler(): NotificationScheduler {
+  if (!defaultScheduler) {
+    defaultScheduler = createScheduler({ notifications: getDefaultNotifications() });
+  }
+  return defaultScheduler;
+}
+
+/** Ön planda da bildirim gösterilsin (yalnızca yerel bildirim; ses/rozet yok). */
+export function configureNotificationHandler(): void {
+  const N = getDefaultNotifications() as unknown as {
+    setNotificationHandler(h: {
+      handleNotification: () => Promise<Record<string, boolean>>;
+    }): void;
+  };
+  N.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+}

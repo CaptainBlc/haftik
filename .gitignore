@@ -1,0 +1,43 @@
+# Sırlar
+.env
+.env.*
+!.env.example
+
+# Bağımlılıklar ve derleme çıktıları
+node_modules/
+dist/
+build/
+.expo/
+.expo-shared/
+web-build/
+android/
+ios/
+
+# Expo / TypeScript üretilen dosyalar (S1: create-expo-app + expo-router)
+expo-env.d.ts
+*.tsbuildinfo
+.metro-health-check*
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.keystore
+credentials.json
+google-services.json
+GoogleService-Info.plist
+*.apk
+*.aab
+
+# Sistem / editör
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# Python (hook önbelleği)
+__pycache__/
+*.pyc

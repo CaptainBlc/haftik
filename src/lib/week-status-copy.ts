@@ -1,0 +1,60 @@
+/**
+ * Hafta durumu ekranının (Ekran 3, `docs/ux/ekran-akisi.md`) saf metin
+ * seçimi. `WeekState`'ten (domain, S2) UI metnine saf bir eşleme; React/RN'e
+ * dokunmaz.
+ *
+ * `docs/ux/ekran-akisi.md`in birebir belirttiği iki durum:
+ * - eşik dolu değilse: "Kartın için X gün daha lazım."
+ * - eşik dolu ama saat gelmediyse: "Pazar 20:00'de açılıyor"
+ *
+ * **Dokümante edilmemiş üçüncü durum (S6 kararı):** `unlocked === true`
+ * iken (kullanıcı henüz kutuya dokunmadan önce) gösterilecek metin
+ * `ekran-akisi.md`de yazılı değil (doküman yalnızca "kilitli kutu"nun iki
+ * alt-durumunu tanımlıyor; tam açık/dokunulmayı bekleyen an S7'nin kart
+ * açılış ekranına geçiş anıdır). Burada seçilen "Kartın hazır, açmak için
+ * dokun" nötr, ton kuralına uygun bir UI metnidir — spec'in dondurduğu bir
+ * içerik havuzu (`content/tr.ts`) parçası DEĞİLDİR, gerektiğinde S7/UX
+ * onayıyla değiştirilebilir.
+ *
+ * **Dördüncü durum (S7a, K3): `needsTodayCheckin`.** `docs/ux/pazar-akisi.md`
+ * "Ara ekran" bölümü: kullanıcı kart açılış ekranından ("Bugünü de
+ * ekleyelim") geri dönerse, kilitli kutu kilitli kalır ve altındaki metin
+ * "Bugünü işaretlemeden kartın açılmaz" olarak güncellenir. Bu yalnızca
+ * `unlocked === true` iken ve çağıran (`week.tsx`) K3 kontrolünü
+ * (`needsTodayCheckinBeforeCard`) ayrıca çalıştırıp `true` bulduğunda
+ * anlamlıdır — bu dosya kendi başına o kontrolü yapmaz (saf metin seçimi).
+ */
+import type { WeekState } from '@/domain/types';
+
+/** Nokta/kutu üstündeki bağımsız durum satırı. */
+export function weekStatusHeadline(state: WeekState): string {
+  if (!state.thresholdMet) {
+    const remaining = state.requiredDays - state.filledDays;
+    return `Kartın için ${remaining} gün daha lazım.`;
+  }
+  if (!state.timeMet) {
+    return "Kartın hazırlanıyor, Pazar 20:00'de açılacak.";
+  }
+  return 'Kartın hazır!';
+}
+
+/**
+ * Kilitli kart kutusunun altındaki, kutuya özgü kısa metin.
+ *
+ * @param needsTodayCheckin K3 (bkz. dosya başı "Dördüncü durum"): `unlocked`
+ *   olsa bile bugün bu haftanın Pazar'ıysa ve bugünün check-in'i eksikse
+ *   `true` verilir (`needsTodayCheckinBeforeCard`, `src/lib/card-flow.ts`).
+ */
+export function lockedBoxCaption(state: WeekState, needsTodayCheckin = false): string {
+  if (!state.thresholdMet) {
+    const remaining = state.requiredDays - state.filledDays;
+    return `Kartın için ${remaining} gün daha lazım.`;
+  }
+  if (!state.timeMet) {
+    return "Pazar 20:00'de açılıyor";
+  }
+  if (needsTodayCheckin) {
+    return 'Bugünü işaretlemeden kartın açılmaz';
+  }
+  return 'Kartın hazır, açmak için dokun';
+}

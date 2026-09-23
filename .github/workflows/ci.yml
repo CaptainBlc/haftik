@@ -1,0 +1,39 @@
+name: CI
+
+# Amac: her push/PR'da tip kontrolu + lint + test calistir. Ucretsiz GitHub Actions
+# dakikalari yeterli olacak sekilde tek job, tek Node surumu, cache acik.
+# Script adlari (typecheck/lint/test) package.json'da standart isimlerle
+# beklenir; henuz tanimli degilse ilgili adim basarisiz olur (bu beklenen bir
+# durumdur, S1 tamamlanana kadar).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Typecheck, lint, test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+
+      - name: Node kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Bagimliliklari kur
+        run: npm ci
+
+      - name: Tip kontrolu (tsc --noEmit)
+        run: npm run typecheck
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Testler (Jest)
+        run: npm test -- --ci

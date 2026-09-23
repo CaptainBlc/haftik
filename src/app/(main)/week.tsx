@@ -1,0 +1,99 @@
+/**
+ * Hafta durumu ekranı (Ekran 3, `docs/ux/ekran-akisi.md`) — rota katmanı.
+ *
+ * **S7a'da tamamlandı:** `plan.md` S6 notunun bıraktığı "kilitli kutu
+ * `unlocked` iken dokunma gerçek kart açılışına GÖTÜRMEZ" kısıtı burada
+ * kaldırıldı — kutuya dokunma artık gerçek kart açılış ekranına
+ * (`src/app/card/[weekStart].tsx`) yönlendirir. K3 (Pazar çakışması) kontrolü
+ * doğrudan orada (`openOrBuildCard` → `needsTodayCheckinBeforeCard`)
+ * yapılır; bu dosya yalnızca navigasyonu tetikler.
+ */
+import { useRouter } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
+
+import { LoadingView } from '@/components/loading-view';
+import { WeekStatusView } from '@/components/week-status-view';
+import { hasAnyPriorCard } from '@/data/card-repo';
+import { getCheckins } from '@/data/checkin-repo';
+import type { Checkin } from '@/domain/types';
+import { addLocalDays, getWeekStart, getWeekState, toLocalDateString } from '@/domain/week';
+import { needsTodayCheckinBeforeCard } from '@/lib/card-flow';
+import { computeWeekDots } from '@/lib/week-dots';
+import { lockedBoxCaption, weekStatusHeadline } from '@/lib/week-status-copy';
+import { useNow } from '@/lib/now';
+import { trackEventOnce } from '@/metrics/track';
+
+export default function WeekScreen() {
+  const router = useRouter();
+  const now = useNow();
+  const weekStart = useMemo(() => getWeekStart(now), [now]);
+  const weekEnd = useMemo(() => addLocalDays(weekStart, 6), [weekStart]);
+
+  /**
+   * `weekStart`e göre son yüklenen veri (bir çift `null` state yerine) —
+   * `data?.weekStart !== weekStart` iken "henüz yüklenmedi" demektir.
+   * Bilerek bu şekilde: `react-hooks/set-state-in-effect` kuralı, effect
+   * gövdesinde async çağrıdan önce doğrudan `setState(null)` çağrılarını
+   * (cascading render riski) engelliyor; bu desen o senkron sıfırlamaya
+   * hiç ihtiyaç bırakmıyor (bkz. `today.tsx`'teki aynı desen).
+   */
+  const [data, setData] = useState<{
+    weekStart: string;
+    checkins: Checkin[];
+    hasPrior: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([getCheckins(weekStart, weekEnd), hasAnyPriorCard()]).then(([c, prior]) => {
+      if (cancelled) {
+        return;
+      }
+      setData({ weekStart, checkins: c, hasPrior: prior });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [weekStart, weekEnd]);
+
+  // S9: kart bu hafta ilk kez açılabilir görüldüğünde bir kez say (hafta başına tek kayıt, DB'de dedupe).
+  // Hook, erken `return`'den ÖNCE olmalı (hook sırası sabit kalsın).
+  const unlockedNow =
+    data !== null &&
+    data.weekStart === weekStart &&
+    getWeekState({ weekStart, now, checkins: data.checkins, hasAnyPriorCard: data.hasPrior }).unlocked;
+  useEffect(() => {
+    if (unlockedNow) {
+      void trackEventOnce('card_unlocked', weekStart);
+    }
+  }, [unlockedNow, weekStart]);
+
+  if (!data || data.weekStart !== weekStart) {
+    return <LoadingView />;
+  }
+
+  const { checkins, hasPrior } = data;
+  const weekState = getWeekState({ weekStart, now, checkins, hasAnyPriorCard: hasPrior });
+  const today = toLocalDateString(now);
+  const dots = computeWeekDots(weekStart, checkins, today);
+  const needsTodayCheckin = needsTodayCheckinBeforeCard({ weekStart, today, checkins });
+
+  function handleLockedPress() {
+    if (!weekState.unlocked) {
+      // Kilitliyken dokunma: hiçbir şey açılmaz (spec/ekran-akisi.md);
+      // görsel "shake" geri bildirimi `LockedCardPlaceholder` içinde.
+      return;
+    }
+    router.push({ pathname: '/card/[weekStart]', params: { weekStart } });
+  }
+
+  return (
+    <WeekStatusView
+      dots={dots}
+      headline={weekStatusHeadline(weekState)}
+      caption={lockedBoxCaption(weekState, needsTodayCheckin)}
+      unlocked={weekState.unlocked}
+      onLockedPress={handleLockedPress}
+    />
+  );
+}

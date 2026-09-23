@@ -1,0 +1,211 @@
+/**
+ * Kart açılışı reveal akışı — v1'in tek "wow anı"
+ * (`docs/ux/ekran-akisi.md` "Tek 'wow anı'" + "Reveal animasyonu").
+ * `CardSnapshot`'ı props olarak alır, saf `CardView`'i (S7a) aşamalı bir
+ * animasyonla gösterir.
+ *
+ * Adımlar (dokümanla birebir):
+ * 1. Yükleme/spinner yok (`buildCard` cihazda milisaniyeler sürer).
+ * 2. Blur→net geçiş (~400ms crossfade).
+ * 3. İçerik aşamalı belirir: unvan (~150ms) → 4 satır sırayla (~80ms
+ *    arayla, hareket→uyku→harcama→sosyal) → özet. Toplam ~1,2sn.
+ * 4. Herhangi bir dokunuşla animasyon anında tamamlanır (atlanabilir).
+ *
+ * **Bilinçli yaklaşım notu (blur→net):** doküman gerçek bir gaussian blur
+ * tarif ediyor; bu depoda `expo-blur` (veya benzeri) bir bağımlılık yok ve
+ * bu dilimde (S7a) eklenmedi — yeni bir native bağımlılık kararı görev
+ * kapsamı dışında kaldı. Bunun yerine yalnızca opaklık ile bir crossfade
+ * YAKLAŞIK olarak taklit edilir; gerçek blur efekti istenirse S10 (Android
+ * cihaz testi, cila) dilimine bırakılabilir (bkz. `plan.md` S7a notu).
+ *
+ * PNG yakalama (`capture.ts`) her zaman TAM opaklıkla (animasyon
+ * tamamlandıktan/atlandıktan sonra) yapılmalıdır — bu bileşenin kendisi
+ * yakalamayı tetiklemez, yalnızca `viewShotRef`'i `onRevealComplete` ile
+ * dışarı açar.
+ *
+ * **"Paylaş" birincil eylemi (Ekran 4, `ekran-akisi.md`; S7b'de eklendi):**
+ * yalnızca reveal tamamlandıktan (`revealed === true`) sonra görünür —
+ * animasyon sırasında dikkat dağıtmaması için (aynı "wow anı önce, eylem
+ * sonra" ilkesi). Dokunulunca bu bileşen KENDİSİ paylaşım yapmaz/yakalama
+ * tetiklemez; yalnızca `onShare`'i çağırır — asıl gizleme önizlemesi ve
+ * yakalama akışı `src/components/card-preview-view.tsx`tedir (Ekran 5),
+ * çağıran ekran (`src/app/card/[weekStart].tsx`) `onShare` ile oraya geçer.
+ */
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
+import type { ViewShotRef } from 'react-native-view-shot';
+
+import { ThemedText } from '@/components/themed-text';
+import { Spacing } from '@/constants/theme';
+import type { CardSnapshot } from '@/domain/types';
+
+import { CardView } from './CardView';
+
+const BLUR_FADE_MS = 400;
+const CONTENT_REVEAL_MS = 1200;
+
+export interface CardRevealViewProps {
+  snapshot: CardSnapshot;
+  onClose: () => void;
+  /** Reveal animasyonu tamamlandığında (doğal bitiş veya atlama) çağrılır. */
+  onRevealComplete?: () => void;
+  /**
+   * "Paylaş" butonuna dokununca çağrılır (yalnızca `revealed` iken buton
+   * görünür). Verilmezse buton hiç render edilmez (ör. ileride bu bileşenin
+   * paylaşımsız bir bağlamda kullanılması ihtimaline karşı).
+   */
+  onShare?: () => void;
+}
+
+export function CardRevealView({
+  snapshot,
+  onClose,
+  onRevealComplete,
+  onShare,
+}: CardRevealViewProps) {
+  // `react-hooks/refs` (React Compiler'a hazırlık kuralı) burada `Animated.Value`
+  // örneklerini gerçek bir React ref sanıp "render sırasında ref okunuyor"
+  // diye işaretliyor — aynı bilinen yanlış pozitif `locked-card-placeholder.tsx`te
+  // de var (bkz. o dosyadaki not + CLAUDE.md "Bilinen tuzaklar" MOB/S6):
+  // `Animated.Value`/`Animated.CompositeAnimation` standart RN `Animated`
+  // API'sinin mutable nesneleridir, `useRef` yalnızca referanslarını
+  // render'lar arası sabit tutmak için kullanılır; render sırasında OKUNMAZ,
+  // yalnızca interpolasyon zinciri (`.interpolate(...)`) kurulur. Bu dosyada
+  // (aynı desenin çok sayıda tekrarı nedeniyle) dosya geneli için kapatıldı.
+  /* eslint-disable react-hooks/refs */
+  const blurFade = useRef(new Animated.Value(0)).current;
+  const contentProgress = useRef(new Animated.Value(0)).current;
+  const animationRef = useRef<Animated.CompositeAnimation | null>(null);
+  const viewShotRef = useRef<ViewShotRef>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    const sequence = Animated.sequence([
+      Animated.timing(blurFade, {
+        toValue: 1,
+        duration: BLUR_FADE_MS,
+        useNativeDriver: true,
+      }),
+      Animated.timing(contentProgress, {
+        toValue: 1,
+        duration: CONTENT_REVEAL_MS,
+        useNativeDriver: true,
+      }),
+    ]);
+    animationRef.current = sequence;
+    sequence.start(({ finished }) => {
+      if (finished) {
+        setRevealed(true);
+        onRevealComplete?.();
+      }
+    });
+    return () => {
+      sequence.stop();
+    };
+    // Yalnızca mount'ta bir kez başlatılır; `blurFade`/`contentProgress`
+    // `useRef` ile sabit tutulan `Animated.Value`lerdir, tekrar tetiklenmez.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handleSkip() {
+    if (revealed) {
+      return;
+    }
+    animationRef.current?.stop();
+    blurFade.setValue(1);
+    contentProgress.setValue(1);
+    setRevealed(true);
+    onRevealComplete?.();
+  }
+
+  function sectionOpacity(start: number, end: number) {
+    return contentProgress.interpolate({
+      inputRange: [start, end],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    });
+  }
+
+  return (
+    <View style={styles.container}>
+      {!revealed && (
+        <Pressable
+          testID="card-reveal-skip-overlay"
+          style={StyleSheet.absoluteFill}
+          onPress={handleSkip}
+          accessibilityRole="button"
+          accessibilityLabel="Animasyonu atla"
+        />
+      )}
+
+      <Animated.View style={[styles.cardWrapper, { opacity: blurFade }]}>
+        <CardView
+          ref={viewShotRef}
+          snapshot={snapshot}
+          sectionOpacity={{
+            title: sectionOpacity(0, 0.15),
+            movement: sectionOpacity(0.1, 0.25),
+            sleep: sectionOpacity(0.22, 0.37),
+            spending: sectionOpacity(0.34, 0.49),
+            social: sectionOpacity(0.46, 0.61),
+            summary: sectionOpacity(0.6, 0.75),
+          }}
+        />
+      </Animated.View>
+
+      <Pressable
+        testID="card-reveal-close"
+        accessibilityRole="button"
+        accessibilityLabel="Kapat"
+        onPress={onClose}
+        style={styles.closeButton}>
+        <ThemedText style={styles.closeText}>✕</ThemedText>
+      </Pressable>
+
+      {revealed && onShare && (
+        <Pressable
+          testID="card-reveal-share"
+          accessibilityRole="button"
+          onPress={onShare}
+          style={styles.shareButton}>
+          <ThemedText type="smallBold" style={styles.shareButtonText}>
+            Paylaş
+          </ThemedText>
+        </Pressable>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.four,
+  },
+  cardWrapper: {
+    borderRadius: Spacing.three,
+    overflow: 'hidden',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: Spacing.six,
+    left: Spacing.four,
+    padding: Spacing.two,
+  },
+  closeText: {
+    fontSize: 22,
+  },
+  shareButton: {
+    position: 'absolute',
+    bottom: Spacing.six,
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.five,
+    borderRadius: Spacing.two,
+    backgroundColor: '#1C1C1E',
+  },
+  shareButtonText: {
+    color: '#FFFFFF',
+  },
+});

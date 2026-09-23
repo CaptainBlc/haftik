@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # npm bagimliliklari (Expo/React Native paketleri dahil) - haftalik kontrol.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # CI workflow dosyalarinin kendisi de (actions/checkout, actions/setup-node vb.)
+  # guncel tutulur; ayri bir servis degil, ayni ucretsiz Dependabot ozelligi.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
