@@ -1,4 +1,4 @@
-import { getCard, saveCard } from '@/data/card-repo';
+import { getCard, getCardWeekStarts, saveCard } from '@/data/card-repo';
 import { getDriver } from '@/data/db';
 import type { CardSnapshot } from '@/domain/types';
 import { setupTestDb } from '../helpers/setup-test-db';
@@ -110,4 +110,16 @@ describe('card-repo', () => {
   // (2026-10-01, Kritik-1/A8) hasAnyPriorCard ve testleri kaldırıldı: eşik
   // artık check-in geçmişinden türüyor (domain/week.ts hasQualifiedWeekBefore),
   // bu fonksiyon hiçbir akışta kullanılmıyordu.
+
+  it('getCardWeekStarts kaydedilmis tum haftalarin week_start listesini doner (T2)', async () => {
+    await saveCard(makeCard({ weekStart: '2026-09-14' }));
+    await saveCard(makeCard({ weekStart: '2026-09-21' }));
+
+    const starts = await getCardWeekStarts();
+    expect(starts.sort()).toEqual(['2026-09-14', '2026-09-21']);
+  });
+
+  it('getCardWeekStarts hic kart yoksa bos dizi doner', async () => {
+    expect(await getCardWeekStarts()).toEqual([]);
+  });
 });

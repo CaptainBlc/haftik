@@ -59,7 +59,7 @@ describe('scheduler', () => {
     warn.mockRestore();
   });
 
-  it('metin kind`dan çözülür, data yalnızca {kind}, trigger tarih tipinde', async () => {
+  it('metin kind`dan çözülür, data {kind, weekStart} (T3 yönlendirmesi için), trigger tarih tipinde', async () => {
     const fake = createFakeNotifications();
     const spy = jest.spyOn(fake, 'scheduleNotificationAsync');
     const s = createScheduler({ notifications: fake, platform: 'android' });
@@ -67,10 +67,19 @@ describe('scheduler', () => {
     const req = spy.mock.calls[0][0];
     expect(req.content.title).toBe(NOTIFICATION_TEXTS['card-ready'].title);
     expect(req.content.body).toBe(NOTIFICATION_TEXTS['card-ready'].body);
-    expect(req.content.data).toEqual({ kind: 'card-ready' });
+    expect(req.content.data).toEqual({ kind: 'card-ready', weekStart: '2026-09-21' });
     expect(req.trigger.type).toBe('date');
     expect(req.trigger.date).toEqual(PLAN[2].fireAt);
     expect(req.identifier).toBe('card-2026-09-27');
+  });
+
+  it('T3: `daily` için data yalnızca {kind} (weekStart eklenmez, rota zaten sabit /today)', async () => {
+    const fake = createFakeNotifications();
+    const spy = jest.spyOn(fake, 'scheduleNotificationAsync');
+    const s = createScheduler({ notifications: fake, platform: 'android' });
+    await s.replaceAll([PLAN[0]]);
+    const req = spy.mock.calls[0][0];
+    expect(req.content.data).toEqual({ kind: 'daily' });
   });
 
   it('S-03: eşzamanlı iki replaceAll seri çalışır, sonuç SON planın kendisi', async () => {
@@ -114,5 +123,51 @@ describe('scheduler', () => {
     expect(await s.getPermission()).toBe('undetermined');
     fake.permission = 'granted';
     expect(await s.getPermission()).toBe('granted');
+  });
+
+  describe('T3: bildirim yanıtı (yönlendirme için)', () => {
+    it('getLastResponse: yanıt yoksa null, varsa yalnızca data çözülür', async () => {
+      const fake = createFakeNotifications();
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      expect(await s.getLastResponse()).toBeNull();
+
+      fake.lastResponse = { notification: { request: { content: { data: { kind: 'daily' } } } } };
+      expect(await s.getLastResponse()).toEqual({ data: { kind: 'daily' } });
+    });
+
+    it('getLastResponse: data yoksa boş obje döner (çökmez)', async () => {
+      const fake = createFakeNotifications();
+      fake.lastResponse = { notification: { request: { content: {} } } };
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      expect(await s.getLastResponse()).toEqual({ data: {} });
+    });
+
+    it('onResponseReceived: sıcak açılış olayında dinleyici data ile çağrılır', () => {
+      const fake = createFakeNotifications();
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      const received: Record<string, unknown>[] = [];
+      s.onResponseReceived((r) => received.push(r.data));
+      fake.emitResponse({ kind: 'card-ready', weekStart: '2026-09-07' });
+      expect(received).toEqual([{ kind: 'card-ready', weekStart: '2026-09-07' }]);
+    });
+
+    it('onResponseReceived: remove() sonrası dinleyici tetiklenmez', () => {
+      const fake = createFakeNotifications();
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      const received: unknown[] = [];
+      const sub = s.onResponseReceived((r) => received.push(r.data));
+      sub.remove();
+      fake.emitResponse({ kind: 'daily' });
+      expect(received).toEqual([]);
+    });
+
+    it('clearLastResponse: native temizleyiciyi çağırır', async () => {
+      const fake = createFakeNotifications();
+      fake.lastResponse = { notification: { request: { content: { data: { kind: 'daily' } } } } };
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      await s.clearLastResponse();
+      expect(fake.clearCount).toBe(1);
+      expect(fake.lastResponse).toBeNull();
+    });
   });
 });

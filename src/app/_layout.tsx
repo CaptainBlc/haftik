@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { sweepSnapshotFiles } from '@/card/temp-cleanup';
 import { initAppDatabase } from '@/data/init';
 import { deleteReportFile } from '@/metrics/report-file';
+import { useNotificationRouting } from '@/notify/notification-routing';
 import { configureNotificationHandler } from '@/notify/scheduler';
 import { syncNotificationsNow } from '@/notify/wiring';
 
@@ -34,6 +35,10 @@ export default function RootLayout() {
   initAppDatabase();
 
   const colorScheme = useColorScheme();
+
+  // T3: bildirime dokunarak açılış (soğuk) ve açıkken dokunma (sıcak) --
+  // sabit rota tablosuna göre yönlendirir (bkz. `notify/notification-routing.ts`).
+  useNotificationRouting();
 
   useEffect(() => {
     SplashScreen.hideAsync();

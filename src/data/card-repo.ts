@@ -127,6 +127,17 @@ export async function saveCard(c: CardSnapshot): Promise<void> {
   );
 }
 
+/**
+ * Kartı zaten kaydedilmiş tüm haftaların `week_start` listesini döndürür
+ * (T2, kaçırılan hafta yolu — `domain/week.ts` `findOpenableWeeks` için).
+ * Yılda en fazla 52 satır (bkz. `21-mimari-ve-efor.md` §2c), tek sorgu.
+ */
+export async function getCardWeekStarts(): Promise<string[]> {
+  const driver = getDriver();
+  const rows = driver.all<{ week_start: string }>('SELECT week_start FROM weekly_card');
+  return rows.map((r) => r.week_start);
+}
+
 // (2026-10-01, Kritik-1 düzeltmesi/A8) `hasAnyPriorCard` buradan kaldırıldı:
 // eşik artık kartların varlığına değil check-in geçmişine bakıyor
 // (`domain/week.ts` `hasQualifiedWeekBefore`), bu fonksiyon hiçbir yerden

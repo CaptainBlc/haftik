@@ -90,3 +90,19 @@ export async function getCheckinsBefore(beforeDate: string): Promise<Checkin[]> 
   );
   return rows.map(rowToCheckin);
 }
+
+/**
+ * Tarih sınırı olmadan TÜM check-in geçmişini döndürür (T2, kaçırılan hafta
+ * yolu — `domain/week.ts` `findOpenableWeeks` için). `getCheckinsBefore`
+ * gibi günde en fazla 1 satır olduğundan (aylarca kullanımda bile) v1.5
+ * ölçeğinde tek sorguda tüm geçmişi çekmek performans sorunu yaratmaz.
+ */
+export async function getAllCheckins(): Promise<Checkin[]> {
+  const driver = getDriver();
+  const rows = driver.all<CheckinRow>(
+    `SELECT local_date, movement, sleep, spending, social
+     FROM checkin
+     ORDER BY local_date ASC`
+  );
+  return rows.map(rowToCheckin);
+}

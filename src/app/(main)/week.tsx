@@ -13,11 +13,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { LoadingView } from '@/components/loading-view';
 import { WeekStatusView } from '@/components/week-status-view';
-import { getCard } from '@/data/card-repo';
-import { getCheckins, getCheckinsBefore } from '@/data/checkin-repo';
+import { getCard, getCardWeekStarts } from '@/data/card-repo';
+import { getAllCheckins, getCheckins, getCheckinsBefore } from '@/data/checkin-repo';
 import type { Checkin } from '@/domain/types';
 import {
   addLocalDays,
+  findOpenableWeeks,
   getWeekStart,
   getWeekState,
   hasQualifiedWeekBefore,
@@ -48,6 +49,7 @@ export default function WeekScreen() {
     checkins: Checkin[];
     qualifiedBefore: boolean;
     hasCard: boolean;
+    missedWeek: string | null;
   } | null>(null);
 
   // BLG-02: sekme odağa her gelişinde yeniden yükle (Bugün'de kaydedilen
@@ -55,6 +57,8 @@ export default function WeekScreen() {
   // Kritik-1 düzeltmesi (A8): `hasAnyPriorCard()` yerine check-in geçmişi
   // okunur (`getCheckinsBefore`), eşik artık kartların varlığına bağlı değil
   // (bkz. `domain/week.ts` `hasQualifiedWeekBefore` dosya başı yorumu).
+  // T2, kaçırılan hafta: `getAllCheckins`/`getCardWeekStarts` + `findOpenableWeeks`
+  // ile "açılmayı bekleyen" en yeni haftayı (varsa, `weekStart` hariç) bulur.
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
@@ -62,20 +66,35 @@ export default function WeekScreen() {
         getCheckins(weekStart, weekEnd),
         getCheckinsBefore(weekStart),
         getCard(weekStart),
-      ]).then(([c, priorCheckins, card]) => {
+        getAllCheckins(),
+        getCardWeekStarts(),
+      ]).then(([c, priorCheckins, card, allCheckins, cardWeekStarts]) => {
         if (cancelled) {
           return;
         }
+        const openable = findOpenableWeeks({
+          checkins: allCheckins,
+          cardWeekStarts,
+          now,
+        }).filter((ws) => ws !== weekStart);
         setData({
           weekStart,
           checkins: c,
           qualifiedBefore: hasQualifiedWeekBefore(priorCheckins, weekStart),
           hasCard: card !== null,
+          missedWeek: openable.length > 0 ? openable[openable.length - 1] : null,
         });
       });
       return () => {
         cancelled = true;
       };
+      // `now` bilerek dependency değil (bkz. `card/[weekStart].tsx`teki aynı
+      // desen): yalnızca `weekStart`/`weekEnd` değişince veya odağa her
+      // gelişte yeniden kurulur. Dahil etmek, her render'da YENİ bir `Date`
+      // nesnesi dönen çağıranlarla (ör. bu ekranın testindeki `useNow` sahtesi)
+      // sonsuz render döngüsüne yol açar — gerçek `useNow()` kimliği yalnızca
+      // gerçek "an"larda değiştirdiğinden üründe sorun yaşanmaz.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [weekStart, weekEnd])
   );
 
@@ -100,7 +119,7 @@ export default function WeekScreen() {
     return <LoadingView />;
   }
 
-  const { checkins, qualifiedBefore, hasCard } = data;
+  const { checkins, qualifiedBefore, hasCard, missedWeek } = data;
   const weekState = getWeekState({
     weekStart,
     now,
@@ -124,6 +143,16 @@ export default function WeekScreen() {
     router.push({ pathname: '/card/[weekStart]', params: { weekStart } });
   }
 
+  function handleMissedWeekPress() {
+    if (!missedWeek) {
+      return;
+    }
+    // T2: normal reveal (18-ux-akisi.md §2.7 — K3 burada uygulanmaz,
+    // Pazartesi'de bugün ≠ Pazar). Uygunluk `openOrBuildCard` içinde
+    // kendisi yeniden doğrulanır (card/[weekStart].tsx), bu yalnızca navigasyon.
+    router.push({ pathname: '/card/[weekStart]', params: { weekStart: missedWeek } });
+  }
+
   return (
     <WeekStatusView
       dots={dots}
@@ -131,6 +160,8 @@ export default function WeekScreen() {
       caption={lockedBoxCaption(weekState, needsTodayCheckin, hasCard)}
       unlocked={weekState.unlocked}
       onLockedPress={handleLockedPress}
+      missedWeek={missedWeek}
+      onMissedWeekPress={handleMissedWeekPress}
     />
   );
 }

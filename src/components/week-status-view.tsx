@@ -6,6 +6,7 @@
 import { ScrollView, StyleSheet } from 'react-native';
 
 import { LockedCardPlaceholder } from '@/components/locked-card-placeholder';
+import { MissedWeekBanner } from '@/components/missed-week-banner';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WeekDotsRow } from '@/components/week-dots-row';
@@ -19,6 +20,9 @@ export interface WeekStatusViewProps {
   caption: string;
   unlocked: boolean;
   onLockedPress: () => void;
+  /** T2: en yeni "açılmayı bekleyen" (uygun ama kartı kaydedilmemiş) hafta — yoksa `null`. */
+  missedWeek?: string | null;
+  onMissedWeekPress?: () => void;
 }
 
 export function WeekStatusView({
@@ -27,6 +31,8 @@ export function WeekStatusView({
   caption,
   unlocked,
   onLockedPress,
+  missedWeek,
+  onMissedWeekPress,
 }: WeekStatusViewProps) {
   const topInset = useTopInset();
 
@@ -34,6 +40,8 @@ export function WeekStatusView({
     <ThemedView style={[styles.flex, { paddingTop: topInset }]}>
       {/* B10: büyük yazı tipinde / küçük ekranda içerik kesilmesin, kaydırılabilsin. */}
       <ScrollView testID="week-scroll" contentContainerStyle={styles.container}>
+        {missedWeek && onMissedWeekPress && <MissedWeekBanner onPress={onMissedWeekPress} />}
+
         <ThemedText type="title" style={styles.heading}>
           Bu hafta
         </ThemedText>

@@ -49,12 +49,29 @@ export interface ExpoNotificationsLike {
   setNotificationChannelAsync(channelId: string, channel: Record<string, unknown>): Promise<unknown>;
   SchedulableTriggerInputTypes: { DATE: unknown };
   AndroidImportance: { DEFAULT: unknown };
+  // T3, bildirim yönlendirmesi (`notify/notification-routing.ts`):
+  // soğuk açılış (uygulama bir bildirime dokunularak başlatıldı) ve sıcak
+  // açılış (uygulama açıkken dokunuldu) için. SDK 57 d.ts'inde ikisi de var.
+  getLastNotificationResponseAsync(): Promise<{
+    notification: { request: { content: { data?: Record<string, unknown> } } };
+  } | null>;
+  addNotificationResponseReceivedListener(
+    listener: (response: {
+      notification: { request: { content: { data?: Record<string, unknown> } } };
+    }) => void
+  ): { remove(): void };
+  clearLastNotificationResponseAsync(): Promise<void>;
 }
 
 export interface PendingNotification {
   id: string;
   kind: string;
   fireAt: Date;
+}
+
+/** T3: bir bildirim yanıtından (dokunma) çözülen, yalnızca ilgilendiğimiz `data` yükü. */
+export interface NotificationResponseData {
+  data: Record<string, unknown>;
 }
 
 export interface NotificationScheduler {
@@ -68,6 +85,12 @@ export interface NotificationScheduler {
   replaceAll(plan: PlannedNotification[]): Promise<{ scheduled: number; failed: number }>;
   cancelAll(): Promise<void>;
   listPending(): Promise<PendingNotification[]>;
+  /** T3, soğuk açılış: uygulama bir bildirime dokunularak başlatıldıysa son yanıtı döner. */
+  getLastResponse(): Promise<NotificationResponseData | null>;
+  /** T3, sıcak açılış: uygulama açıkken bir bildirime dokunulursa tetiklenir. */
+  onResponseReceived(listener: (response: NotificationResponseData) => void): { remove(): void };
+  /** T3: bir yanıt işlendikten sonra tekrar işlenmesin diye temizler. */
+  clearLastResponse(): Promise<void>;
 }
 
 function toPermissionStatus(status: string): PermissionStatus {
@@ -137,7 +160,11 @@ export function createScheduler(deps: {
               content: {
                 title: text.title,
                 body: text.body,
-                data: { kind: item.kind },
+                // T3, bildirim yönlendirmesi: `card-ready` rotası `weekStart`e
+                // ihtiyaç duyar (`notify/notification-routing.ts`
+                // `resolveNotificationRoute`); `daily` her zaman `/today`e
+                // gittiğinden yükü büyütmemek için eklenmez.
+                data: item.kind === 'card-ready' ? { kind: item.kind, weekStart: item.weekStart } : { kind: item.kind },
               },
               trigger: {
                 type: notifications.SchedulableTriggerInputTypes.DATE,
@@ -172,6 +199,18 @@ export function createScheduler(deps: {
           fireAt: new Date(raw),
         };
       });
+    },
+    async getLastResponse() {
+      const response = await notifications.getLastNotificationResponseAsync();
+      return response ? { data: response.notification.request.content.data ?? {} } : null;
+    },
+    onResponseReceived(listener) {
+      return notifications.addNotificationResponseReceivedListener((response) =>
+        listener({ data: response.notification.request.content.data ?? {} })
+      );
+    },
+    clearLastResponse() {
+      return notifications.clearLastNotificationResponseAsync();
     },
   };
 }

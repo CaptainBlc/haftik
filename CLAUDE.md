@@ -209,7 +209,35 @@ dependabot/pre-commit, CLAUDE.md ayıklaması (hepsi 2026-10-01, S13) · migrati
 (2026-10-01, S15 T1 — ayrıntı `docs/kararlar/2026-09-30-taban-oncesi-kararlar.md` ve
 `2026-10-01-taban-oncesi-kararlar-b.md`). `now` zorunlu kılma (TB-10) bilerek ERTELENDİ (S15'te
 `open-card.ts`'e dokunulurken fırsat değerlendirildi ama kapsam dışı bırakıldı, kendi önceliği
-zaten düşüktü — bir sonraki `open-card.ts` dokunuşunda ele alınabilir).
+zaten düşüktü — bir sonraki `open-card.ts` dokunuşunda ele alınabilir). · T2 kaçırılan hafta
+yolu (2026-10-01, S15 T2): saf `findOpenableWeeks({checkins, cardWeekStarts, now})`
+(`src/domain/week.ts`) + `getAllCheckins`/`getCardWeekStarts` (yeni repo fonksiyonları) + Hafta
+ekranında `MissedWeekBanner` ("Geçen haftanın kartı seni bekliyor", yalnız en yeni bekleyen
+hafta, `weekStart` hariç). Tıklayınca normal reveal (`card/[weekStart]`), K3 uygulanmaz.
+Bekleyen diğer haftaların kalıcı evi S25 Albüm. **Tuzak (not düşüldü):** `useFocusEffect`in
+`useCallback` bağımlılık dizisine `now`(Date nesnesi) EKLENMEMELİ — kimliği her render'da
+değişen bir `useNow()` çağıranla (ör. test sahtesi) sonsuz render döngüsüne yol açar; `now`
+kapanışta (closure) bırakılır, `eslint-disable-next-line react-hooks/exhaustive-deps` ile
+(bkz. `week.tsx`, aynı desen `card/[weekStart].tsx`te de var). · T3 bildirim yönlendirmesi
+(2026-10-01, S15 T3): `scheduler.ts` `replaceAll` artık `card-ready` bildirimine `data.weekStart`
+ekler (`daily` eklemez, rotası zaten sabit `/today`). Yeni saf fonksiyon
+`resolveNotificationRoute(data, today)` (`src/notify/notification-routing.ts`) sabit rota
+tablosunu uygular: bilinmeyen/eksik `kind` -> `/week`, `daily` -> `/today`, `card-ready` + geçerli
+`weekStart` -> `/card/<weekStart>`, `card-ready` + eksik/geçersiz `weekStart` (güncellemeden önce
+planlanmış bildirim) -> `/week` (T2 banner'ı zaten gösterir). Bildirim verisi dış girdi sayılır,
+`isValidWeekStartParam` ile yeniden doğrulanır. `useNotificationRouting()` hook'u kökte
+(`_layout.tsx`) bir kez çağrılır; soğuk açılış (`scheduler.getLastResponse()`) ve sıcak açılış
+(`scheduler.onResponseReceived`) aynı çözümü kullanır, her yanıt `clearLastResponse()` ile bir kez
+işlenir, navigasyon `useRootNavigationState().key` hazır olana kadar ertelenir. **Tuzak (not
+düşüldü):** bekleyen rota/"navigasyon hazır mı" `useState` değil `useRef` ile tutulur
+(`react-hooks/set-state-in-effect` kuralı çakışırdı), ve ref'e yazma render SIRASINDA değil
+yalnızca bir EFEKT içinde yapılır (`react-hooks/refs` kuralı render-sırasında ref yazmayı da
+yasaklıyor) — iki ayrı lint hatası sırayla bulunup düzeltildi. `getLastResponse`/
+`onResponseReceived`/`clearLastResponse` `scheduler.ts`'e (`NotificationScheduler` arayüzüne,
+var olan DI deseniyle) eklendi, `expo-notifications` yine yalnızca orada (tembel require)
+çözülür. TB-10 (`now` zorunlu kılma) üçüncü kez bilerek ERTELENDİ (T3 onu gerektirmedi). K4
+(sıcak/soğuk açılış emülatör kanıtı) bu ortamda YOK, sonraki cihaz oturumuna kalıyor. `npm run
+verify`: 77 suite / 914 test yeşil, 3 atlandı.
 
 **Batuhan'ın onayladığı, henüz uygulanmamış kararlar** (Karar A 18/18 ve Karar B 14/14
 tamam — tam liste ve gerekçe `docs/kararlar/`): açık tema kilidi (A11) · seviye kelimeleri +
@@ -219,10 +247,8 @@ security-reviewer görüşü (B1, S21'in girdi kapısı) · seviye/font/ikon/hap
 Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23) · 6 kişilik P0 görsel test oturumu
 (B12, S19'dan önce) · Maestro kurulumu (B14, çekirdek kapısında).
 
-**S15'in geri kalanı (T1 bitti, T2/T3 ve diğerleri henüz yapılmadı):** T2 kaçırılan hafta
-yolu (`findOpenableWeeks` + Hafta banner'ı), T3 bildirim tıklaması yönlendirmesi (soğuk/sıcak
-açılış, sabit rota tablosu), iki bildirim kanalı tanımı (A12'nin kod karşılığı), teslim
-edilmiş bildirimleri kaldırma, V-03 geri tuşu düzeltmesi.
+**S15'in geri kalanı (T1/T2/T3 bitti, geri kalanı henüz yapılmadı):** iki bildirim kanalı
+tanımı (A12'nin kod karşılığı), teslim edilmiş bildirimleri kaldırma, V-03 geri tuşu düzeltmesi.
 
 **Hâlâ Batuhan'a kalan (henüz karar listesine girmedi):** N-9 uygulama kilidi/
 FLAG_SECURE (öneri: yalnız son uygulamalar önizlemesini gizle), K5 mağaza bağlantısının
@@ -233,8 +259,9 @@ Karar C (denemeden önce, 10 madde) ve D (ikinci yapı, 10 madde).
 **Cihaz/release kanıtı bekleyen (K4/K5):** release merged manifest + ağ gözlemi
 (`docs/kararlar/` A16 ile başladı, PCAPdroid ölçümü kaldı), iOS iCloud yedek hariç
 tutma + temp PNG süpürme, TZ/DST testleri (şu an `it.skip`), Pazar bildirimi gerçek
-teslim gecikmesi. Takip: `docs/manual-checklist.md`, `docs/inceleme-2026-09-25/
-29-yol-haritasi.md` §6 (blokaj haritası).
+teslim gecikmesi, T3 bildirim tıklaması yönlendirmesi sıcak VE soğuk açılışta (`am force-stop`
+sonra bildirime dokunma; 09 #1/#2/#5 — kod/K2 testiyle doğrulandı, cihaz kanıtı kalmadı). Takip:
+`docs/manual-checklist.md`, `docs/inceleme-2026-09-25/29-yol-haritasi.md` §6 (blokaj haritası).
 
 ## Doğrulama ("done" ne demek)
 

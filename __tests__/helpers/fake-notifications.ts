@@ -4,6 +4,8 @@
  */
 import type { ExpoNotificationsLike } from '@/notify/scheduler';
 
+type FakeNotificationResponse = { notification: { request: { content: { data?: Record<string, unknown> } } } };
+
 export interface FakeNotifications extends ExpoNotificationsLike {
   pending: Map<string, { identifier: string; content: { data?: Record<string, unknown>; title: string; body: string }; trigger: { date: Date } }>;
   calls: string[];
@@ -16,6 +18,14 @@ export interface FakeNotifications extends ExpoNotificationsLike {
   canAskAgain?: boolean;
   /** İstek sonrası canAskAgain (ör. ikinci ret -> false). */
   canAskAgainAfterRequest?: boolean;
+  /** T3: soğuk açılış senaryosu için `getLastNotificationResponseAsync`in döneceği değer. */
+  lastResponse: FakeNotificationResponse | null;
+  /** T3: `clearLastNotificationResponseAsync` çağrı sayısı. */
+  clearCount: number;
+  /** T3: testin `onResponseReceived`i tetiklemesi için kayıtlı dinleyiciler. */
+  responseListeners: ((response: FakeNotificationResponse) => void)[];
+  /** T3 test yardımcısı: sıcak açılışı taklit eder (gerçek native olayı gibi). */
+  emitResponse(data: Record<string, unknown>): void;
 }
 
 export function createFakeNotifications(permission = 'granted'): FakeNotifications {
@@ -27,6 +37,9 @@ export function createFakeNotifications(permission = 'granted'): FakeNotificatio
     failScheduleFor: new Set(),
     failCancel: false,
     requestCount: 0,
+    lastResponse: null,
+    clearCount: 0,
+    responseListeners: [],
     SchedulableTriggerInputTypes: { DATE: 'date' },
     AndroidImportance: { DEFAULT: 3 },
     async getPermissionsAsync() {
@@ -68,6 +81,28 @@ export function createFakeNotifications(permission = 'granted'): FakeNotificatio
     async setNotificationChannelAsync() {
       fake.calls.push('channel');
       return null;
+    },
+    async getLastNotificationResponseAsync() {
+      return fake.lastResponse;
+    },
+    addNotificationResponseReceivedListener(listener) {
+      fake.responseListeners.push(listener);
+      return {
+        remove() {
+          const i = fake.responseListeners.indexOf(listener);
+          if (i >= 0) fake.responseListeners.splice(i, 1);
+        },
+      };
+    },
+    async clearLastNotificationResponseAsync() {
+      fake.clearCount++;
+      fake.lastResponse = null;
+    },
+    emitResponse(data) {
+      const response: FakeNotificationResponse = { notification: { request: { content: { data } } } };
+      for (const listener of fake.responseListeners) {
+        listener(response);
+      }
     },
   };
   return fake;

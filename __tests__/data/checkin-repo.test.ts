@@ -1,4 +1,4 @@
-import { saveCheckin, getCheckins } from '@/data/checkin-repo';
+import { saveCheckin, getCheckins, getAllCheckins } from '@/data/checkin-repo';
 import { getDriver } from '@/data/db';
 import { setupTestDb } from '../helpers/setup-test-db';
 
@@ -105,5 +105,18 @@ describe('checkin-repo', () => {
   it('hic kayit yoksa bos dizi doner', async () => {
     const rows = await getCheckins('2026-09-01', '2026-09-30');
     expect(rows).toEqual([]);
+  });
+
+  it('getAllCheckins tarih sinirlamasi olmadan TUM gecmisi artan sirada doner (T2)', async () => {
+    await saveCheckin({ localDate: '2026-09-23', movement: 1, sleep: 1, spending: 1, social: 1 });
+    await saveCheckin({ localDate: '2020-01-01', movement: 2, sleep: 2, spending: 2, social: 2 });
+    await saveCheckin({ localDate: '2026-01-01', movement: 3, sleep: 3, spending: 3, social: 3 });
+
+    const rows = await getAllCheckins();
+    expect(rows.map((r) => r.localDate)).toEqual(['2020-01-01', '2026-01-01', '2026-09-23']);
+  });
+
+  it('getAllCheckins hic kayit yoksa bos dizi doner', async () => {
+    expect(await getAllCheckins()).toEqual([]);
   });
 });

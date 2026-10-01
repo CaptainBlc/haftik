@@ -158,6 +158,55 @@ export function getWeekState(params: {
 }
 
 /**
+ * **T2, kaçırılan hafta yolu** (bkz. `docs/inceleme-2026-09-25/21-mimari-ve-
+ * efor.md` §2c/§T2 ve `docs/inceleme-2026-09-25/18-ux-akislar-v2.md` §2.7).
+ *
+ * `checkins`teki günlerin ait olduğu haftaları (yalnızca domain'de, `SQL'de
+ * hafta aritmetiği yapılmaz` kuralı gereği) bulur ve bunlardan hem **uygun**
+ * (`getWeekState(...).unlocked`) hem de **henüz kartı kaydedilmemiş**
+ * (`cardWeekStarts` içinde olmayan) olanları döndürür — "açılmayı bekleyen"
+ * haftalar. Saf fonksiyondur; Hafta ekranının banner'ı ve (S25) Albüm'ün
+ * "Bekliyor" yuvaları aynı fonksiyonu yeniden kullanır.
+ *
+ * Sonuç `weekStart`e göre ARTAN sırada döner. Çağıran, "yalnız en yeni"
+ * kuralını (18-ux-akislar-v2.md §2.7) kendisi uygular — genellikle son
+ * elemanı alır ve o an ekranda zaten gösterilen haftayla aynıysa (yani
+ * "kaçırılmış" değil, "bu hafta" zaten açılmışsa) göstermez.
+ */
+export function findOpenableWeeks(params: {
+  checkins: Checkin[];
+  cardWeekStarts: string[];
+  now: Date;
+}): string[] {
+  const { checkins, cardWeekStarts, now } = params;
+  const deduped = dedupeByLocalDate(checkins);
+  const cardWeekStartSet = new Set(cardWeekStarts);
+
+  const candidateWeekStarts = new Set<string>();
+  for (const day of deduped) {
+    candidateWeekStarts.add(getWeekStart(parseLocalDate(day.localDate)));
+  }
+
+  const openable: string[] = [];
+  for (const weekStart of candidateWeekStarts) {
+    if (cardWeekStartSet.has(weekStart)) {
+      continue;
+    }
+    const state = getWeekState({
+      weekStart,
+      now,
+      checkins: deduped,
+      hasQualifiedWeekBefore: hasQualifiedWeekBefore(deduped, weekStart),
+    });
+    if (state.unlocked) {
+      openable.push(weekStart);
+    }
+  }
+
+  return openable.sort();
+}
+
+/**
  * `date`'in yerel takvim gününü `YYYY-MM-DD` biçiminde döndürür (bkz.
  * `formatLocalDate` üstündeki not — `toISOString()` kasıtlı olarak
  * kullanılmaz, gece yarısına yakın anlarda günü kaydırır). UI katmanı (S6,

@@ -69,4 +69,37 @@ describe('WeekStatusView', () => {
     });
     expect(onLockedPress).toHaveBeenCalledTimes(1);
   });
+
+  it('T2: missedWeek verilmezse banner render edilmez', () => {
+    let tree: ReturnType<typeof create> | undefined;
+    act(() => {
+      tree = create(
+        <WeekStatusView dots={dots} headline="x" caption="y" unlocked={false} onLockedPress={() => {}} />
+      );
+    });
+    expect(tree!.root.findAllByProps({ testID: 'missed-week-banner' })).toHaveLength(0);
+  });
+
+  it('T2: missedWeek verilince banner render edilir ve dokununca onMissedWeekPress çağrılır', () => {
+    const onMissedWeekPress = jest.fn();
+    let tree: ReturnType<typeof create> | undefined;
+    act(() => {
+      tree = create(
+        <WeekStatusView
+          dots={dots}
+          headline="x"
+          caption="y"
+          unlocked={false}
+          onLockedPress={() => {}}
+          missedWeek="2026-09-07"
+          onMissedWeekPress={onMissedWeekPress}
+        />
+      );
+    });
+    const banner = tree!.root.findByProps({ testID: 'missed-week-banner' });
+    act(() => {
+      banner.props.onPress();
+    });
+    expect(onMissedWeekPress).toHaveBeenCalledTimes(1);
+  });
 });
