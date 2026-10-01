@@ -3,6 +3,7 @@ import { saveCheckin } from '@/data/checkin-repo';
 import { saveCard } from '@/data/card-repo';
 import { setReminderEnabled, getReminderEnabled } from '@/data/setting-repo';
 import { recordEvent } from '@/data/metric-repo';
+import { incrementCounter } from '@/data/metric-counter-repo';
 import { getDriver } from '@/data/db';
 import { setupTestDb } from '../helpers/setup-test-db';
 
@@ -15,7 +16,7 @@ function countRows(table: string): number {
 describe('delete-all', () => {
   setupTestDb();
 
-  it('dolu dort tabloyu da bosaltir', async () => {
+  it('dolu bes tabloyu da bosaltir (A10: metric_counter de dahil)', async () => {
     await saveCheckin({ localDate: '2026-09-21', movement: 1, sleep: 1, spending: 1, social: 1 });
     await saveCard({
       weekStart: '2026-09-21',
@@ -33,11 +34,13 @@ describe('delete-all', () => {
     });
     await setReminderEnabled(false);
     await recordEvent('card_opened', '2026-09-21');
+    await incrementCounter({ name: 'test_event', weekStart: '2026-09-21' });
 
     expect(countRows('checkin')).toBe(1);
     expect(countRows('weekly_card')).toBe(1);
     expect(countRows('setting')).toBe(1);
     expect(countRows('metric_event')).toBe(1);
+    expect(countRows('metric_counter')).toBe(1);
 
     const cancel = jest.fn();
     await deleteAllData(cancel);
@@ -46,6 +49,7 @@ describe('delete-all', () => {
     expect(countRows('weekly_card')).toBe(0);
     expect(countRows('setting')).toBe(0);
     expect(countRows('metric_event')).toBe(0);
+    expect(countRows('metric_counter')).toBe(0);
   });
 
   it('callback tam 1 kez cagrilir', async () => {

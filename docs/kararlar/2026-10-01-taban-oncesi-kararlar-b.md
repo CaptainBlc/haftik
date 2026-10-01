@@ -35,11 +35,20 @@ Uygulanacağı dilim: **S15** (T1).
 ## A9 — Eski placeholder sütunu (N-7)
 Kalır, dokunulmaz. Şemaya "bu sıra numarası yakıldı, tekrar kullanılmasın" notu düşülür.
 Uygulanacağı dilim: **S14** (not olarak; kod değişikliği yok).
+**Uygulandı: 2026-10-01** (`src/data/migrations.ts` migration v3 yorumu — "v2 numarası yakıldı" kuralı not düşüldü).
 
 ## A10 — Ölçüm şeması (v3)
 **Ekleme biçiminde** `metric_counter` tablosu eklenir (CHECK kısıtı yok, `UPSERT` sayaç). Eski `metric_event`
 tablosu **silinmez** (silme kapsamında kalmaya devam eder), yalnızca yeni yazım durur. Ad kümesi TS tipiyle
 ve sözleşme testiyle korunur. Spec S9'daki "CHECK" ifadesi güncellenir.
+**Uygulandı: 2026-10-01** (S14) — `src/data/migrations.ts` (v3 migration, `week_start`/`dim`/`build` bilerek
+`NOT NULL DEFAULT ''`, NULL'lı composite PK tuzağından kaçınmak için), `src/data/metric-counter-repo.ts`
+(henüz hiçbir akışa bağlanmadı, S19+'ta ilk gerçek olay eklenince ad kümesi daralır). Testler:
+`__tests__/data/migrations.test.ts` (kesinti simülasyonu + v2→v3 round-trip), `__tests__/data/
+metric-counter-repo.test.ts`. T7 (migration atomikliği, BEGIN/COMMIT + rollback) aynı değişiklikte yapıldı.
+`delete-all.ts` güncellendi, R-9 sözleşme testi eklendi (`__tests__/data/delete-all.schema-contract.test.ts`
+— `sqlite_master`'ı mekanik tarar, yeni tablo eklenip silme listesine eklenmezse kırılır). Spec S9'daki CHECK
+ifadesi henüz güncellenmedi (dokümantasyon işi, ayrı not).
 Uygulanacağı dilim: **S14**.
 
 ## A12 — Bildirim kanalı sesi

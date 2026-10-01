@@ -34,9 +34,12 @@ export async function deleteAllData(
   }
 
   const driver = getDriver();
-  // N-2: dört DELETE tek transaction'da (yarım silme olmaz). `SqlDriver`
+  // N-2: tüm tablolar tek transaction'da (yarım silme olmaz). `SqlDriver`
   // arayüzü değişmedi; `exec` çoklu deyim kabul ettiğinden BEGIN/COMMIT
   // aynı çağrıda verilir. Hata olursa ROLLBACK ve hata yeniden fırlatılır.
+  // R-9: yeni bir kalıcı tablo eklenince buraya da eklenmeli — bunu unutan
+  // biri `__tests__/data/delete-all.schema-contract.test.ts`te yakalanır
+  // (sqlite_master'daki her tablo silme sonrası 0 satır olmalı).
   try {
     driver.exec(
       'BEGIN;' +
@@ -44,6 +47,7 @@ export async function deleteAllData(
         'DELETE FROM weekly_card;' +
         'DELETE FROM setting;' +
         'DELETE FROM metric_event;' +
+        'DELETE FROM metric_counter;' +
         'COMMIT;'
     );
   } catch (error) {

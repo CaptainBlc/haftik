@@ -108,27 +108,103 @@ const migrationV2Placeholder: Migration = {
   },
 };
 
+/**
+ * v3 -- `metric_counter` tablosu (A10 kararı, `docs/kararlar/2026-10-01-
+ * taban-oncesi-kararlar-b.md`): `metric_event`in `name` sütunundaki CHECK
+ * kısıtı yeni bir olay adı eklemeyi (tüm tabloyu yeniden kurmadan)
+ * imkânsız kılıyordu. Çözüm EKLEME biçimindedir: yeni bir tablo, CHECK
+ * kısıtı yok (ad kümesi TS tipiyle korunur, bkz. `metric-counter-repo.ts`),
+ * `n` sütunu UPSERT ile artan bir sayaç. **Eski `metric_event` tablosu
+ * SİLİNMEZ** (silme kapsamında kalmaya devam eder, `delete-all.ts`), yalnızca
+ * yeni olaylar bu tabloya yazılır; mevcut 5 olay (`track.ts`) bu migration'da
+ * taşınmaz -- hangi yeni özellik hangi sayacı kullanacaksa o dilimde eklenir
+ * (bkz. `docs/muhendislik/veri-ve-migration.md`).
+ *
+ * `week_start`/`dim`/`build` bilerek NULLABLE DEĞİL (`NOT NULL DEFAULT ''`):
+ * SQLite'ta birleşik (composite) PRIMARY KEY sütunları otomatik NOT NULL
+ * olmaz -- NULL'lü bir sütun PK'ye girerse aynı (name, NULL, dim, build)
+ * kombinasyonundan birden fazla satır sessizce eklenebilir (NULL != NULL
+ * karşılaştırması PK'nin tekillik denetimini atlar), UPSERT'in güvendiği
+ * tekillik kırılır. Boş dize "hafta/boyut/sürüm yok" sentinel'idir.
+ */
+const migrationV3MetricCounter: Migration = {
+  version: 3,
+  description:
+    "metric_counter tablosu eklendi (A10): CHECK kisitsiz, ekleme bicimli olcum semasi. " +
+    'metric_event SILINMEDI, yalnizca yeni yazim bu tabloya gider.',
+  up: (driver) => {
+    driver.exec(`
+      CREATE TABLE metric_counter (
+        name       TEXT NOT NULL,
+        week_start TEXT NOT NULL DEFAULT '',
+        dim        TEXT NOT NULL DEFAULT '',
+        build      TEXT NOT NULL DEFAULT '',
+        n          INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (name, week_start, dim, build)
+      );
+    `);
+  },
+};
+
 /** Surum sirasina gore migration listesi (artan). */
-export const MIGRATIONS: readonly Migration[] = [migrationV1, migrationV2Placeholder];
+export const MIGRATIONS: readonly Migration[] = [
+  migrationV1,
+  migrationV2Placeholder,
+  migrationV3MetricCounter,
+];
 
 /** Su an tanimli en yuksek sema surumu. */
 export const LATEST_SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;
 
 /**
  * `driver`'in `PRAGMA user_version`'ini okur, henuz uygulanmamis (surum >
- * mevcut) tum migration'lari surum sirasiyla uygular ve her birinden sonra
- * `user_version`'i gunceller. Idempotenttir: zaten en son surumdeyse hicbir
- * sey yapmaz (tekrar cagrilmasi guvenlidir, ikinci `ALTER TABLE` gibi
- * calismalari tekrarlamaz).
+ * mevcut) tum migration'lari surum sirasiyla uygular. Idempotenttir: zaten
+ * en son surumdeyse hicbir sey yapmaz.
+ *
+ * **T7 -- atomiklik (2026-10-01):** her migration kendi `BEGIN;`/`COMMIT;`
+ * islemi icinde calisir; `migration.up(driver)` VE ardindan gelen
+ * `setUserVersion` AYNI islemin parcasidir. Kesinti (hata, crash, cihaz
+ * kapanmasi) migration bitmeden olursa `ROLLBACK` ile hem sema hem
+ * `user_version` migration ONCESI durumuna doner -- yarim kalmis bir
+ * `CREATE TABLE`/`ALTER TABLE` asla kalici olmaz, bir sonraki acilista
+ * migration BASTAN (ayni surumden) yeniden calisir. (SQLite'ta DDL
+ * islemler icinde geri alinabilir, bu yuzden bu desen guvenlidir.)
+ *
+ * Gercek `MIGRATIONS` listesiyle calisir; test edilebilirlik icin asil is
+ * parametre alan `applyMigrations`'a devredilir (bkz.
+ * `__tests__/data/migrations.test.ts` "kesinti simulasyonu": testler
+ * `MIGRATIONS`i degistirmeden, kendi (gercek + bozuk) listesini verebilir).
  */
 export function runMigrations(driver: SqlDriver): void {
+  applyMigrations(driver, MIGRATIONS);
+}
+
+/**
+ * `runMigrations`in gercek calisma mantigi; `migrations` disaridan verilir
+ * (production'da hep `MIGRATIONS`, testte kesinti/yukseltme senaryolari icin
+ * ozel listeler). Ayrintili davranis: yukaridaki `runMigrations` yorumu.
+ */
+export function applyMigrations(driver: SqlDriver, migrations: readonly Migration[]): void {
   const currentVersion = driver.getUserVersion();
-  const pending = MIGRATIONS.filter((m) => m.version > currentVersion).sort(
-    (a, b) => a.version - b.version
-  );
+  const pending = migrations
+    .filter((m) => m.version > currentVersion)
+    .sort((a, b) => a.version - b.version);
 
   for (const migration of pending) {
-    migration.up(driver);
-    driver.setUserVersion(migration.version);
+    driver.exec('BEGIN;');
+    try {
+      migration.up(driver);
+      driver.setUserVersion(migration.version);
+    } catch (error) {
+      try {
+        driver.exec('ROLLBACK;');
+      } catch {
+        // Acik transaction yoksa (ornegin hata BEGIN'den once olustuysa)
+        // ROLLBACK kendisi hata verebilir; bu durumda yutulur, asil hata
+        // asagida yeniden firlatilir.
+      }
+      throw error;
+    }
+    driver.exec('COMMIT;');
   }
 }

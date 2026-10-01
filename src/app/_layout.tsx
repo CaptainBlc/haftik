@@ -2,7 +2,8 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { AppState, useColorScheme } from 'react-native';
+import { AppState, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { sweepSnapshotFiles } from '@/card/temp-cleanup';
 import { initAppDatabase } from '@/data/init';
@@ -73,3 +74,101 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
+/**
+ * Kök hata sınırı (S14 "veri sağlamlığı", Ç29 kararı — bkz.
+ * `docs/kararlar/2026-10-01-cekirdekten-once-kararlar.md` ve
+ * `docs/inceleme-2026-09-25/28-muhendislik-standartlari-v2.md` §4.5).
+ * `expo-router`'ın "aynı route dosyasından `ErrorBoundary` dışa aktarımı"
+ * sözleşmesini kullanır (bkz. `node_modules/expo-router/build/views/
+ * ErrorBoundary.d.ts`): bu dosyanın (`_layout.tsx`) render'ında fırlayan
+ * HER hatayı yakalar — en önemlisi `initAppDatabase()`'in render sırasında
+ * (yukarıda, `useEffect` DIŞINDA) senkron çağrılması, yani bir migration
+ * hatası (ör. T7'nin koruyamadığı bir disk/izin hatası) burada yakalanır.
+ *
+ * **Kasıtlı olarak yalnızca "Tekrar dene" gösterir, veri silme SEÇENEĞİ
+ * SUNMAZ** (tech-lead kararı, Ç29): `retry()` bileşeni yeniden mount eder,
+ * `initAppDatabase`'in `initialized` bayrağı hâlâ `false` olduğundan
+ * `setDriver`/`runMigrations` baştan (T7 sayesinde temiz bir sürümden)
+ * yeniden dener. Kalıcı bir hata (ör. bozuk disk) için veri silme yolu
+ * ayrı, çift onaylı bir karar olur — şimdi eklenmedi.
+ */
+export function ErrorBoundary({ error, retry }: { error: Error; retry: () => void }) {
+  const colorScheme = useColorScheme();
+  const palette = colorScheme === 'dark' ? darkPalette : lightPalette;
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: palette.background }]}>
+      <View style={styles.content}>
+        <Text style={[styles.title, { color: palette.text }]}>Bir şeyler ters gitti.</Text>
+        <Text style={[styles.message, { color: palette.textSecondary }]}>
+          Uygulama açılırken bir hata oluştu. Verilerin cihazında duruyor; tekrar denemek
+          genellikle sorunu çözer.
+        </Text>
+        <Text
+          testID="root-error-boundary-detail"
+          style={[styles.detail, { color: palette.textSecondary }]}
+        >
+          {error.message}
+        </Text>
+        <Pressable
+          testID="root-error-boundary-retry"
+          onPress={retry}
+          style={[styles.button, { backgroundColor: palette.accent }]}
+        >
+          <Text style={styles.buttonText}>Tekrar dene</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const lightPalette = {
+  background: '#FFFFFF',
+  text: '#1C1C1E',
+  textSecondary: '#60646C',
+  accent: '#208AEF',
+} as const;
+
+const darkPalette = {
+  background: '#000000',
+  text: '#FFFFFF',
+  textSecondary: '#B0B4BA',
+  accent: '#208AEF',
+} as const;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  message: {
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  detail: {
+    fontSize: 12,
+    opacity: 0.7,
+  },
+  button: {
+    marginTop: 12,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

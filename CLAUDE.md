@@ -202,18 +202,26 @@ Yalnızca **aktif ve araçla henüz yakalanmayan** tuzaklar; `(tarih, sınıf)` 
 
 ## Açık kararlar ve cihaz maddeleri
 
-**Batuhan'ın onayladığı, henüz uygulanmamış kararlar** (kod/CI/CLAUDE.md değişikliği
-S13-S18'de yapılacak — tam liste ve gerekçe `docs/kararlar/`):
-Node ≥24 + ölü kod/web yığını temizliği (uygulandı, 2026-10-01) · açık tema kilidi (A11) ·
-Pazar'da çift bildirim düzeltmesi (A13) · seviye kelimeleri + içerik paketi (A14/A15) ·
-Kritik-1 eşik kuralı B (A8) · ölçüm şeması `metric_counter` (A10) · bildirim kanalları
+**Uygulandı (tarihiyle, kod/test var):** Node ≥24 + ölü kod/web yığını temizliği, CI/
+dependabot/pre-commit, CLAUDE.md ayıklaması (hepsi 2026-10-01) · migration atomikliği T7 +
+ölçüm şeması `metric_counter` v3 (A10) + N-7 not (A9) + kök ErrorBoundary (Ç29) — hepsi
+2026-10-01, S14.
+
+**Batuhan'ın onayladığı, henüz uygulanmamış kararlar** (Karar A 18/18 ve Karar B 14/14
+tamam — tam liste ve gerekçe `docs/kararlar/`): açık tema kilidi (A11) · Pazar'da çift
+bildirim düzeltmesi (A13) · seviye kelimeleri + içerik paketi (A14/A15) · Kritik-1 eşik
+kuralı B (A8) · `now` zorunlu kılma (TB-10, A8 ile birlikte S15'te) · bildirim kanalları
 sesli (A12) · INTERNET/izin temizliği + D2D kapatma (A16/A17) · R8 hem preview hem
-production'da (A18).
+production'da (A18) · paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı)
+· seviye/font/ikon/haptik/K3-banner/Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23) ·
+6 kişilik P0 görsel test oturumu (B12, S19'dan önce) · Maestro kurulumu (B14, çekirdek
+kapısında).
 
 **Hâlâ Batuhan'a kalan (henüz karar listesine girmedi):** N-9 uygulama kilidi/
 FLAG_SECURE (öneri: yalnız son uygulamalar önizlemesini gizle), K5 mağaza bağlantısının
 paylaşım hedefine gerçekten taşındığı (cihaz kanıtı), K10 KVKK/hukuki görüş, politika
-URL'si ve yayın yeri, Play hesabı (13 Kasım 2023 öncesi var mı), Apple Developer hesabı.
+URL'si ve yayın yeri, Play hesabı (13 Kasım 2023 öncesi var mı), Apple Developer hesabı,
+Karar C (denemeden önce, 10 madde) ve D (ikinci yapı, 10 madde).
 
 **Cihaz/release kanıtı bekleyen (K4/K5):** release merged manifest + ağ gözlemi
 (`docs/kararlar/` A16 ile başladı, PCAPdroid ölçümü kaldı), iOS iCloud yedek hariç
