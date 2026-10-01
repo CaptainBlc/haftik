@@ -7,8 +7,12 @@ import type { ExpoNotificationsLike } from '@/notify/scheduler';
 type FakeNotificationResponse = { notification: { request: { content: { data?: Record<string, unknown> } } } };
 
 export interface FakeNotifications extends ExpoNotificationsLike {
-  pending: Map<string, { identifier: string; content: { data?: Record<string, unknown>; title: string; body: string }; trigger: { date: Date } }>;
+  pending: Map<string, { identifier: string; content: { data?: Record<string, unknown>; title: string; body: string }; trigger: { date: Date; channelId?: string } }>;
   calls: string[];
+  /** A12: `setNotificationChannelAsync` çağrılarının argümanları (kanal/isim/önem/ses doğrulaması için). */
+  channelCalls: { channelId: string; config: Record<string, unknown> }[];
+  /** A12: `deleteNotificationChannelAsync` ile silinen kanal id'leri. */
+  deletedChannels: string[];
   permission: string;
   requestResult: string;
   failScheduleFor: Set<string>;
@@ -26,12 +30,20 @@ export interface FakeNotifications extends ExpoNotificationsLike {
   responseListeners: ((response: FakeNotificationResponse) => void)[];
   /** T3 test yardımcısı: sıcak açılışı taklit eder (gerçek native olayı gibi). */
   emitResponse(data: Record<string, unknown>): void;
+  /** 22 §4.4: `dismissNotificationAsync` ile kaldırılan tekil id'ler. */
+  dismissed: string[];
+  /** 22 §4.4: `dismissAllNotificationsAsync` çağrı sayısı. */
+  dismissAllCount: number;
+  /** Test enjeksiyonu: bir sonraki `dismissNotificationAsync`/`dismissAllNotificationsAsync` çağrısı hata fırlatsın mı. */
+  failDismiss: boolean;
 }
 
 export function createFakeNotifications(permission = 'granted'): FakeNotifications {
   const fake: FakeNotifications = {
     pending: new Map(),
     calls: [],
+    channelCalls: [],
+    deletedChannels: [],
     permission,
     requestResult: 'granted',
     failScheduleFor: new Set(),
@@ -40,6 +52,9 @@ export function createFakeNotifications(permission = 'granted'): FakeNotificatio
     lastResponse: null,
     clearCount: 0,
     responseListeners: [],
+    dismissed: [],
+    dismissAllCount: 0,
+    failDismiss: false,
     SchedulableTriggerInputTypes: { DATE: 'date' },
     AndroidImportance: { DEFAULT: 3 },
     async getPermissionsAsync() {
@@ -64,7 +79,7 @@ export function createFakeNotifications(permission = 'granted'): FakeNotificatio
       fake.pending.set(id, {
         identifier: id,
         content: req.content,
-        trigger: { date: req.trigger.date },
+        trigger: { date: req.trigger.date, channelId: req.trigger.channelId },
       });
       return id;
     },
@@ -78,9 +93,13 @@ export function createFakeNotifications(permission = 'granted'): FakeNotificatio
     async getAllScheduledNotificationsAsync() {
       return Array.from(fake.pending.values());
     },
-    async setNotificationChannelAsync() {
+    async setNotificationChannelAsync(channelId, config) {
       fake.calls.push('channel');
+      fake.channelCalls.push({ channelId, config });
       return null;
+    },
+    async deleteNotificationChannelAsync(channelId) {
+      fake.deletedChannels.push(channelId);
     },
     async getLastNotificationResponseAsync() {
       return fake.lastResponse;
@@ -103,6 +122,18 @@ export function createFakeNotifications(permission = 'granted'): FakeNotificatio
       for (const listener of fake.responseListeners) {
         listener(response);
       }
+    },
+    async dismissNotificationAsync(identifier) {
+      if (fake.failDismiss) {
+        throw new Error('dismiss failure');
+      }
+      fake.dismissed.push(identifier);
+    },
+    async dismissAllNotificationsAsync() {
+      if (fake.failDismiss) {
+        throw new Error('dismiss failure');
+      }
+      fake.dismissAllCount++;
     },
   };
   return fake;

@@ -55,6 +55,83 @@ ayarından değiştirebilir). Kartın planlandığı Pazar günü `daily` **üre
 (A13 kararı; önceden ikisi de planlanıp ters sırada gelebiliyordu, 04-kod-incelemesi.md #11). Ayarlar'da iki
 ayrı anahtar bu kanal modeliyle birebir eşleşir.
 
+**Kanal tanımı uygulandı (2026-10-01, S15):** `src/notify/scheduler.ts` `NOTIFICATION_CHANNEL_IDS`
+(`daily`, `card-ready`), isimler "Günlük hatırlatma"/"Kart hazır", `AndroidImportance.DEFAULT`, `sound:
+'default'`. `ensureChannel()` ikisini de oluşturur ve eski tek kanalı (`hhk-reminders`) en iyi çabayla
+(`deleteNotificationChannelAsync`, hata yutulur) siler. `replaceAll` her bildirimi `item.kind`ine ait
+kanala planlar. Ayarlar'daki ayrı "Kart hazır" anahtarı (UI) hâlâ **S23**'e kalıyor — bu turda yalnızca
+kanal/planlama tarafı yapıldı.
+
+## Kaçırılan hafta yolu (T2, 2026-10-01 S15)
+
+Saf `findOpenableWeeks({checkins, cardWeekStarts, now})` (`src/domain/week.ts`): check-in'leri haftalara
+gruplar (SQL'de hafta aritmetiği yapılmaz, tek kaynak `week.ts`), hem uygun (`getWeekState().unlocked`) hem
+kartı kaydedilmemiş haftaları artan sırada döner. Yeni repo fonksiyonları `getAllCheckins`/`getCardWeekStarts`.
+Hafta ekranında `MissedWeekBanner` ("Geçen haftanın kartı seni bekliyor"), yalnız en yeni bekleyen hafta
+(mevcut hafta hariç tutulur); dokununca normal `card/[weekStart]` reveal'i (K3 uygulanmaz). Birden fazla
+bekleyen haftanın kalıcı evi **S25 Albüm** (aynı fonksiyon orada da kullanılacak).
+
+**Tuzak:** `useFocusEffect`in `useCallback` bağımlılık dizisine `now` (bir `Date` nesnesi) EKLENMEMELİ —
+kimliği her çağrıda değişen bir `useNow()` sahtesiyle (ör. test mock'u `() => new Date(...)`) sonsuz render
+döngüsüne yol açar (`useCallback` her render'da yeni referans üretir → efekt yeniden kurulur → `setData` →
+yeniden render → ...). `now` kapanışta (closure) bırakılır, `eslint-disable-next-line
+react-hooks/exhaustive-deps` ile — aynı desen zaten `card/[weekStart].tsx`te vardı.
+
+## Bildirim tıklaması yönlendirmesi (T3, 2026-10-01 S15)
+
+`scheduler.ts` `replaceAll`, `card-ready` bildirimine `data.weekStart` ekler (`daily` eklemez, rotası zaten
+sabit `/today`). Saf `resolveNotificationRoute(data, today)` (`src/notify/notification-routing.ts`) sabit rota
+tablosunu uygular: bilinmeyen/eksik `kind` → `/week`, `daily` → `/today`, `card-ready` + geçerli `weekStart`
+→ `/card/<weekStart>`, `card-ready` + eksik/geçersiz `weekStart` (güncellemeden önce planlanmış bildirim) →
+`/week` (T2 banner'ı zaten gösterir). Bildirim verisi **dış girdi** sayılır, `isValidWeekStartParam` ile
+yeniden doğrulanır (kendi değerine güvenilmez). `useNotificationRouting()` kökte (`_layout.tsx`) bir kez
+çağrılır; soğuk açılış (`scheduler.getLastResponse()`) ve sıcak açılış (`scheduler.onResponseReceived`) aynı
+çözümü kullanır, her yanıt `clearLastResponse()` ile bir kez işlenir, navigasyon `useRootNavigationState().key`
+hazır olana kadar ertelenir. `getLastResponse`/`onResponseReceived`/`clearLastResponse` var olan DI deseniyle
+(`NotificationScheduler`) eklendi, `expo-notifications` yine yalnızca `scheduler.ts`te (tembel require) çözülür.
+
+**Tuzak (iki ayrı lint hatası, art arda):** bekleyen rota ve "navigasyon hazır mı" `useState` ile tutulursa
+`react-hooks/set-state-in-effect` hatası (efekt içinde senkron `setState`); `useRef`'e geçip ref'e RENDER
+SIRASINDA yazmak bu sefer `react-hooks/refs` hatası verir (ref yazımı yalnızca efekt/event handler içinde
+olmalı). Çözüm: iki ref (`pendingRouteRef`, `navReadyRef`), ikisi de yalnızca bir EFEKT içinde yazılır.
+`useRouter()` expo-router'da modül seviyeli bir tekil döndürdüğü için (`node_modules/expo-router/build/
+hooks/useRouter.js`) mount-anı kapanışındaki `router` referansı da güvenle sabit kalır.
+
+**Önkoşul ertelendi:** TB-10 (`openOrBuildCard`'da `now`'ı zorunlu kılma) üçüncü kez bilerek ERTELENDİ — T3 onu
+gerektirmedi. **K4 kanıtı yok**: sıcak/soğuk açılışta gerçek yönlendirme (`am force-stop` sonra bildirime
+dokunma) bu ortamda doğrulanamadı, sonraki cihaz oturumuna kalıyor.
+
+## V-03: izin diyaloğu geri tuşuyla kapatma (düzeltildi, 2026-10-01 S15)
+
+`05-platform-gercekleri.md` P-03/V-03, emülatörde tekrar üretilmişti: Android 13+ izin diyaloğu **geri
+tuşuyla** kapatılırsa Expo'nun kendi `blocked` bayrağı `true` yazıyor ve `canAskAgain` yanlışlıkla `false`
+dönüyor — ama OS bayrağı `USER_SET`/`USER_FIXED` DEĞİL, yani sistem aslında tekrar sorabilir. Eski kod
+`canAskAgain: false` iken isteği hiç yapmıyordu (yalnızca "Ayarları aç" gösteriyordu), bu da kullanıcıyı
+aslında kurtarılabilir bir durumda gereksiz yere ayarlara yönlendiriyordu. **Düzeltme:**
+`wiring.ts` `requestPermissionAndSync`, `canAskAgain` ne olursa olsun `!state.granted` iken isteği dener —
+gerçekten kalıcı reddedilmişse istek zararsızdır (sistem diyalog göstermeden sessizce `DENIED` döner, Android
+belgesi). UI `canAskAgain: false` iken "Ayarları aç"ı göstermeye devam eder (bu, tek seferlik "harçsız"
+deneme buna EK bir güvence ağıdır, yerini almaz). Test: `__tests__/notify/permission-android13.test.ts`
+("V-03" başlıklı iki test — kurtarma senaryosu ve gerçek kalıcı ret senaryosu).
+
+## Teslim edilmiş bildirimleri kaldırma (22 §4.4, 2026-10-01 S15)
+
+`cancelAllScheduledNotificationsAsync`/`cancelAll` yalnızca HENÜZ TETİKLENMEMİŞ planlı bildirimleri etkiler;
+bildirim merkezinde zaten görünen (teslim edilmiş) bir bildirimi KALDIRMAZ — "Tüm verilerimi sil" sonrası ya
+da kart/check-in işi bittikten sonra eski bir bildirim gölgede kalabiliyordu. `scheduler.ts`'e
+`dismiss(id)`/`dismissAll()` eklendi (`expo-notifications`'ın `dismissNotificationAsync`/
+`dismissAllNotificationsAsync`'i, en iyi çaba, hata yutulur). Üç bağlanma noktası:
+
+1. **Silme:** `wiring.ts` `cancelAllNotifications` artık `cancelAll()` VE `dismissAll()`'u birlikte çağırır.
+2. **Kart açılışı:** `card/[weekStart].tsx`, kart hazır olduğunda `dismissCardNotification(weekStart)` çağırır
+   (o haftanın `card-<Pazar>` bildirimi, deterministik id).
+3. **Check-in kaydı:** `today.tsx` `handleSave`, kaydedilen günün (`selectedDate` — bugün ya da dün olabilir,
+   düzenleme penceresi) `daily-<gün>` bildirimini `dismissDailyNotification(date)` ile kaldırır.
+
+Kimlik biçiminin tek kaynağı `domain/notify-plan.ts`teki `dailyNotificationId`/`cardNotificationId` saf
+fonksiyonları (`planNotifications` da aynısını kullanır) — iki yerde ayrı yazılan şablonların bir gün
+birbirinden sapması riskine karşı.
+
 ## Senkronizasyon kuyruğu
 
 (2026-09-23, MOB/S8) `syncNotifications` tüm çağrıları modül içi tek kuyrukta seri çalıştırır ve DB okumasını

@@ -46,14 +46,28 @@ describe('bildirim izni: Android 13+ durumu (BLG-01)', () => {
       return origChannel(...a);
     };
     await requestPermissionAndSync(o);
-    expect(order.slice(0, 2)).toEqual(['channel', 'request']);
+    // A12: ensureChannel artık İKİ kanal oluşturuyor (channel, channel), istekten önce.
+    expect(order.slice(0, 3)).toEqual(['channel', 'channel', 'request']);
   });
 
-  it('denied + canAskAgain:false (kalıcı ret) -> istek YAPILMAZ, plan yok', async () => {
+  it('V-03: denied + canAskAgain:false iken de istek YİNE DE YAPILIR (geri tuşuyla kapatma, OS gerçekte sorabilir) ve kurtarırsa plan kurulur', async () => {
+    // Expo `blocked:true` yazdığı için canAskAgain:false görünüyor olabilir,
+    // ama OS bayrağı USER_SET/USER_FIXED değilse sistem yine de sorar --
+    // burada "sorar ve kullanıcı izin verir" senaryosu (varsayılan requestResult='granted').
     await setOnboardingDone(true);
     const { fake, o } = env('denied', false);
+    expect(await requestPermissionAndSync(o)).toBe('granted');
+    expect(fake.requestCount).toBe(1);
+    expect(fake.pending.size).toBe(7);
+  });
+
+  it('V-03: canAskAgain:false iken istek YİNE DE yapılır ama gerçekten kalıcı reddedilmişse zararsız (çökmez, plan yok)', async () => {
+    await setOnboardingDone(true);
+    const { fake, o } = env('denied', false);
+    fake.requestResult = 'denied';
+    fake.canAskAgainAfterRequest = false;
     expect(await requestPermissionAndSync(o)).toBe('denied');
-    expect(fake.requestCount).toBe(0);
+    expect(fake.requestCount).toBe(1);
     expect(fake.pending.size).toBe(0);
   });
 

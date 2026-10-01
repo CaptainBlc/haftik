@@ -66,6 +66,11 @@ Uygulanacağı dilim: **S14**.
 **Sesli** (DEFAULT önem, sistem bildirim sesi). İki kanal: `daily` (günlük hatırlatma), `card-ready` (kart hazır).
 Kullanıcı sistem ayarından değiştirebilir. Uygulanacağı dilim: **S15/S23** (kanal tanımı S15, Ayarlar'daki
 anahtarlar S23).
+**Kanal tanımı uygulandı: 2026-10-01 (S15).** `src/notify/scheduler.ts`: `NOTIFICATION_CHANNEL_IDS`
+(`daily`, `card-ready`), isimler "Günlük hatırlatma"/"Kart hazır", `AndroidImportance.DEFAULT`,
+`sound: 'default'`. `ensureChannel()` ikisini de oluşturur, eski tek kanalı (`hhk-reminders`) en
+iyi çabayla siler. `replaceAll` her bildirimi kendi `kind`ine ait kanala planlar. Ayarlar'daki
+ayrı "Kart hazır" anahtarı hâlâ S23'e kalıyor (bu turda yalnızca kanal tanımı yapıldı).
 
 ## A16 — İnternet ve izin temizliği
 **Önerilen sıra onaylandı:**

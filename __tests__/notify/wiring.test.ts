@@ -9,6 +9,8 @@ import type { CardSnapshot } from '@/domain/types';
 import { createScheduler } from '@/notify/scheduler';
 import {
   cancelAllNotifications,
+  dismissCardNotification,
+  dismissDailyNotification,
   requestPermissionAndSync,
   syncNotificationsNow,
 } from '@/notify/wiring';
@@ -127,5 +129,25 @@ describe('bildirim entegrasyonu', () => {
     fake.failCancel = true;
     await expect(deleteAllData(() => cancelAllNotifications(o))).resolves.toBeUndefined();
     expect(await getCheckins('2026-09-01', '2026-09-30')).toEqual([]);
+  });
+
+  it('22 §4.4: cancelAllNotifications hem planlıları iptal eder HEM teslim edilmişleri kaldırır', async () => {
+    await setOnboardingDone(true);
+    const { fake, o } = env();
+    await cancelAllNotifications(o);
+    expect(fake.calls).toContain('cancelAll');
+    expect(fake.dismissAllCount).toBe(1);
+  });
+
+  it('22 §4.4: dismissCardNotification o haftanın Pazar\'ı için deterministik id ile dismiss çağırır', async () => {
+    const { fake, o } = env();
+    await dismissCardNotification('2026-09-21', o); // haftanın Pazar'ı: 2026-09-27.
+    expect(fake.dismissed).toEqual(['card-2026-09-27']);
+  });
+
+  it('22 §4.4: dismissDailyNotification verilen gün için deterministik id ile dismiss çağırır (bugün/dün olabilir)', async () => {
+    const { fake, o } = env();
+    await dismissDailyNotification('2026-09-22', o);
+    expect(fake.dismissed).toEqual(['daily-2026-09-22']);
   });
 });

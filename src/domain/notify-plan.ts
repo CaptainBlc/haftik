@@ -54,6 +54,19 @@ function localDateTime(localDate: string, hour: number, minute: number): Date {
   return new Date(year, month - 1, day, hour, minute, 0, 0);
 }
 
+/**
+ * `PlannedNotification.id` biçiminin tek kaynağı (22 §4.4, teslim edilmiş
+ * bildirimleri kaldırma): `notify/wiring.ts`teki `dismissDailyNotification`/
+ * `dismissCardNotification` da bu formatı kullanır, iki yerde ayrı ayrı
+ * yazılan şablonların bir gün birbirinden sapması riskine karşı.
+ */
+export function dailyNotificationId(date: string): string {
+  return `daily-${date}`;
+}
+export function cardNotificationId(sunday: string): string {
+  return `card-${sunday}`;
+}
+
 export function planNotifications(input: NotifyPlanInput): PlannedNotification[] {
   const { now, checkins, settings, hasQualifiedWeekBefore } = input;
   if (!(now instanceof Date) || Number.isNaN(now.getTime())) {
@@ -89,7 +102,7 @@ export function planNotifications(input: NotifyPlanInput): PlannedNotification[]
         continue;
       }
       planned.push({
-        id: `daily-${date}`,
+        id: dailyNotificationId(date),
         kind: 'daily',
         fireAt,
         weekStart: getWeekStart(fireAt),
@@ -101,7 +114,7 @@ export function planNotifications(input: NotifyPlanInput): PlannedNotification[]
     const cardTime = parseReminderTime(CARD_READY_TIME);
     const fireAt = localDateTime(sunday, cardTime.hour, cardTime.minute);
     if (fireAt.getTime() > nowMs) {
-      planned.push({ id: `card-${sunday}`, kind: 'card-ready', fireAt, weekStart });
+      planned.push({ id: cardNotificationId(sunday), kind: 'card-ready', fireAt, weekStart });
     }
   }
 

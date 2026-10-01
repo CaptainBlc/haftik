@@ -26,7 +26,7 @@ import { toLocalDateString } from '@/domain/week';
 import { useNow } from '@/lib/now';
 import { isValidWeekStartParam } from '@/lib/week-param';
 import { trackEvent } from '@/metrics/track';
-import { syncNotificationsNow } from '@/notify/wiring';
+import { dismissCardNotification, syncNotificationsNow } from '@/notify/wiring';
 
 export default function CardScreen() {
   const { weekStart } = useLocalSearchParams<{ weekStart: string }>();
@@ -66,6 +66,9 @@ export default function CardScreen() {
         // artık gereksiz kalan "kart hazır" bildirimi kuyruktan düşsün diye
         // (replaceAll idempotent, `planNotifications` geçmiş fireAt'leri zaten elemez).
         void syncNotificationsNow();
+        // 22 §4.4: kart artık açıldı, o haftanın card-ready bildirimi
+        // teslim edilmiş olsa bile gölgede kalmasın.
+        void dismissCardNotification(weekStart);
       }
     });
     return () => {

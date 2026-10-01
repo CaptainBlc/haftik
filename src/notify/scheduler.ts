@@ -13,7 +13,7 @@
  */
 import { Platform } from 'react-native';
 
-import { NOTIFICATION_TEXTS } from '@/domain/content/notification-texts';
+import { NOTIFICATION_TEXTS, type NotificationKind } from '@/domain/content/notification-texts';
 import type { PlannedNotification } from '@/domain/notify-plan';
 
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
@@ -31,7 +31,25 @@ export interface PermissionState {
   canAskAgain: boolean;
 }
 
-export const NOTIFICATION_CHANNEL_ID = 'hhk-reminders';
+/**
+ * A12 (`docs/kararlar/2026-10-01-taban-oncesi-kararlar-b.md`, S15 — kanal
+ * tanımı; Ayarlar'daki ayrı anahtarlar S23'te): **iki kanal**, `hhk-reminders`
+ * tek kanalının yerini alır. Kullanıcı sistem ayarlarında günlük hatırlatmayı
+ * kapatıp kart bildirimini açık bırakabilir (`22-platform-v2.md` §4.3, tek
+ * yönlü kapı — 0.2.0'dan sonra kanal kimliği değişmez).
+ */
+export const NOTIFICATION_CHANNEL_IDS: Readonly<Record<NotificationKind, string>> = {
+  daily: 'daily',
+  'card-ready': 'card-ready',
+};
+
+const NOTIFICATION_CHANNEL_NAMES: Readonly<Record<NotificationKind, string>> = {
+  daily: 'Günlük hatırlatma',
+  'card-ready': 'Kart hazır',
+};
+
+/** Eski tek kanal (S8-S14); A12 ile ikiye bölündü, yalnızca silmek için tutulur. */
+const LEGACY_CHANNEL_ID = 'hhk-reminders';
 
 /** Kullandığımız `expo-notifications` yüzeyinin dar, mock'lanabilir hali. */
 export interface ExpoNotificationsLike {
@@ -46,7 +64,14 @@ export interface ExpoNotificationsLike {
   getAllScheduledNotificationsAsync(): Promise<
     { identifier: string; content: { data?: Record<string, unknown> }; trigger: unknown }[]
   >;
+  // 22 §4.4, teslim edilmiş bildirimleri kaldırma: `cancelAll*` yalnızca
+  // HENÜZ TETİKLENMEMİŞ planlı bildirimleri etkiler, bildirim merkezinde
+  // zaten görünen (teslim edilmiş) bir bildirimi KALDIRMAZ.
+  dismissNotificationAsync(identifier: string): Promise<void>;
+  dismissAllNotificationsAsync(): Promise<void>;
   setNotificationChannelAsync(channelId: string, channel: Record<string, unknown>): Promise<unknown>;
+  /** A12: eski tek kanaldan (`hhk-reminders`) iki kanala geçişte en iyi çaba temizliği. */
+  deleteNotificationChannelAsync(channelId: string): Promise<void>;
   SchedulableTriggerInputTypes: { DATE: unknown };
   AndroidImportance: { DEFAULT: unknown };
   // T3, bildirim yönlendirmesi (`notify/notification-routing.ts`):
@@ -85,6 +110,10 @@ export interface NotificationScheduler {
   replaceAll(plan: PlannedNotification[]): Promise<{ scheduled: number; failed: number }>;
   cancelAll(): Promise<void>;
   listPending(): Promise<PendingNotification[]>;
+  /** 22 §4.4: zaten teslim edilmiş (bildirim merkezinde görünen) tek bir bildirimi kaldırır. En iyi çaba, hata yutulur. */
+  dismiss(id: string): Promise<void>;
+  /** 22 §4.4: "Tüm verilerimi sil" akışı — teslim edilmiş TÜM bildirimleri kaldırır. En iyi çaba, hata yutulur. */
+  dismissAll(): Promise<void>;
   /** T3, soğuk açılış: uygulama bir bildirime dokunularak başlatıldıysa son yanıtı döner. */
   getLastResponse(): Promise<NotificationResponseData | null>;
   /** T3, sıcak açılış: uygulama açıkken bir bildirime dokunulursa tetiklenir. */
@@ -142,10 +171,15 @@ export function createScheduler(deps: {
       if (platform !== 'android') {
         return;
       }
-      await notifications.setNotificationChannelAsync(NOTIFICATION_CHANNEL_ID, {
-        name: 'Hatırlatmalar',
-        importance: notifications.AndroidImportance.DEFAULT,
-      });
+      for (const kind of Object.keys(NOTIFICATION_CHANNEL_IDS) as NotificationKind[]) {
+        await notifications.setNotificationChannelAsync(NOTIFICATION_CHANNEL_IDS[kind], {
+          name: NOTIFICATION_CHANNEL_NAMES[kind],
+          importance: notifications.AndroidImportance.DEFAULT,
+          sound: 'default',
+        });
+      }
+      // En iyi çaba: eski tek kanal varsa kaldırılır (yoksa no-op/hata yutulur).
+      await notifications.deleteNotificationChannelAsync(LEGACY_CHANNEL_ID).catch(() => undefined);
     },
     replaceAll(plan) {
       return enqueue(async () => {
@@ -169,7 +203,7 @@ export function createScheduler(deps: {
               trigger: {
                 type: notifications.SchedulableTriggerInputTypes.DATE,
                 date: item.fireAt,
-                channelId: NOTIFICATION_CHANNEL_ID,
+                channelId: NOTIFICATION_CHANNEL_IDS[item.kind],
               },
             });
             scheduled++;
@@ -184,6 +218,12 @@ export function createScheduler(deps: {
     },
     cancelAll() {
       return enqueue(() => notifications.cancelAllScheduledNotificationsAsync());
+    },
+    dismiss(id) {
+      return notifications.dismissNotificationAsync(id).catch(() => undefined);
+    },
+    dismissAll() {
+      return notifications.dismissAllNotificationsAsync().catch(() => undefined);
     },
     async listPending() {
       const all = await notifications.getAllScheduledNotificationsAsync();

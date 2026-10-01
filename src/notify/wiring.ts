@@ -5,6 +5,7 @@
  */
 import { getCheckins, getCheckinsBefore } from '@/data/checkin-repo';
 import { getAllSettings } from '@/data/setting-repo';
+import { cardNotificationId, dailyNotificationId } from '@/domain/notify-plan';
 import { addLocalDays, getWeekStart, hasQualifiedWeekBefore } from '@/domain/week';
 import { getNow } from '@/lib/now';
 import { getDefaultScheduler, type NotificationScheduler, type PermissionState, type PermissionStatus } from './scheduler';
@@ -44,10 +45,21 @@ export function syncNotificationsNow(overrides: Overrides = {}): Promise<SyncRes
 }
 
 /**
- * Kullanıcı akışından (onboarding "İzin ver" / Ayarlar anahtarı): izin yok VE
- * sistem tekrar sorabiliyorsa (`canAskAgain`) sistem diyaloğunu ister, sonra
- * yeniden planlar. Kalıcı reddedilmişse (`canAskAgain: false`) istek YAPILMAZ
- * (Android diyalog göstermez); UI yalnızca "Ayarları aç" yönlendirmesi sunar.
+ * Kullanıcı akışından (onboarding "İzin ver" / Ayarlar anahtarı): izin yoksa
+ * sistem diyaloğunu ister, sonra yeniden planlar.
+ *
+ * **V-03 düzeltmesi (2026-10-01, S15):** `canAskAgain: false` iken de istek
+ * YAPILIR (eskiden yalnızca `canAskAgain: true` iken isteniyordu). Gerekçe:
+ * Android 13+ izin diyaloğu **geri tuşuyla** kapatılırsa (`05-platform-
+ * gercekleri.md` P-03/V-03, emülatörde tekrar üretildi) Expo'nun kendi
+ * `blocked` bayrağı `true` yazıyor ve `canAskAgain` yanlışlıkla `false`
+ * dönüyor — ama OS bayrağı `USER_SET`/`USER_FIXED` DEĞİL, yani sistem aslında
+ * TEKRAR SORABİLİR. `canAskAgain: false`e güvenip isteği hiç yapmamak bu
+ * durumda kullanıcıyı gereksiz yere "Ayarları aç"a yönlendirirdi. Gerçekten
+ * kalıcı reddedilmişse (iki gerçek ret) istek zararsızdır: sistem diyalog
+ * göstermeden sessizce `DENIED` döner (Android belgesi). UI yine de
+ * `canAskAgain: false` iken "Ayarları aç"ı GÖSTERMEYE devam eder (bu, tek
+ * seferlik "harçsız" deneme buna EK bir güvence ağıdır, yerini almaz).
  * Android 13'te kanal, ilk bildirimden önce yoksa diyalog çıkmayabildiğinden
  * kanal istekten ÖNCE oluşturulur (en iyi çaba).
  */
@@ -59,7 +71,7 @@ export async function requestPermissionAndSync(
   try {
     const state = await scheduler.getPermissionState();
     status = state.status;
-    if (!state.granted && state.canAskAgain) {
+    if (!state.granted) {
       await scheduler.ensureChannel().catch(() => undefined);
       status = await scheduler.requestPermission();
     }
@@ -100,7 +112,36 @@ export function runDeleteExclusive(task: () => Promise<void>): Promise<void> {
   return runExclusiveNotify(task);
 }
 
-/** `deleteAllData` kancası. */
-export function cancelAllNotifications(overrides: Overrides = {}): Promise<void> {
-  return (overrides.scheduler ?? getDefaultScheduler()).cancelAll();
+/**
+ * `deleteAllData` kancası. 22 §4.4: yalnızca planlı bildirimleri iptal etmek
+ * yetmez — bildirim merkezinde zaten görünen (teslim edilmiş) bildirimler de
+ * kaldırılmalı, yoksa "Tüm verilerimi sil" sonrası eski bir hatırlatma
+ * gölgede kalabilir.
+ */
+export async function cancelAllNotifications(overrides: Overrides = {}): Promise<void> {
+  const scheduler = overrides.scheduler ?? getDefaultScheduler();
+  await scheduler.cancelAll();
+  await scheduler.dismissAll();
+}
+
+/**
+ * 22 §4.4: kart açılınca o haftanın `card-ready` bildirimi (teslim edilmiş
+ * olsa bile) bildirim merkezinden kaldırılır — iş zaten bitti, gölgede
+ * kalmasın. En iyi çaba, akışı bozmaz.
+ */
+export function dismissCardNotification(weekStart: string, overrides: Overrides = {}): Promise<void> {
+  const scheduler = overrides.scheduler ?? getDefaultScheduler();
+  const sunday = addLocalDays(weekStart, 6);
+  return scheduler.dismiss(cardNotificationId(sunday));
+}
+
+/**
+ * 22 §4.4: check-in kaydedilince (Kaydet) o günün `daily` hatırlatması
+ * (teslim edilmiş olsa bile) bildirim merkezinden kaldırılır. `date`,
+ * kaydedilen check-in'in `localDate`'idir (bugün ya da dün olabilir, düzenleme
+ * penceresi gereği) — her zaman "bugün" varsayılmaz.
+ */
+export function dismissDailyNotification(date: string, overrides: Overrides = {}): Promise<void> {
+  const scheduler = overrides.scheduler ?? getDefaultScheduler();
+  return scheduler.dismiss(dailyNotificationId(date));
 }

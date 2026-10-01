@@ -28,7 +28,7 @@ import { formatTurkishDateLabel } from '@/lib/date-format';
 import { useNow } from '@/lib/now';
 import { isValidWeekStartParam } from '@/lib/week-param';
 import { trackEvent } from '@/metrics/track';
-import { syncNotificationsNow } from '@/notify/wiring';
+import { dismissDailyNotification, syncNotificationsNow } from '@/notify/wiring';
 
 export default function TodayScreen() {
   const router = useRouter();
@@ -89,6 +89,8 @@ export default function TodayScreen() {
       void trackEvent('check_in_saved'); // S9: en iyi çaba, akışı bozmaz
       // Bugünkü hatırlatmayı iptal / kart eşiğini yeniden değerlendir (S8).
       void syncNotificationsNow();
+      // 22 §4.4: teslim edilmiş olsa bile o günün hatırlatması gölgede kalmasın.
+      void dismissDailyNotification(selectedDate);
       if (isValidWeekStartParam(returnToCardWeekStart, today)) {
         router.replace({ pathname: '/card/[weekStart]', params: { weekStart: returnToCardWeekStart } });
       }

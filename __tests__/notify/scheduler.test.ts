@@ -106,13 +106,32 @@ describe('scheduler', () => {
     expect(await s.listPending()).toEqual([]);
   });
 
-  it('S-12: Android kanalı oluşturulur, iOS no-op', async () => {
+  it('S-12 (A12 ile güncellendi): Android İKİ kanal oluşturur, iOS no-op', async () => {
     const a = createFakeNotifications();
     await createScheduler({ notifications: a, platform: 'android' }).ensureChannel();
-    expect(a.calls).toEqual(['channel']);
+    expect(a.calls).toEqual(['channel', 'channel']);
+    expect(a.channelCalls.map((c) => c.channelId).sort()).toEqual(['card-ready', 'daily']);
+    for (const call of a.channelCalls) {
+      expect(call.config.importance).toBe(a.AndroidImportance.DEFAULT);
+      expect(call.config.sound).toBe('default');
+    }
     const i = createFakeNotifications();
     await createScheduler({ notifications: i, platform: 'ios' }).ensureChannel();
     expect(i.calls).toEqual([]);
+  });
+
+  it('A12: eski tek kanal (hhk-reminders) en iyi çabayla silinir', async () => {
+    const a = createFakeNotifications();
+    await createScheduler({ notifications: a, platform: 'android' }).ensureChannel();
+    expect(a.deletedChannels).toEqual(['hhk-reminders']);
+  });
+
+  it('A12: card-ready bildirimi card-ready kanalına, daily bildirimi daily kanalına planlanır', async () => {
+    const fake = createFakeNotifications();
+    const s = createScheduler({ notifications: fake, platform: 'android' });
+    await s.replaceAll(PLAN);
+    expect(fake.pending.get('daily-2026-09-24')!.trigger.channelId).toBe('daily');
+    expect(fake.pending.get('card-2026-09-27')!.trigger.channelId).toBe('card-ready');
   });
 
   it('izin durumları eşlenir; bilinmeyen -> undetermined', async () => {
@@ -168,6 +187,36 @@ describe('scheduler', () => {
       await s.clearLastResponse();
       expect(fake.clearCount).toBe(1);
       expect(fake.lastResponse).toBeNull();
+    });
+  });
+
+  describe('22 §4.4: teslim edilmiş bildirimleri kaldırma', () => {
+    it('dismiss: native dismissNotificationAsync id ile çağrılır', async () => {
+      const fake = createFakeNotifications();
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      await s.dismiss('daily-2026-09-23');
+      expect(fake.dismissed).toEqual(['daily-2026-09-23']);
+    });
+
+    it('dismiss: native hata verirse yutulur (en iyi çaba, çökmez)', async () => {
+      const fake = createFakeNotifications();
+      fake.failDismiss = true;
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      await expect(s.dismiss('daily-2026-09-23')).resolves.toBeUndefined();
+    });
+
+    it('dismissAll: native dismissAllNotificationsAsync çağrılır', async () => {
+      const fake = createFakeNotifications();
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      await s.dismissAll();
+      expect(fake.dismissAllCount).toBe(1);
+    });
+
+    it('dismissAll: native hata verirse yutulur (en iyi çaba, çökmez)', async () => {
+      const fake = createFakeNotifications();
+      fake.failDismiss = true;
+      const s = createScheduler({ notifications: fake, platform: 'android' });
+      await expect(s.dismissAll()).resolves.toBeUndefined();
     });
   });
 });
