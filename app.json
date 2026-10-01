@@ -27,10 +27,6 @@
       ],
       "package": "com.batuhan.haftik"
     },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
     "plugins": [
       "expo-router",
       [
