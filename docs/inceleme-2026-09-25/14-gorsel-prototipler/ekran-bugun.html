@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik · Bugün ekranı · A ve B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:ital,opsz,wght@0,14..32,400..800;1,14..32,400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #CFCAD8; font-family: Inter, system-ui, sans-serif; color: #1F1B16; padding: 40px; }
+  .page-head { max-width: 1180px; margin: 0 auto 32px; }
+  .page-head h1 { font: 700 22px/1.2 Inter, sans-serif; }
+  .page-head p { font: 400 14px/1.55 Inter, sans-serif; color: #444; max-width: 800px; margin-top: 6px; }
+  .stage { display: flex; flex-wrap: wrap; gap: 60px; justify-content: center; align-items: flex-start; }
+  figure { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+  figcaption { font: 600 12px/1.4 Inter, sans-serif; color: #333; text-align: center; max-width: 420px; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-weight: 400; font-style: normal; line-height: 1; }
+  .embed body { background: transparent; padding: 20px; }
+  .embed .page-head, .embed .extra, .embed figcaption { display: none; }
+
+  /* ---------- telefon çerçevesi (yalnızca sunum) ---------- */
+  .phone { position: relative; width: 411px; height: 914px; border-radius: 40px; overflow: hidden; flex: none;
+    background: var(--bg); color: var(--ink);
+    box-shadow: 0 0 0 9px #121016, 0 0 0 10px #2b2833, 0 40px 80px -30px rgba(0,0,0,.55); }
+
+  /* ---------- A token'ları ---------- */
+  .pa { --bg: #F5EEDF; --surface: #FFFCF5; --sunken: #ECE3D1; --ink: #1F1B16; --ink2: #6A6155; --line: #DDD0B8;
+    --accent: #4B32C3; --accentSoft: #ECE8FB; --onAccent: #FFFFFF; --ckInk: #FFFFFF; --title: Fraunces, serif; --r: 14px; }
+  /* ---------- B token'ları ---------- */
+  .pb { --bg: #0F0C24; --surface: rgba(255,255,255,.06); --sunken: rgba(255,255,255,.03); --ink: #FFFFFF; --ink2: #C9C1EA;
+    --line: rgba(255,255,255,.12); --accent: #A99BFF; --accentSoft: rgba(169,155,255,.18); --amber: #FFB36B; --ckInk: #0F0C24;
+    --title: "Bricolage Grotesque", sans-serif; --r: 16px; }
+  .phone.pb { background:
+      radial-gradient(70% 30% at 85% 0%, rgba(125,92,255,.40), rgba(125,92,255,0) 70%),
+      radial-gradient(90% 25% at 50% 104%, rgba(255,146,92,.20), rgba(255,146,92,0) 70%),
+      #0F0C24; }
+
+  .sb { position: absolute; top: 0; left: 0; right: 0; height: 34px; padding: 0 26px; display: flex; align-items: center; justify-content: space-between;
+    font: 600 13px/1 Inter, sans-serif; color: var(--ink); }
+  .sb svg { height: 12px; width: 52px; color: var(--ink); }
+
+  .topbar { position: absolute; top: 46px; left: 24px; right: 24px; height: 34px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { font: 700 21px/1 var(--title); letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; }
+  .brand svg { width: 30px; height: 16px; }
+  .pa .brand i { font-style: normal; color: var(--accent); }
+  .pb .brand { font-weight: 800; }
+  .chip { font: 600 13px/1 Inter, sans-serif; color: var(--ink); padding: 8px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+
+  .date { position: absolute; top: 96px; left: 24px; right: 24px; }
+  .kick { font: 800 10px/1 Inter, sans-serif; letter-spacing: .22em; color: var(--accent); }
+  .pb .kick { color: var(--amber); }
+  .big { margin-top: 8px; font: 800 46px/1 var(--title); letter-spacing: -.025em; }
+  .pb .big { letter-spacing: -.04em; }
+
+  .wk { position: absolute; top: 172px; left: 24px; right: 24px; display: flex; justify-content: space-between; }
+  .wk .d { width: 38px; display: flex; flex-direction: column; align-items: center; gap: 6px; font: 600 11px/1 Inter, sans-serif; color: var(--ink2); }
+  .wk .d i { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--line); }
+  .wk .d i.f { background: var(--accent); border-color: var(--accent); }
+  .wk .d i.m { border-style: dashed; border-color: var(--ink2); }
+  .wk .d.t { color: var(--ink); font-weight: 800; }
+  .wk .d.t i { width: 16px; height: 16px; margin-top: -2px; border: 2.5px solid var(--accent); background: transparent; }
+  .pb .wk .d i.f { box-shadow: 0 0 8px rgba(169,155,255,.7); }
+  .pb .wk .d.t i { border-color: var(--amber); }
+
+  .cats { position: absolute; top: 214px; left: 24px; right: 24px; }
+  .cat + .cat { margin-top: 18px; }
+  .lab { height: 24px; display: flex; align-items: baseline; gap: 6px; font: 700 15px/24px Inter, sans-serif; }
+  .lab span { font-weight: 500; color: var(--ink2); }
+  .pa .lab span { font: italic 500 16px/24px Fraunces, serif; }
+  .opts { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .opt { position: relative; height: 72px; border-radius: var(--r); display: grid; place-items: center;
+    background: var(--surface); border: 1px solid var(--line); }
+  .pa .opt { box-shadow: 0 1px 0 rgba(31,27,22,.06); }
+  .opt .emo { font-size: 34px; }
+  .opt.sel { background: var(--accentSoft); border: 2.5px solid var(--accent); }
+  .opt.sel .emo { transform: scale(1.06); }
+  .pb .opt.sel { box-shadow: 0 0 0 4px rgba(169,155,255,.12), 0 10px 26px -8px rgba(125,92,255,.7); }
+  .opt.pas .emo { opacity: .42; filter: grayscale(.4); }
+  .pa .opt.pas { background: transparent; box-shadow: none; }
+  .opt.press { transform: scale(.96); background: var(--sunken); }
+  .opt.focus { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .ck { position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
+    display: grid; place-items: center; box-shadow: 0 0 0 2.5px var(--bg); color: var(--ckInk); }
+  .ck svg { width: 12px; height: 12px; }
+
+  .save { position: absolute; left: 24px; right: 24px; top: 744px; height: 54px; border: 0; border-radius: 14px;
+    font: 700 16px/1 Inter, sans-serif; color: #fff; background: #4B32C3;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 8px 18px -8px rgba(75,50,195,.65); }
+  .pb .save { background: linear-gradient(180deg, #6E50F5, #5236D6); box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 10px 28px -8px rgba(110,80,245,.8); }
+
+  .tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 86px; padding: 8px 18px 26px; display: flex; justify-content: space-around;
+    background: var(--surface); border-top: 1px solid var(--line); }
+  .pb .tabs { background: #0E0B20; }
+  .tab { width: 90px; display: flex; flex-direction: column; align-items: center; gap: 4px; font: 600 12px/1 Inter, sans-serif; color: var(--ink2); }
+  .tab .ic { width: 58px; height: 30px; border-radius: 15px; display: grid; place-items: center; }
+  .tab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .tab.on { color: var(--accent); font-weight: 800; }
+  .tab.on .ic { background: var(--accentSoft); }
+  .home { position: absolute; left: 50%; bottom: 8px; width: 130px; height: 4px; margin-left: -65px; border-radius: 2px; background: var(--ink); opacity: .8; }
+
+  /* durum lejantı */
+  .legend { display: flex; gap: 16px; padding: 22px 24px; border-radius: 22px; }
+  .legend.pa { background: #F5EEDF; }
+  .legend.pb { background: #0F0C24; }
+  .legend .item { width: 104px; display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+  .legend .item small { font: 600 11px/1.3 Inter, sans-serif; color: var(--ink2); text-align: center; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-status" viewBox="0 0 52 12"><g fill="currentColor"><rect x="0" y="8" width="3" height="4" rx=".6"/><rect x="4.5" y="5.5" width="3" height="6.5" rx=".6"/><rect x="9" y="3" width="3" height="9" rx=".6"/><rect x="13.5" y="0" width="3" height="12" rx=".6"/><path d="M27 11.5l-2.4-2.9a3.8 3.8 0 0 1 4.8 0zM22.4 6.4a7.3 7.3 0 0 1 9.2 0l-1.3 1.6a5.2 5.2 0 0 0-6.6 0zM20.2 3.8a10.8 10.8 0 0 1 13.6 0l-1.3 1.6a8.7 8.7 0 0 0-11 0z"/><rect x="37" y="1.5" width="12.5" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="38.6" y="3.1" width="8" height="5.8" rx=".8"/><rect x="50.2" y="4.3" width="1.4" height="3.4" rx=".5"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 12 12"><path d="M2.5 6.3l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-today" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M8 12.3l2.7 2.7L16.2 9.5"/></symbol>
+    <symbol id="i-week" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8.5 3v4M15.5 3v4"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7.5h9M18.5 7.5H20M4 16.5h3.5M11.5 16.5H20"/><circle cx="16" cy="7.5" r="2.3"/><circle cx="9.5" cy="16.5" r="2.3"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 30 16"><g fill="#F4F0FF"><circle cx="2.5" cy="4" r="1.7"/><circle cx="5.6" cy="9.2" r="1.7"/><circle cx="10.2" cy="12.6" r="1.7"/><circle cx="15" cy="13.6" r="1.7"/><circle cx="19.8" cy="12.6" r="1.7"/><circle cx="24.4" cy="9.2" r="1.7"/></g><circle cx="27.4" cy="3.6" r="2.6" fill="#FFB36B"/></symbol>
+  </defs>
+</svg>
+
+<header class="page-head">
+  <h1>Bugün (check-in) ekranı · Yön A ve Yön B</h1>
+  <p>411×914 dp. Kutu yüksekliği 72 dp (dikey bütçe kuralı korunur). Seçili durum üç işaretle gösterilir: renkli dolgu, 2,5 dp çerçeve ve ✓ rozeti.
+  Aynı satırda seçim yapılınca diğer iki kutu “pasif” olur (emoji soluk) ama devre dışı gibi görünmez. Sosyal satırı henüz seçilmedi: üç kutu da normal.
+  Seçimler, kart örneklerindeki “Konforun Kalesi” haftasıyla aynıdır.</p>
+</header>
+
+<main class="stage">
+
+  <!-- ================= A ================= -->
+  <figure>
+    <div class="phone pa">
+      <div class="sb"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="topbar"><div class="brand">Haftik<i>.</i></div><div class="chip">‹ Dün</div></div>
+      <div class="date"><div class="kick">BUGÜN · CUMA</div><div class="big">25 Eylül</div></div>
+      <div class="wk">
+        <div class="d">Pzt<i class="f"></i></div><div class="d">Sal<i class="f"></i></div><div class="d">Çar<i class="m"></i></div>
+        <div class="d">Per<i class="f"></i></div><div class="d t">Cum<i></i></div><div class="d">Cmt<i></i></div><div class="d">Paz<i></i></div>
+      </div>
+
+      <section class="cats">
+        <div class="cat"><div class="lab">Hareket<span>· durgun</span></div>
+          <div class="opts">
+            <div class="opt sel"><span class="emo">🐢</span><i class="ck"><svg><use href="#i-check"/></svg></i></div>
+            <div class="opt pas"><span class="emo">🚶</span></div>
+            <div class="opt pas"><span class="emo">🏃</span></div>
+          </div></div>
+        <div class="cat"><div class="lab">Uyku<span>· iyi</span></div>
+          <div class="opts">
+            <div class="opt pas"><span class="emo">😪</span></div>
+            <div class="opt pas"><span class="emo">😌</span></div>
+            <div class="opt sel"><span class="emo">😴</span><i class="ck"><svg><use href="#i-check"/></svg></i></div>
+          </div></div>
+        <div class="cat"><div class="lab">Harcama<span>· orta</span></div>
+          <div class="opts">
+            <div class="opt pas"><span class="emo">🐷</span></div>
+            <div class="opt sel"><span class="emo">💳</span><i class="ck"><svg><use href="#i-check"/></svg></i></div>
+            <div class="opt pas"><span class="emo">💸</span></div>
+          </div></div>
+        <div class="cat"><div class="lab">Sosyal</div>
+          <div class="opts">
+            <div class="opt"><span class="emo">👤</span></div>
+            <div class="opt"><span class="emo">👥</span></div>
+            <div class="opt"><span class="emo">🎉</span></div>
+          </div></div>
+      </section>
+
+      <button class="save">Kaydet</button>
+
+      <nav class="tabs">
+        <div class="tab on"><span class="ic"><svg><use href="#i-today"/></svg></span>Bugün</div>
+        <div class="tab"><span class="ic"><svg><use href="#i-week"/></svg></span>Hafta</div>
+        <div class="tab"><span class="ic"><svg><use href="#i-settings"/></svg></span>Ayarlar</div>
+      </nav>
+      <div class="home"></div>
+    </div>
+    <figcaption>A · Kâğıt zemin, serif tarih, mor seçim. Pasif kutular şeffaf zemine düşer, seçili kutu “kabarır”.</figcaption>
+  </figure>
+
+  <!-- ================= B ================= -->
+  <figure>
+    <div class="phone pb">
+      <svg style="position:absolute;left:0;top:0;width:411px;height:220px" viewBox="0 0 411 220" fill="#fff">
+        <circle cx="40" cy="120" r=".8" opacity=".5"/><circle cx="130" cy="60" r=".7" opacity=".45"/><circle cx="210" cy="30" r=".9" opacity=".6"/>
+        <circle cx="300" cy="150" r=".6" opacity=".4"/><circle cx="360" cy="84" r=".8" opacity=".55"/><circle cx="250" cy="110" r=".5" opacity=".4"/>
+        <path d="M330 40l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" opacity=".7"/>
+      </svg>
+      <div class="sb"><span>9:41</span><svg><use href="#i-status"/></svg></div>
+      <div class="topbar"><div class="brand"><svg><use href="#i-smile"/></svg>haftik</div><div class="chip">‹ Dün</div></div>
+      <div class="date"><div class="kick">BUGÜN · CUMA</div><div class="big">25 Eylül</div></div>
+      <div class="wk">
+        <div class="d">Pzt<i class="f"></i></div><div class="d">Sal<i class="f"></i></div><div class="d">Çar<i class="m"></i></div>
+        <div class="d">Per<i class="f"></i></div><div class="d t">Cum<i></i></div><div class="d">Cmt<i></i></div><div class="d">Paz<i></i></div>
+      </div>
+
+      <section class="cats">
+        <div class="cat"><div class="lab">Hareket<span>· durgun</span></div>
+          <div class="opts">
+            <div class="opt sel"><span class="emo">🐢</span><i class="ck"><svg><use href="#i-check"/></svg></i></div>
+            <div class="opt pas"><span class="emo">🚶</span></div>
+            <div class="opt pas"><span class="emo">🏃</span></div>
+          </div></div>
+        <div class="cat"><div class="lab">Uyku<span>· iyi</span></div>
+          <div class="opts">
+            <div class="opt pas"><span class="emo">😪</span></div>
+            <div class="opt pas"><span class="emo">😌</span></div>
+            <div class="opt sel"><span class="emo">😴</span><i class="ck"><svg><use href="#i-check"/></svg></i></div>
+          </div></div>
+        <div class="cat"><div class="lab">Harcama<span>· orta</span></div>
+          <div class="opts">
+            <div class="opt pas"><span class="emo">🐷</span></div>
+            <div class="opt sel"><span class="emo">💳</span><i class="ck"><svg><use href="#i-check"/></svg></i></div>
+            <div class="opt pas"><span class="emo">💸</span></div>
+          </div></div>
+        <div class="cat"><div class="lab">Sosyal</div>
+          <div class="opts">
+            <div class="opt"><span class="emo">👤</span></div>
+            <div class="opt"><span class="emo">👥</span></div>
+            <div class="opt"><span class="emo">🎉</span></div>
+          </div></div>
+      </section>
+
+      <button class="save">Kaydet</button>
+
+      <nav class="tabs">
+        <div class="tab on"><span class="ic"><svg><use href="#i-today"/></svg></span>Bugün</div>
+        <div class="tab"><span class="ic"><svg><use href="#i-week"/></svg></span>Hafta</div>
+        <div class="tab"><span class="ic"><svg><use href="#i-settings"/></svg></span>Ayarlar</div>
+      </nav>
+      <div class="home"></div>
+    </div>
+    <figcaption>B · Gece zemini, cam kutular; seçili kutu lila çerçeve + ışıma + ✓. Kaydet düğmesi gradyanlı.</figcaption>
+  </figure>
+
+  <!-- ================= Durum lejantı ================= -->
+  <figure class="extra">
+    <div class="legend pa">
+      <div class="item"><div class="opt"><span class="emo">🚶</span></div><small>Normal</small></div>
+      <div class="item"><div class="opt sel"><span class="emo">🚶</span><i class="ck"><svg><use href="#i-check"/></svg></i></div><small>Seçili</small></div>
+      <div class="item"><div class="opt pas"><span class="emo">🚶</span></div><small>Pasif (kardeşi seçili)</small></div>
+      <div class="item"><div class="opt press"><span class="emo">🚶</span></div><small>Basılı (0,96)</small></div>
+      <div class="item"><div class="opt focus"><span class="emo">🚶</span></div><small>Klavye/erişim odağı</small></div>
+    </div>
+    <div class="legend pb">
+      <div class="item"><div class="opt"><span class="emo">🚶</span></div><small>Normal</small></div>
+      <div class="item"><div class="opt sel"><span class="emo">🚶</span><i class="ck"><svg><use href="#i-check"/></svg></i></div><small>Seçili</small></div>
+      <div class="item"><div class="opt pas"><span class="emo">🚶</span></div><small>Pasif (kardeşi seçili)</small></div>
+      <div class="item"><div class="opt press"><span class="emo">🚶</span></div><small>Basılı (0,96)</small></div>
+      <div class="item"><div class="opt focus"><span class="emo">🚶</span></div><small>Klavye/erişim odağı</small></div>
+    </div>
+    <figcaption>Durum lejantı. Seçili durum renge bağlı değil: çerçeve kalınlığı + ✓ rozeti gri tonlamada da ayırt edilir.</figcaption>
+  </figure>
+
+</main>
+</body>
+</html>

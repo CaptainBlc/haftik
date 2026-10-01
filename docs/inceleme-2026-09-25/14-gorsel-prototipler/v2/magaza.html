@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik v2 · Play mağaza grafikleri</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #E9E5EF; font: 400 14px/1.55 Inter, system-ui, sans-serif; color: #3a3550; padding: 40px; }
+  .wrap { max-width: 1280px; margin: 0 auto; }
+  h1 { font: 800 28px/1.2 Fraunces, Georgia, serif; color: #17131F; }
+  h2 { font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; color: #5E5870; margin: 40px 0 14px; }
+  p.lead { max-width: 920px; margin-top: 6px; }
+  .embed body { padding: 12px; } .embed .hide-embed { display: none; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; line-height: 1; font-style: normal; font-weight: 400; }
+  .dots { background: radial-gradient(rgba(255,255,255,.085) 1.6px, rgba(255,255,255,0) 2.3px) 10px 10px / 20px 20px, radial-gradient(90% 80% at 30% 0%, rgba(255,255,255,.07), rgba(255,255,255,0) 60%), #3D2E7C; }
+  .cdots { background: radial-gradient(rgba(255,255,255,.085) 1.1px, rgba(255,255,255,0) 1.6px) 7px 7px / 14px 14px, #3D2E7C; }
+
+  .fg { position: relative; width: 1024px; height: 500px; overflow: hidden; color: #FFFDF8; }
+  .fg .safe { position: absolute; left: 64px; top: 50px; width: 896px; height: 400px; border: 1.5px dashed rgba(255,120,120,.9); pointer-events: none; }
+  .fg .wm { position: absolute; left: 88px; top: 118px; font: 800 96px/1 Fraunces, Georgia, serif; letter-spacing: -.02em; }
+  .fg .sl { position: absolute; left: 92px; top: 236px; width: 430px; font: 600 30px/1.25 Inter, sans-serif; color: #EDE8FF; }
+  .fg .ic { position: absolute; left: 88px; top: 340px; display: flex; gap: 12px; align-items: center; font: 700 16px/1.3 Inter, sans-serif; color: #EDE8FF; }
+  .fg .ic span { display: inline-flex; height: 40px; padding: 0 16px; align-items: center; border-radius: 999px; background: rgba(255,253,248,.10); box-shadow: inset 0 0 0 1.5px rgba(255,253,248,.25); }
+  .fg .cards { position: absolute; left: 560px; top: 30px; width: 420px; height: 440px; }
+  .mc { position: absolute; width: 216px; height: 384px; overflow: hidden; border-radius: 6px; box-shadow: 0 0 0 4px #FFFDF8, 8px 10px 0 4px #211850; }
+  .toggle { display: flex; gap: 8px; margin-bottom: 10px; }
+  .toggle label { font: 700 12px/1 Inter, sans-serif; display: flex; gap: 6px; align-items: center; cursor: pointer; }
+
+  .shots { display: flex; gap: 18px; flex-wrap: wrap; }
+  .shot { width: 324px; height: 576px; border-radius: 10px; overflow: hidden; position: relative; }
+  .shot .in { width: 1080px; height: 1920px; transform: scale(.3); transform-origin: 0 0; position: relative; }
+  .shot h3 { position: absolute; left: 90px; right: 90px; top: 150px; font: 800 92px/1.04 Fraunces, Georgia, serif; color: #FFFDF8; letter-spacing: -.015em; }
+  .shot h3 em { font-style: italic; font-weight: 600; color: #FFD84D; }
+  .shot .frame { position: absolute; left: 150px; top: 520px; width: 780px; height: 1560px; border-radius: 64px; background: #17131F; padding: 18px; box-shadow: 0 0 0 10px #FFFDF8, 22px 26px 0 10px #211850; }
+  .shot .scr { width: 744px; height: 1524px; border-radius: 48px; overflow: hidden; position: relative; background: #3D2E7C; }
+  .shot .scr iframe, .shot .scr .mount { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; }
+  .shot .tag { position: absolute; left: 90px; top: 60px; height: 44px; padding: 0 22px; background: #FFD84D; color: #17131F; font: 800 22px/44px Inter, sans-serif; letter-spacing: .16em; transform: rotate(-1.5deg); }
+  table { border-collapse: collapse; background: #FFFDF8; font-size: 12.5px; margin-top: 14px; }
+  th, td { padding: 6px 10px; border-bottom: 1px solid #ECE7F0; text-align: left; vertical-align: top; }
+  th { font: 800 10px/1.2 Inter, sans-serif; letter-spacing: .1em; color: #5E5870; background: #F2EEF6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Play mağaza grafikleri · albüm sayfası dili</h1>
+  <p class="lead hide-embed">Tanıtım görseli (1024×500) ve 5 ekran görüntüsü şablonu (1080×1920). Tüm içerik uydurma örnektir; cihaz çerçevesi sade;
+  “#1”, yıldız ya da sağlık sözcüğü yok (S12). Başlıklar copywriter onayına tabidir. Ölçüler ikincil kaynaklara göre (K3): ikon 512×512,
+  tanıtım görseli 1024×500 saydamsız, önerilere uygunluk için ≥4 ekran görüntüsü ve ≥1080 px.</p>
+
+  <h2>1 · TANITIM GÖRSELİ 1024×500 (%100)</h2>
+  <div class="toggle hide-embed"><label><input type="checkbox" id="sf"> Güvenli alanı göster (Play bazı yerleşimlerde kenarı kırpar ya da ikon/ad bindirir)</label></div>
+  <div class="fg dots">
+    <div class="wm">haftik</div>
+    <div class="sl">Günde dört emoji.<br>Pazar akşamı esprili bir kart.</div>
+    <div class="ic"><span>Hesap yok</span><span>Veri telefonunda</span></div>
+    <div class="cards">
+      <div class="mc" id="m1" style="left:0;top:40px;transform:rotate(-4deg)"></div>
+      <div class="mc" id="m2" style="left:196px;top:18px;transform:rotate(3deg)"></div>
+    </div>
+    <i class="safe" id="safe" style="display:none"></i>
+  </div>
+
+  <h2>2 · EKRAN GÖRÜNTÜSÜ ŞABLONU (1080×1920, %30)</h2>
+  <div class="shots" id="shots"></div>
+  <table class="hide-embed">
+    <tr><th>#</th><th>Başlık (copywriter)</th><th>İçerik</th><th>Nasıl alınır</th></tr>
+    <tr><td>1</td><td>Haftan, bir <i>kart</i>.</td><td>Kart ekranı (normal)</td><td>Android emülatör, dev zaman menüsü + uydurma veri (10 §7)</td></tr>
+    <tr><td>2</td><td>Günde <i>dört</i> dokunuş.</td><td>Bugün, 3 seçili</td><td>aynı</td></tr>
+    <tr><td>3</td><td>Pazar 20:00'de <i>açılır</i>.</td><td>Hafta, açılabilir</td><td>aynı</td></tr>
+    <tr><td>4</td><td>Neyi paylaşacağını <i>sen</i> seçersin.</td><td>Kart, varsayılan gizleme</td><td>Paylaşım seçicisi (18 §2.8) hazır olunca seçici ekranı</td></tr>
+    <tr><td>5</td><td>Hesap yok. Veri <i>telefonunda</i>.</td><td>Burada geçici olarak Bugün (Kaydedildi); gerçekte Ayarlar/gizlilik sayfası</td><td>Ayarlar v2 çizilmedi; metin iddiası 25-gizlilik ile çapraz kontrol</td></tr>
+  </table>
+</div>
+<script>
+  var SEAL = function (id) { return '<svg style="position:absolute;left:260px;top:26px;width:76px;height:76px;transform:rotate(8deg)" viewBox="0 0 76 76"><defs><path id="' + id + '" d="M11 36a25 25 0 1 1 50 0a25 25 0 1 1 -50 0"/></defs><circle cx="38.5" cy="39.5" r="34" fill="#211850"/><circle cx="36" cy="36" r="34" fill="#FFFDF8"/><circle cx="36" cy="36" r="30.5" fill="none" stroke="#17131F" stroke-opacity=".22" stroke-width=".8"/><text font-family="Inter, sans-serif" font-weight="800" font-size="6.6" fill="#17131F"><textPath href="#' + id + '" textLength="150" lengthAdjust="spacingAndGlyphs">HAFTİK · HAFTALIK KART ·</textPath></text><circle cx="36" cy="36" r="14.5" fill="#FFD84D"/><g transform="translate(36 36) scale(.04) translate(-512 -512)" fill="none" stroke="#17131F" stroke-width="88" stroke-linecap="round" stroke-linejoin="round"><path d="M421 321V703M421 563C421 484 468 456 512 456C559 456 603 484 603 563V703"/></g></svg>'; };
+  var T = { mov: '#BFE8D2', slp: '#D6CEFF', spn: '#FFD4B3', soc: '#FFCADB' }, n = 0;
+  function row(r, i) {
+    var base = 'position:absolute;left:24px;top:' + (218 + i * 62) + 'px;width:312px;height:56px;border-radius:14px;display:flex;align-items:center;gap:10px;padding:0 12px 0 10px;';
+    var meta = 'display:flex;gap:8px;align-items:center;font:800 9px/1 Inter,sans-serif;letter-spacing:.14em';
+    if (r.h) return '<div style="' + base + 'background:#E7E4EE;outline:1.5px dashed rgba(23,19,31,.38);outline-offset:-5px"><span style="width:40px;height:40px;border-radius:50%;border:1.5px dashed rgba(23,19,31,.45);flex:none;margin-right:12px"></span><div><div style="' + meta + '">' + r.c + '<span style="font:800 8.5px/1 Inter,sans-serif;letter-spacing:.14em;background:#17131F;color:#FFFDF8;padding:3px 6px;border-radius:4px">GİZLİ</span></div><p style="font:500 12.5px/16px Inter,sans-serif;color:#5E5870;margin-top:2px">Gizli çıkartma</p></div></div>';
+    return '<div style="' + base + 'background:#FFFDF8;box-shadow:0 3px 0 #211850"><span style="width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;margin-right:12px;background:' + r.t + '"><span class="emo" style="font-size:22px">' + r.e + '</span></span><div><div style="' + meta + '">' + r.c + '<i style="font:italic 600 13px/1 Fraunces,Georgia,serif;letter-spacing:0">' + r.w + '</i></div><p style="font:500 12.5px/16px Inter,sans-serif;margin-top:2px">' + r.p + '</p></div></div>';
+  }
+  function card(o) {
+    n++;
+    var h = '<div class="cdots" style="position:relative;width:360px;height:640px;overflow:hidden;color:#17131F">';
+    h += '<div style="position:absolute;left:24px;top:44px;height:24px;padding:0 16px;background:#FFD84D;font:800 10px/24px Inter,sans-serif;letter-spacing:.18em">HAFTALIK KART</div>' + SEAL('ms' + n);
+    if (o.hid) h += '<div style="position:absolute;left:24px;top:88px;width:312px;height:116px;border-radius:18px;padding:12px 16px 8px;background:#E7E4EE;outline:1.5px dashed rgba(23,19,31,.38);outline-offset:-5px"><div style="font:800 9px/9px Inter,sans-serif;letter-spacing:.16em">HAFTANIN UNVANI</div><div style="font:italic 600 27px/30px Fraunces,Georgia,serif;margin-top:22px">Gizli çıkartma</div><div style="font:500 12px/16px Inter,sans-serif;color:#5E5870">bilerek saklandı</div></div>';
+    else h += '<div style="position:absolute;left:24px;top:88px;width:312px;height:116px;transform:rotate(-1.5deg);background:#FFD84D;border-radius:18px;padding:12px 16px 8px;display:flex;flex-direction:column;box-shadow:0 0 0 3px #FFFDF8,3px 4px 0 3px #211850"><div style="font:800 9px/9px Inter,sans-serif;letter-spacing:.16em">HAFTANIN UNVANI</div><div style="flex:1;display:flex;align-items:center;font:800 38px/40px Fraunces,Georgia,serif;letter-spacing:-.012em">' + o.title + '</div></div>';
+    h += o.rows.map(row).join('');
+    h += '<div style="position:absolute;left:40px;top:472px;width:280px;height:48px;background:#FFFDF8;border-radius:16px;box-shadow:0 3px 0 #211850;display:grid;place-items:center;padding:0 14px;font:italic 500 14.5px/17px Fraunces,Georgia,serif;text-align:center">' + o.sum + '</div>';
+    h += '<div style="position:absolute;left:24px;top:572px;font:800 28px/1 Fraunces,Georgia,serif;color:#FFFDF8">haftik</div></div>';
+    return h;
+  }
+  var A = { title: 'Konforun Kalesi', sum: 'Bu hafta terazi hem sağa hem sola salındı.', rows: [
+    { c: 'HAREKET', t: T.mov, e: '🐢', w: 'durgun', p: 'Kanepe bu hafta seni pek bırakmadı.' }, { c: 'UYKU', t: T.slp, e: '😴', w: 'uzun', p: 'Yastığınla resmen kader birliği yaptınız.' },
+    { c: 'HARCAMA', t: T.spn, e: '💳', w: 'orta', p: 'Ne cimri ne çılgın, tam kararında harcadın.' }, { c: 'SOSYAL', t: T.soc, e: '👥', w: 'orta', p: 'Sosyallik dozun tam kıvamındaydı bu hafta.' }] };
+  var B = { hid: true, sum: 'Bu hafta geçen haftadan biraz daha hızlı geçti.', rows: [
+    { c: 'HAREKET', t: T.mov, e: '🏃', w: 'yoğun', p: 'Enerjin taşmış, hareket resmen sende bu hafta.' }, { c: 'UYKU', h: true }, { c: 'HARCAMA', h: true },
+    { c: 'SOSYAL', t: T.soc, e: '🎉', w: 'kalabalık', p: 'Bu hafta etrafın seninle şenlendi.' }] };
+  function mini(el, o) { el.innerHTML = '<div style="transform:scale(.6);transform-origin:0 0">' + card(o) + '</div>'; }
+  mini(document.getElementById('m1'), B); mini(document.getElementById('m2'), A);
+  document.getElementById('sf').onchange = function () { document.getElementById('safe').style.display = this.checked ? 'block' : 'none'; };
+
+  /* Gömülü ekran sayfası 435 px genişlikte açılır: her satırda tek telefon; k. telefonun üstü = 12 + k × (914 + 28). */
+  var K = 1524 / 914;
+  function frame(src, k) {
+    var top = -(12 + k * 942) * K, left = -12 * K;
+    return '<iframe src="' + src + '" width="435" height="5200" style="transform:scale(' + K.toFixed(4) + ');left:' + left.toFixed(1) + 'px;top:' + top.toFixed(1) + 'px" title="ekran"></iframe>';
+  }
+  var S = [
+    ['KART', 'Haftan, bir <em>kart</em>.', '<div class="mount" style="transform:scale(2.0667)">' + card(A) + '</div>'],
+    ['BUGÜN', 'Günde <em>dört</em> dokunuş.', frame('ekran-bugun-v2.html?embed', 1)],
+    ['PAZAR', 'Pazar 20:00’de <em>açılır</em>.', frame('ekran-hafta-v2.html?embed', 2)],
+    ['GİZLİLİK', 'Neyi paylaşacağını <em>sen</em> seçersin.', '<div class="mount" style="transform:scale(2.0667)">' + card(B) + '</div>'],
+    ['CİHAZDA', 'Hesap yok. Veri <em>telefonunda</em>.', frame('ekran-bugun-v2.html?embed', 2)]
+  ];
+  document.getElementById('shots').innerHTML = S.map(function (s) {
+    return '<div class="shot"><div class="in dots"><div class="tag">' + s[0] + '</div><h3>' + s[1] + '</h3><div class="frame"><div class="scr">' + s[2] + '</div></div></div></div>';
+  }).join('');
+</script>
+</body>
+</html>

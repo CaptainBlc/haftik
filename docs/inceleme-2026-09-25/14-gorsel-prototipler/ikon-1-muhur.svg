@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Haftik ikon alternatifi 1: "Mühür" (Yön A). Kendi çizimim, lisans serbest.
+       Arka plan: #4B32C3 (hafif ışık gradyanı). Ön plan: krem #FBF3E4 mühür halkası + gülen H.
+       Ön plan dış yarıçapı 318/512 -> adaptive güvenli alan içinde (bkz. ikon.html). -->
+  <defs>
+    <radialGradient id="bg" cx="30%" cy="22%" r="95%">
+      <stop offset="0" stop-color="#5E47DC"/>
+      <stop offset=".6" stop-color="#4B32C3"/>
+      <stop offset="1" stop-color="#3D27A8"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <g transform="rotate(-8 512 512)" fill="none" stroke="#FBF3E4" stroke-linecap="round">
+    <circle cx="512" cy="512" r="296" stroke-width="44"/>
+    <circle cx="512" cy="512" r="232" stroke-width="18" stroke-dasharray="0 36.4"/>
+    <path d="M418 386V638M606 386V638" stroke-width="64"/>
+    <path d="M418 500Q512 596 606 500" stroke-width="52"/>
+  </g>
+</svg>

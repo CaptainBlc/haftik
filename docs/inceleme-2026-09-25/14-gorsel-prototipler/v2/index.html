@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik · Görsel sistem v2 · Galeri</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #F5F2EC; font: 400 14px/1.55 Inter, system-ui, sans-serif; color: #17131F; }
+  header { background: radial-gradient(rgba(255,255,255,.085) 1.1px, rgba(255,255,255,0) 1.6px) 7px 7px / 14px 14px, #3D2E7C; color: #FFFDF8; padding: 48px 40px 56px; }
+  header .in { max-width: 1280px; margin: 0 auto; display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+  header img { width: 112px; height: 112px; border-radius: 26px; }
+  header h1 { font: 800 44px/1.05 Fraunces, Georgia, serif; letter-spacing: -.015em; }
+  header p { max-width: 760px; margin-top: 10px; color: #EDE8FF; font-size: 15px; }
+  header .idea { display: inline-block; margin-top: 14px; background: #FFD84D; color: #17131F; padding: 8px 14px; border-radius: 12px; font: 600 15px/1.35 Inter, sans-serif; transform: rotate(-1deg); box-shadow: 0 0 0 3px #FFFDF8, 3px 4px 0 3px #211850; }
+  main { max-width: 1280px; margin: 0 auto; padding: 40px; }
+  h2 { font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; color: #5E5870; margin: 8px 0 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 22px; }
+  .tile { background: #FFFDF8; border-radius: 18px; border: 1px solid #E2DCE8; overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: inherit; }
+  .tile:hover, .tile:focus-visible { outline: 3px solid #3D2E7C; outline-offset: 2px; }
+  .pv { height: 260px; position: relative; overflow: hidden; background: #E9E5EF; }
+  .pv iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .tx { padding: 14px 16px 16px; }
+  .tx b { display: block; font: 800 19px/1.25 Fraunces, Georgia, serif; }
+  .tx span { display: block; margin-top: 4px; font-size: 13px; color: #5E5870; }
+  table { border-collapse: collapse; width: 100%; background: #FFFDF8; font-size: 13px; border-radius: 14px; overflow: hidden; margin-bottom: 36px; }
+  th, td { padding: 8px 12px; border-bottom: 1px solid #ECE7F0; text-align: left; vertical-align: top; }
+  th { font: 800 10px/1.2 Inter, sans-serif; letter-spacing: .12em; color: #5E5870; background: #F2EEF6; }
+  .foot { margin-top: 36px; font-size: 12.5px; color: #5E5870; max-width: 900px; }
+</style>
+</head>
+<body>
+<header><div class="in">
+  <img src="ikon-v2-1024.svg" alt="Haftik ikonu">
+  <div>
+    <h1>Haftik · görsel sistem v2</h1>
+    <p>Yön C “Çıkartma albümü”nün yetişkin sürümü. Sıfatlar: <b>esprili · derli toplu · elle yapılmış · yargısız · sakin</b>.
+    Oyuncu olan görsel, ciddi olan yazı (19 §1): zıtlık yetişkin mizahını üretir.</p>
+    <div class="idea">“Haftan, derin mor bir albüm sayfasına yapıştırılmış kesim çıkartmalar.”</div>
+  </div>
+</div></header>
+<main>
+  <h2>ÇOCUKSU → YETİŞKİN: NE DEĞİŞTİ</h2>
+  <table>
+    <tr><th>C v1 (çocuksu sinyal)</th><th>C v2 (yetişkin karşılık)</th><th>Neden</th></tr>
+    <tr><td>Elektrik moru #6D4AFF, %16 beyaz nokta</td><td>Derin albüm moru #3D2E7C, %8,5 nokta + %7 kâğıt greni</td><td>Doygun parlak mor oyuncak/oyun okunur; koyu mor kadife, kırtasiye</td></tr>
+    <tr><td>2,5 px siyah kontur (karikatür)</td><td>3 px beyaz kesim kenarı (gerçek die-cut çıkartma)</td><td>Siyah kontur çizgi film dili; beyaz kenar gerçek nesne dili</td></tr>
+    <tr><td>Baloo 2 (yuvarlak, şişkin)</td><td>Fraunces (editoryal serif) + Inter</td><td>Serif = dergi/kırtasiye markası; yuvarlak font çocuk kitabı</td></tr>
+    <tr><td>Pembe patlama rozeti, pırıltılar</td><td>Tek yuvarlak mühür çıkartması</td><td>Süs yığını yerine tek imza</td></tr>
+    <tr><td>Çok eğik öğe (−3°, −2°, satırlar)</td><td>Yalnız unvan −1,5° ve mühür +8°</td><td>Kontrollü eğim “elle yapıştırılmış”, fazlası “dağınık”</td></tr>
+    <tr><td>4–5 px mürekkep sert gölge</td><td>3 px derin mor, ton-içi sert gölge</td><td>Aynı fikir, daha az bağırıyor</td></tr>
+    <tr><td>Rastgele pastel/neon</td><td>4 sabit, eşit parlaklıkta kategori tonu</td><td>Renk düzen taşır, gürültü değil</td></tr>
+    <tr><td>1–3 dolu nokta (puan gibi)</td><td>Konum işareti + kelime</td><td>Birikim yok, “yelpazenin neresi”</td></tr>
+  </table>
+
+  <h2>PROTOTİPLER (TIKLA: TAM BOY)</h2>
+  <div class="grid" id="grid"></div>
+  <p class="foot">Açmak için Chrome/Edge önerilir; fontlar Google Fonts'tan gelir (internet gerekir). Emoji Noto Color Emoji ile Android'e yakın çizilir.
+  Bu turda prototipler tarayıcıda gözle görülemedi; koordinatlar ve taşmalar hesapla denetlendi (K1). Rapor: <code>../../17-gorsel-sistem-v2.md</code>.</p>
+</main>
+<script>
+  var P = [
+    ['kart-v2.html?embed', 'Kart v2', 'Normal · unvan gizli · uzun unvan · hepsi düşük · ÖRNEK · Story · kare. Üst menüden seviye gösterimi (L1/L2/L3).', .34, 3000, 1400],
+    ['ton-sistemi.html?embed', 'Ton sistemi ve kontrast', 'Kategori başına sabit ton, canlı WCAG tablosu, gri/renk körlüğü, gizli kategori kuralları.', .33, 1200, 2400],
+    ['seviye.html?embed', 'Seviye gösterimi', 'Konum işareti (önerilen), katman, boy; küçük boyut denemesi.', .33, 1200, 2200],
+    ['ekran-bugun-v2.html?embed', 'Bugün v2', 'Boş · seçim · Kaydedildi anı · Pazar K3 bandı.', .26, 1800, 1000],
+    ['ekran-hafta-v2.html?embed', 'Hafta v2', 'Kilitli · yolda · açılabilir · açıldı · Albüm.', .26, 2300, 1000],
+    ['reveal-storyboard.html?embed', 'Kart açılışı', '1,4 sn “yapışma” storyboard’u, canlı oynatma, azaltılmış hareket.', .3, 1300, 1400],
+    ['koyu-tema.html', 'Koyu tema', 'Kabuk koyulaşır, kart asla. B14 kararı için.', .3, 1300, 1600],
+    ['ikon-v2.html?embed', 'İkon 3 final', 'Adaptive, maskeler, 192→36 px, temalı ikon, splash, bildirim, Play.', .3, 1300, 2600],
+    ['magaza.html?embed', 'Mağaza grafikleri', 'Tanıtım görseli 1024×500 ve 5 ekran görüntüsü şablonu.', .34, 1150, 1500]
+  ];
+  document.getElementById('grid').innerHTML = P.map(function (p) {
+    var href = p[0].replace('?embed', '');
+    return '<a class="tile" href="' + href + '"><div class="pv"><iframe loading="lazy" src="' + p[0] + '" width="' + p[4] + '" height="' + p[5] + '" style="transform:scale(' + p[3] + ')" tabindex="-1" title="' + p[1] + '"></iframe></div><div class="tx"><b>' + p[1] + '</b><span>' + p[2] + '</span></div></a>';
+  }).join('');
+</script>
+</body>
+</html>

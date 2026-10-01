@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik v2 · Kart açılışı (reveal) storyboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #E9E5EF; font: 400 14px/1.5 Inter, system-ui, sans-serif; color: #3a3550; padding: 40px; }
+  .wrap { max-width: 1380px; margin: 0 auto; }
+  h1 { font: 800 28px/1.2 Fraunces, Georgia, serif; color: #17131F; }
+  h2 { font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; color: #5E5870; margin: 36px 0 14px; }
+  p.lead { max-width: 920px; margin-top: 6px; }
+  .embed body { padding: 12px; } .embed .hide-embed { display: none; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; line-height: 1; font-style: normal; font-weight: 400; }
+  .frames { display: flex; gap: 16px; flex-wrap: wrap; }
+  .fr { display: flex; flex-direction: column; gap: 8px; }
+  .fr .box { width: 180px; height: 320px; overflow: hidden; border-radius: 8px; }
+  .fr .box > .card { transform: scale(.5); transform-origin: 0 0; }
+  .fr b { font: 800 13px/1 Inter, sans-serif; color: #17131F; }
+  .fr span { font: 500 12px/1.4 Inter, sans-serif; max-width: 180px; }
+  .live { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+  .phone { width: 411px; height: 914px; border-radius: 28px; overflow: hidden; position: relative; box-shadow: 0 0 0 10px #17131F, 0 24px 60px -20px rgba(0,0,0,.45);
+    background: radial-gradient(rgba(255,255,255,.085) 1.1px, rgba(255,255,255,0) 1.6px) 7px 7px / 14px 14px, #2F2463; display: flex; flex-direction: column; align-items: center; }
+  .phone .sb { height: 52px; width: 100%; flex: none; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 24px 8px; font: 600 13px/1 Inter, sans-serif; color: #FFFDF8; }
+  .phone .bar { height: 48px; width: 100%; flex: none; display: flex; align-items: center; padding: 0 12px; }
+  .phone .x { width: 48px; height: 48px; display: grid; place-items: center; color: #FFFDF8; font: 400 26px/1 Inter, sans-serif; }
+  .phone .slot { width: 360px; height: 640px; flex: none; box-shadow: 0 0 0 1px rgba(255,255,255,.10); }
+  .phone .done { height: 20px; margin-top: 8px; font: 700 14px/20px Inter, sans-serif; color: #EDE8FF; }
+  .phone .share { width: 363px; height: 56px; margin-top: 8px; border-radius: 16px; background: #FFD84D; color: #17131F; font: 800 16px/56px Inter, sans-serif; text-align: center; }
+  .ctl { display: flex; flex-direction: column; gap: 12px; max-width: 520px; }
+  .ctl button { font: 700 14px/1 Inter, sans-serif; padding: 14px 18px; min-height: 48px; border-radius: 14px; border: 0; background: #3D2E7C; color: #FFFDF8; cursor: pointer; }
+  .ctl button.alt { background: #FFFDF8; color: #3D2E7C; box-shadow: inset 0 0 0 1.5px #3D2E7C; }
+  table { border-collapse: collapse; background: #FFFDF8; font-size: 12.5px; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid #ECE7F0; text-align: left; vertical-align: top; }
+  th { font: 800 10px/1.2 Inter, sans-serif; letter-spacing: .1em; color: #5E5870; background: #F2EEF6; }
+
+  /* ---- kart (kart-v2 ile aynı ölçüler) ---- */
+  .card { position: relative; isolation: isolate; width: 360px; height: 640px; overflow: hidden; color: #17131F;
+    background: radial-gradient(rgba(255,255,255,.085) 1.1px, rgba(255,255,255,0) 1.6px) 7px 7px / 14px 14px, radial-gradient(120% 70% at 50% 0%, rgba(255,255,255,.07), rgba(255,255,255,0) 65%), #3D2E7C; }
+  .sil { position: absolute; border: 1.5px dashed rgba(237,232,255,.38); border-radius: 14px; }
+  .tape { position: absolute; left: 24px; top: 44px; height: 24px; padding: 0 16px; background: rgba(255,216,77,.93); font: 800 10px/24px Inter, sans-serif; letter-spacing: .18em; }
+  .seal { position: absolute; left: 260px; top: 26px; width: 76px; height: 76px; transform: rotate(8deg); }
+  .title { position: absolute; left: 24px; top: 88px; width: 312px; height: 116px; transform: rotate(-1.5deg); background: #FFD84D; border-radius: 18px; padding: 12px 16px 8px; display: flex; flex-direction: column;
+    box-shadow: 0 0 0 3px #FFFDF8, 3px 4px 0 3px #211850; }
+  .title small { font: 800 9px/9px Inter, sans-serif; letter-spacing: .16em; }
+  .title b { flex: 1; display: flex; align-items: center; font: 800 38px/40px Fraunces, Georgia, serif; letter-spacing: -.012em; }
+  .row { position: absolute; left: 24px; width: 312px; height: 56px; background: #FFFDF8; border-radius: 14px; box-shadow: 0 3px 0 #211850; display: flex; align-items: center; gap: 10px; padding: 0 12px 0 10px; }
+  .row .d { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; margin-right: 12px; }
+  .row .d .emo { font-size: 22px; }
+  .row .t { flex: 1; min-width: 0; }
+  .row .m { display: flex; gap: 8px; align-items: center; height: 14px; font: 800 9px/1 Inter, sans-serif; letter-spacing: .14em; }
+  .row .m i { font: italic 600 13px/1 Fraunces, Georgia, serif; letter-spacing: 0; }
+  .row .m .sp { flex: 1; }
+  .row p { font: 500 12.5px/16px Inter, sans-serif; margin-top: 2px; }
+  .pos { position: relative; width: 40px; height: 12px; }
+  .pos::before { content: ""; position: absolute; left: 2px; right: 2px; top: 5px; height: 2px; background: rgba(23,19,31,.2); }
+  .pos em { position: absolute; top: 4px; width: 4px; height: 4px; border-radius: 50%; background: rgba(23,19,31,.32); }
+  .pos u { position: absolute; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #17131F; box-shadow: 0 0 0 2px #FFFDF8; }
+  .sum { position: absolute; left: 40px; top: 472px; width: 280px; height: 48px; background: #FFFDF8; border-radius: 16px; box-shadow: 0 3px 0 #211850; display: grid; place-items: center; padding: 0 14px;
+    font: italic 500 14.5px/17px Fraunces, Georgia, serif; text-align: center; }
+  .foot { position: absolute; left: 24px; right: 24px; top: 560px; height: 40px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .foot .wm { font: 800 28px/1 Fraunces, Georgia, serif; color: #FFFDF8; }
+  .foot .tg { font: 800 10px/1 Inter, sans-serif; letter-spacing: .14em; color: #EDE8FF; padding-bottom: 6px; }
+
+  /* ---- hareket: yalnız opacity + transform (RN native driver ile birebir) ---- */
+  @keyframes k-title { 0% { opacity: 0; transform: translate(0,-14px) rotate(-5deg) scale(1.06); } 60% { opacity: 1; } 75% { transform: translate(0,1px) rotate(-1.2deg) scale(.992); } 100% { opacity: 1; transform: rotate(-1.5deg); } }
+  @keyframes k-row { 0% { opacity: 0; transform: translateY(-8px) scale(1.02); } 70% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+  @keyframes k-seal { 0% { opacity: 0; transform: rotate(24deg) scale(1.35); } 55% { opacity: 1; } 72% { transform: rotate(6deg) scale(.97); } 100% { opacity: 1; transform: rotate(8deg) scale(1); } }
+  @keyframes k-fade { 0% { opacity: 0; } 100% { opacity: 1; } }
+  @keyframes k-silout { 0% { opacity: 1; } 100% { opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Kart açılışı · “yapışma” storyboard'u</h1>
+  <p class="lead hide-embed">C'nin reveal'ı bir <b>yapıştırma</b> anıdır: sayfa hemen gelir (beyaz boşluk ve spinner yok), boş yerler görünür, çıkartmalar
+  sırayla yerine oturur, en son mühür basılır. Toplam 1,4 sn; konfeti, patlama, ses yok; overshoot ≤ %8 (18 §2.9). Aşağıdaki kareler canlı
+  animasyonla <b>aynı tanımdan</b> üretilir (duraklatılmış negatif gecikme), yani kare = gerçek hareket.</p>
+
+  <h2>1 · KARELER (%50)</h2>
+  <div class="frames" id="frames"></div>
+
+  <h2>2 · CANLI (KART EKRANI, 411×914)</h2>
+  <div class="live">
+    <div class="phone"><div class="sb"><span>20:05</span><span>▾ ▴ ▮</span></div><div class="bar"><span class="x" aria-label="Kapat">×</span></div>
+      <div class="slot" id="liveSlot"></div><div class="done" id="done">Albüme yapıştırıldı · No. 7</div><div class="share" id="share">Paylaş</div></div>
+    <div class="ctl hide-embed">
+      <button id="play">Oynat</button>
+      <button class="alt" id="playR">Azaltılmış hareketle oynat (tek 150 ms geçiş)</button>
+      <table>
+        <tr><th>t (ms)</th><th>Öğe</th><th>Hareket</th><th>RN notu</th></tr>
+        <tr><td>0</td><td>Sayfa + boş yerler</td><td>Anında (zemin PNG önceden çözülmüş)</td><td>Kart ekranı albüm renginde açılır; font yüklenirken silüetler görünür</td></tr>
+        <tr><td>120–420</td><td>Unvan çıkartması</td><td>Yukarıdan −5°→−1,5°, ölçek 1,06→0,992→1; 300 ms</td><td><code>transform</code> + <code>opacity</code>; gölge <code>View</code>'u kendi <code>opacity</code>'siyle son %30'da; <b>haptik 1 (hafif)</b></td></tr>
+        <tr><td>420–830</td><td>4 satır</td><td>Her biri 200 ms, 90 ms arayla; −8 px, 1,02→1</td><td><code>Animated.stagger(90, …)</code></td></tr>
+        <tr><td>800–1000</td><td>Özet balonu</td><td>200 ms solma + −8 px</td><td>—</td></tr>
+        <tr><td>1000–1240</td><td>Mühür</td><td>24°→6°→8°, 1,35→0,97→1; 240 ms (overshoot %3)</td><td><b>haptik 2</b>; PNG, tek <code>Image</code></td></tr>
+        <tr><td>1240–1400</td><td>Altbilgi, “Albüme yapıştırıldı”, Paylaş</td><td>160 ms solma</td><td>Paylaş, R3 kuralıyla görseller yüklenmeden pasif</td></tr>
+      </table>
+      <p style="font-size:12.5px">Herhangi bir dokunuş = son kareye atla. Yakalama (PNG) her zaman son kareden. Animasyonlu görünüm sayısı 12;
+      hepsi <code>useNativeDriver: true</code>. CLAUDE.md'deki Animated/<code>unmount</code> tuzağı bu bileşen için de geçerli.
+      Azaltılmış hareket: <code>AccessibilityInfo.isReduceMotionEnabled()</code> → tüm sayfa tek 150 ms opaklık geçişi, haptik yok.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var SEAL = function (id) { return '<svg class="seal" data-a="k-seal" data-s="1000" data-d="240" viewBox="0 0 76 76"><defs><path id="' + id + '" d="M11 36a25 25 0 1 1 50 0a25 25 0 1 1 -50 0"/></defs><circle cx="38.5" cy="39.5" r="34" fill="#211850"/><circle cx="36" cy="36" r="34" fill="#FFFDF8"/><circle cx="36" cy="36" r="30.5" fill="none" stroke="#17131F" stroke-opacity=".22" stroke-width=".8"/><text font-family="Inter, sans-serif" font-weight="800" font-size="6.6" fill="#17131F"><textPath href="#' + id + '" textLength="150" lengthAdjust="spacingAndGlyphs">HAFTİK · HAFTALIK KART ·</textPath></text><circle cx="36" cy="36" r="14.5" fill="#FFD84D"/><g transform="translate(36 36) scale(.04) translate(-512 -512)" fill="none" stroke="#17131F" stroke-width="88" stroke-linecap="round" stroke-linejoin="round"><path d="M421 321V703M421 563C421 484 468 456 512 456C559 456 603 484 603 563V703"/></g></svg>'; };
+  var R = [['#BFE8D2', '🐢', 'HAREKET', 'durgun', 1, 'Kanepe bu hafta seni pek bırakmadı.'], ['#D6CEFF', '😴', 'UYKU', 'uzun', 3, 'Yastığınla resmen kader birliği yaptınız.'], ['#FFD4B3', '💳', 'HARCAMA', 'orta', 2, 'Ne cimri ne çılgın, tam kararında harcadın.'], ['#FFCADB', '👥', 'SOSYAL', 'orta', 2, 'Sosyallik dozun tam kıvamındaydı bu hafta.']];
+  var n = 0;
+  function pos(l) { var x = [-4, 14, 32][l - 1]; return '<span class="pos"><em style="left:0"></em><em style="left:18px"></em><em style="right:0"></em><u style="left:' + x + 'px"></u></span>'; }
+  function card() {
+    n++;
+    var h = '<div class="card">';
+    h += '<div class="sil" data-a="k-silout" data-s="300" data-d="120" style="left:24px;top:88px;width:312px;height:116px;border-radius:18px"></div>';
+    R.forEach(function (r, i) { h += '<div class="sil" data-a="k-silout" data-s="' + (560 + i * 90) + '" data-d="80" style="left:24px;top:' + (218 + i * 62) + 'px;width:312px;height:56px"></div>'; });
+    h += '<div class="sil" data-a="k-silout" data-s="920" data-d="80" style="left:40px;top:472px;width:280px;height:48px;border-radius:16px"></div>';
+    h += '<div class="tape">HAFTALIK KART</div>' + SEAL('sp' + n);
+    h += '<div class="title" data-a="k-title" data-s="120" data-d="300"><small>HAFTANIN UNVANI</small><b>Konforun Kalesi</b></div>';
+    R.forEach(function (r, i) {
+      h += '<div class="row" data-a="k-row" data-s="' + (420 + i * 90) + '" data-d="200" style="top:' + (218 + i * 62) + 'px"><span class="d" style="background:' + r[0] + '"><span class="emo">' + r[1] + '</span></span><div class="t"><div class="m">' + r[2] + '<i>' + r[3] + '</i><span class="sp"></span>' + pos(r[4]) + '</div><p>' + r[5] + '</p></div></div>';
+    });
+    h += '<div class="sum" data-a="k-row" data-s="800" data-d="200">Bu hafta terazi hem sağa hem sola salındı.</div>';
+    h += '<div class="foot" data-a="k-fade" data-s="1240" data-d="160"><span class="wm">haftik</span><span class="tg">HER PAZAR BİR KART</span></div></div>';
+    return h;
+  }
+  function apply(root, T, running) {
+    root.querySelectorAll('[data-a]').forEach(function (el) {
+      var s = +el.getAttribute('data-s'), d = +el.getAttribute('data-d'), a = el.getAttribute('data-a');
+      var ease = a === 'k-seal' ? 'cubic-bezier(.3,.9,.4,1)' : 'cubic-bezier(.2,.8,.2,1)';
+      el.style.animation = running ? a + ' ' + d + 'ms ' + ease + ' ' + s + 'ms both' : a + ' ' + d + 'ms ' + ease + ' ' + (s - T) + 'ms both paused';
+    });
+  }
+  var FR = [[0, 't = 0', 'Sayfa ve boş yerler anında; tamamı statik.'], [260, 't = 260 ms', 'Unvan çıkartması iniyor (eğik, büyük, yarı saydam).'], [460, 't = 460 ms', 'Unvan oturdu (haptik 1), ilk satır iniyor.'], [760, 't = 760 ms', 'Satırlar 90 ms arayla.'], [1120, 't = 1120 ms', 'Özet yerinde; mühür basılıyor.'], [1400, 't = 1400 ms', 'Son kare = paylaşılan PNG.']];
+  var host = document.getElementById('frames');
+  FR.forEach(function (f) {
+    var w = document.createElement('div'); w.className = 'fr';
+    w.innerHTML = '<div class="box">' + card() + '</div><b>' + f[1] + '</b><span>' + f[2] + '</span>';
+    host.appendChild(w); apply(w, f[0], false);
+  });
+  var slot = document.getElementById('liveSlot'), done = document.getElementById('done'), share = document.getElementById('share');
+  function play(reduced) {
+    slot.innerHTML = card();
+    [done, share].forEach(function (e) { e.style.animation = 'none'; void e.offsetWidth; });
+    if (reduced) {
+      slot.querySelectorAll('.sil').forEach(function (s) { s.style.display = 'none'; });
+      slot.firstChild.style.animation = 'k-fade 150ms linear both';
+      [done, share].forEach(function (e) { e.style.animation = 'k-fade 150ms linear both'; });
+    } else {
+      apply(slot, 0, true);
+      [done, share].forEach(function (e) { e.style.animation = 'k-fade 160ms ease-out 1240ms both'; });
+    }
+  }
+  document.getElementById('play').onclick = function () { play(false); };
+  document.getElementById('playR').onclick = function () { play(true); };
+  play(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+</script>
+</body>
+</html>

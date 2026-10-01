@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik · Uygulama ikonu · 3 alternatif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #E7E4EC; font-family: Inter, system-ui, sans-serif; color: #1B1824; padding: 40px; }
+  .page-head { max-width: 1240px; margin: 0 auto 28px; }
+  .page-head h1 { font: 700 22px/1.2 Inter, sans-serif; }
+  .page-head p { font: 400 14px/1.55 Inter, sans-serif; color: #4a4658; max-width: 860px; margin-top: 6px; }
+  .embed body { background: transparent; padding: 20px; }
+  .embed .page-head, .embed .why, .embed .detail { display: none; }
+
+  .icon-block { max-width: 1240px; margin: 0 auto 28px; background: #fff; border-radius: 24px; padding: 26px 28px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 12px 30px -18px rgba(0,0,0,.25); }
+  .icon-block h2 { font: 800 17px/1.2 Inter, sans-serif; }
+  .icon-block h2 small { font: 600 12px/1 Inter, sans-serif; color: #6b6780; margin-left: 8px; }
+  .why { font: 400 13px/1.55 Inter, sans-serif; color: #4a4658; max-width: 900px; margin-top: 6px; }
+  .row { display: flex; flex-wrap: wrap; gap: 26px; align-items: flex-end; margin-top: 18px; }
+  .tile { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .tile small { font: 600 11px/1.3 Inter, sans-serif; color: #6b6780; text-align: center; max-width: 150px; }
+  .sep { width: 1px; align-self: stretch; background: #E4E1EA; }
+
+  .master { width: 168px; height: 168px; border-radius: 36px; display: block; box-shadow: 0 10px 24px -12px rgba(0,0,0,.4); }
+  .checker { background: repeating-conic-gradient(#EEECF2 0 25%, #FFFFFF 0 50%) 0 0 / 14px 14px; border-radius: 12px; border: 1px solid #E4E1EA; }
+  .layer { width: 132px; height: 132px; display: block; }
+
+  .m { overflow: hidden; display: block; }
+  .m.circle { border-radius: 50%; }
+  .m.squircle { border-radius: 34%; }
+  .m.rsq { border-radius: 20%; }
+  .m svg { display: block; width: 100%; height: 100%; }
+  .s96 { width: 96px; height: 96px; }
+  .s192 { width: 192px; height: 192px; }
+  .s48 { width: 48px; height: 48px; }
+  .s36 { width: 36px; height: 36px; }
+  .themed { padding: 14px; border-radius: 20px; display: flex; gap: 14px; }
+
+  .launcher { display: flex; gap: 22px; padding: 22px 26px 16px; border-radius: 20px; }
+  .launcher.dark { background: radial-gradient(120% 120% at 20% 0%, #3A4A6B 0%, #1B2233 60%, #10141F 100%); }
+  .launcher.light { background: radial-gradient(120% 120% at 80% 0%, #F7E7D3 0%, #E3D6EA 55%, #CFD9EA 100%); }
+  .app { width: 64px; display: flex; flex-direction: column; align-items: center; gap: 6px; font: 500 11px/1.2 Inter, sans-serif; }
+  .launcher.dark .app { color: #fff; } .launcher.light .app { color: #1B1824; }
+  .ph { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; }
+  .ph svg { width: 24px; height: 24px; }
+  .ours { outline: 2px dashed rgba(255,179,107,.0); }
+
+  .play { width: 300px; display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 16px; background: #fff; border: 1px solid #E4E1EA; }
+  .play .m { width: 64px; height: 64px; border-radius: 20%; flex: none; }
+  .play b { font: 700 15px/1.2 Inter, sans-serif; display: block; }
+  .play span { font: 500 12px/1.4 Inter, sans-serif; color: #5f5b70; }
+
+  .compare { max-width: 1240px; margin: 0 auto 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .compare .launcher { justify-content: center; }
+  .label-tr { font: 700 12px/1 Inter, sans-serif; color: #6b6780; margin: 0 auto 8px; max-width: 1240px; letter-spacing: .06em; }
+</style>
+</head>
+<body>
+
+<!-- ============ paylaşılan çizimler (1024 koordinat; ön plan) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="g1" cx="30%" cy="22%" r="95%"><stop offset="0" stop-color="#5E47DC"/><stop offset=".6" stop-color="#4B32C3"/><stop offset="1" stop-color="#3D27A8"/></radialGradient>
+    <linearGradient id="g2n" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#0B0A1A"/><stop offset=".5" stop-color="#150F36"/><stop offset="1" stop-color="#2A1868"/></linearGradient>
+    <radialGradient id="g2v" cx="82%" cy="10%" r="70%"><stop offset="0" stop-color="#7D5CFF" stop-opacity=".55"/><stop offset="1" stop-color="#7D5CFF" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g2s" cx="771.8" cy="530" r="120" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFB36B" stop-opacity=".55"/><stop offset="1" stop-color="#FFB36B" stop-opacity="0"/></radialGradient>
+    <pattern id="g3d" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r=".47" fill="#fff" fill-opacity=".14"/></pattern>
+
+    <!-- arka plan katmanları (108 dp) -->
+    <g id="bg1"><rect width="108" height="108" fill="url(#g1)"/></g>
+    <g id="bg2"><rect width="108" height="108" fill="url(#g2n)"/><rect width="108" height="108" fill="url(#g2v)"/></g>
+    <g id="bg3"><rect width="108" height="108" fill="#6D4AFF"/><rect width="108" height="108" fill="url(#g3d)"/></g>
+
+    <!-- ön plan çizimleri (1024 koordinat, renk = currentColor; ek renkler CSS değişkeniyle, monochrome'da düşer) -->
+    <g id="art1" transform="rotate(-8 512 512)" fill="none" stroke="currentColor" stroke-linecap="round">
+      <circle cx="512" cy="512" r="296" stroke-width="44"/>
+      <circle cx="512" cy="512" r="232" stroke-width="18" stroke-dasharray="0 36.4"/>
+      <path d="M418 386V638M606 386V638" stroke-width="64"/>
+      <path d="M418 500Q512 596 606 500" stroke-width="52"/>
+    </g>
+    <g id="art2">
+      <circle cx="771.8" cy="530" r="120" style="fill: var(--glow, none)"/>
+      <g fill="currentColor">
+        <rect x="372" y="300" width="64" height="128" rx="32"/><rect x="588" y="300" width="64" height="128" rx="32"/>
+        <circle cx="252.2" cy="530" r="36"/><circle cx="319.2" cy="609.8" r="36"/><circle cx="409.4" cy="661.9" r="36"/>
+        <circle cx="512" cy="680" r="36"/><circle cx="614.6" cy="661.9" r="36"/><circle cx="704.8" cy="609.8" r="36"/>
+      </g>
+      <circle cx="771.8" cy="530" r="58" style="fill: var(--amb, currentColor)"/>
+    </g>
+    <g id="art3" transform="rotate(-8 512 512)">
+      <rect x="303" y="307" width="470" height="470" rx="118" style="fill: var(--shadow, none)"/>
+      <rect x="277" y="277" width="470" height="470" rx="118" style="fill: var(--white, none)"/>
+      <rect x="297" y="297" width="430" height="430" rx="100" stroke="currentColor" stroke-width="24" style="fill: var(--sun, none)"/>
+      <path d="M434 340V668M434 548C434 480 474 456 512 456C552 456 590 480 590 548V668" fill="none" stroke="currentColor" stroke-width="76" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M662 330c5 32 21 48 53 53-32 5-48 21-53 53-5-32-21-48-53-53 32-5 48-21 53-53z" stroke="currentColor" stroke-width="12" stroke-linejoin="round" style="fill: var(--white, none)"/>
+    </g>
+
+    <!-- adaptive ön plan: 1024 çizimi 108 dp tuvale, dış yarıçap 318 -> 24 dp (güvenli alan 33 dp) -->
+    <g id="fg1"><g transform="translate(54 54) scale(.0755) translate(-512 -512)" style="color:#FBF3E4"><use href="#art1"/></g></g>
+    <g id="fg2"><g transform="translate(54 54) scale(.0755) translate(-512 -512)" style="color:#F4F0FF; --amb:#FFB36B; --glow:url(#g2s)"><use href="#art2"/></g></g>
+    <g id="fg3"><g transform="translate(54 54) scale(.0755) translate(-512 -512)" style="color:#15121F; --shadow:#15121F; --white:#FFFFFF; --sun:#FFE347"><use href="#art3"/></g></g>
+    <g id="mono1"><g transform="translate(54 54) scale(.0755) translate(-512 -512)"><use href="#art1"/></g></g>
+    <g id="mono2"><g transform="translate(54 54) scale(.0755) translate(-512 -512)"><use href="#art2"/></g></g>
+    <g id="mono3"><g transform="translate(54 54) scale(.0755) translate(-512 -512)"><use href="#art3"/></g></g>
+
+    <!-- tam ikonlar (maskeli görünüm için) -->
+    <g id="full1"><use href="#bg1"/><use href="#fg1"/></g>
+    <g id="full2"><use href="#bg2"/><use href="#fg2"/></g>
+    <g id="full3"><use href="#bg3"/><use href="#fg3"/></g>
+  </defs>
+</svg>
+
+<header class="page-head">
+  <h1>Uygulama ikonu · 3 alternatif (1024 SVG + adaptive + 48 px testi)</h1>
+  <p>Her alternatifin 1024 px ana dosyası bu klasörde ayrı SVG olarak durur (<code>ikon-1-muhur.svg</code>, <code>ikon-2-hafta-gulusu.svg</code>,
+  <code>ikon-3-cikartma.svg</code>). Adaptive ikon için ön plan 108 dp tuvalde, dış yarıçap 24 dp (güvenli alan 33 dp); görünür bölge ortadaki 72 dp.
+  Monochrome (Android 13+ temalı ikon) katmanı aynı çizimin tek renkli hâlidir. Hepsi kendi çizimimdir, dış varlık yok.</p>
+</header>
+
+<!-- ======================= 1 ======================= -->
+<section class="icon-block">
+  <h2>1 · Mühür <small>Yön A · mor zemin, krem mühür, gülen H</small></h2>
+  <p class="why">Kartın imzası olan mühür doğrudan ikon olur: kart paylaşıldığında görülen işaretle mağazada görülen işaret aynıdır. H’nin orta çizgisi
+  gülümseme eğrisi; harf ile yüz aynı anda okunur. Noktalı iç halka 48 px’de kaybolur ve bu kabul edilebilir, işaret yine “halka + H” olarak kalır.</p>
+  <div class="row">
+    <div class="tile"><img class="master" src="ikon-1-muhur.svg" alt="ikon 1"><small>1024 ana dosya (iOS 1024 · Play 512)</small></div>
+    <div class="sep"></div>
+    <div class="tile"><svg class="layer checker" viewBox="0 0 108 108"><use href="#fg1" style="filter: drop-shadow(0 0 .6px rgba(0,0,0,.6))"/><circle cx="54" cy="54" r="33" fill="none" stroke="#E0457B" stroke-width=".5" stroke-dasharray="1.5 1.5"/><rect x="18" y="18" width="72" height="72" fill="none" stroke="#2E7BD6" stroke-width=".4" stroke-dasharray="1 1.5"/></svg><small>Ön plan (saydam) · pembe: 33 dp güvenli alan · mavi: 72 dp görünür</small></div>
+    <div class="tile"><svg class="layer" viewBox="0 0 108 108" style="border-radius:12px"><use href="#bg1"/></svg><small>Arka plan <code>#4B32C3</code> (düz renk de olur)</small></div>
+    <div class="sep"></div>
+    <div class="tile"><span class="m circle s96"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span><small>Daire</small></div>
+    <div class="tile"><span class="m squircle s96"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span><small>Squircle</small></div>
+    <div class="tile"><span class="m rsq s96"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span><small>Yuvarlak kare</small></div>
+    <div class="tile"><div class="themed" style="background:#EDE7F6"><span class="m circle s48" style="background:#D6CCF2; color:#3B2A7A"><svg viewBox="18 18 72 72"><use href="#mono1"/></svg></span><span class="m circle s48" style="background:#2C2640; color:#CFC3FF"><svg viewBox="18 18 72 72"><use href="#mono1"/></svg></span></div><small>Monochrome (temalı, açık/koyu)</small></div>
+  </div>
+  <div class="row">
+    <div class="tile"><span class="m circle s192"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span><small>192 px</small></div>
+    <div class="tile"><span class="m circle s96"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span><small>96 px</small></div>
+    <div class="tile"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span><small>48 px</small></div>
+    <div class="tile"><img src="ikon-1-muhur.svg" width="48" height="48" style="border-radius:11px" alt=""><small>48 px (eski tip, tam kare)</small></div>
+    <div class="tile"><span class="m circle s36"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span><small>36 px (ayar/paylaşım listesi)</small></div>
+    <div class="sep"></div>
+    <div class="play"><span class="m"><svg viewBox="18 18 72 72" width="64" height="64"><use href="#full1"/></svg></span><div><b>Haftik</b><span>Haftanın emoji karnesi · Yaşam tarzı</span></div></div>
+  </div>
+</section>
+
+<!-- ======================= 2 ======================= -->
+<section class="icon-block">
+  <h2>2 · Hafta gülüşü <small>Yön B · gece zemini, yedi nokta, amber Pazar</small></h2>
+  <p class="why">Yedi nokta yedi günü gösterir ve bir gülüş yayı çizer; iki kapsül göz ekleyince yüz olur. Son nokta (Pazar) büyük ve amber: kartın açıldığı an.
+  Ürünün mekaniğini (7 gün, 1 kart) harfsiz anlatan tek ikon bu. 48 px’de noktalar ayrı ayrı seçilir (aralık ≈5 px). Risk: koyu ikonlar koyu duvar kâğıdında kaybolur.</p>
+  <div class="row">
+    <div class="tile"><img class="master" src="ikon-2-hafta-gulusu.svg" alt="ikon 2"><small>1024 ana dosya</small></div>
+    <div class="sep"></div>
+    <div class="tile"><svg class="layer checker" viewBox="0 0 108 108"><use href="#fg2" style="filter: drop-shadow(0 0 .6px rgba(0,0,0,.7))"/><circle cx="54" cy="54" r="33" fill="none" stroke="#E0457B" stroke-width=".5" stroke-dasharray="1.5 1.5"/><rect x="18" y="18" width="72" height="72" fill="none" stroke="#2E7BD6" stroke-width=".4" stroke-dasharray="1 1.5"/></svg><small>Ön plan (saydam)</small></div>
+    <div class="tile"><svg class="layer" viewBox="0 0 108 108" style="border-radius:12px"><use href="#bg2"/></svg><small>Arka plan (gradyan → PNG katmanı)</small></div>
+    <div class="sep"></div>
+    <div class="tile"><span class="m circle s96"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span><small>Daire</small></div>
+    <div class="tile"><span class="m squircle s96"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span><small>Squircle</small></div>
+    <div class="tile"><span class="m rsq s96"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span><small>Yuvarlak kare</small></div>
+    <div class="tile"><div class="themed" style="background:#EDE7F6"><span class="m circle s48" style="background:#D6CCF2; color:#3B2A7A"><svg viewBox="18 18 72 72"><use href="#mono2"/></svg></span><span class="m circle s48" style="background:#2C2640; color:#CFC3FF"><svg viewBox="18 18 72 72"><use href="#mono2"/></svg></span></div><small>Monochrome (Pazar noktası büyüklüğüyle ayrışır)</small></div>
+  </div>
+  <div class="row">
+    <div class="tile"><span class="m circle s192"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span><small>192 px</small></div>
+    <div class="tile"><span class="m circle s96"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span><small>96 px</small></div>
+    <div class="tile"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span><small>48 px</small></div>
+    <div class="tile"><img src="ikon-2-hafta-gulusu.svg" width="48" height="48" style="border-radius:11px" alt=""><small>48 px (eski tip)</small></div>
+    <div class="tile"><span class="m circle s36"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span><small>36 px</small></div>
+    <div class="sep"></div>
+    <div class="play"><span class="m"><svg viewBox="18 18 72 72" width="64" height="64"><use href="#full2"/></svg></span><div><b>Haftik</b><span>Haftanın emoji karnesi · Yaşam tarzı</span></div></div>
+  </div>
+</section>
+
+<!-- ======================= 3 ======================= -->
+<section class="icon-block">
+  <h2>3 · Çıkartma h <small>Yön C · mor albüm, sarı çıkartma, sert gölge</small></h2>
+  <p class="why">En yüksek ayrışma: mor + sarı + siyah kontur mağaza ızgarasında en çok “göze batan” ikon. Ama işaret yalnızca bir harf (h): anlamı Haftik adına
+  bağlı, ürünün mekaniğini anlatmaz. Kalın kontur ve sert gölge 48 px’de iyi dayanır. Risk: “çocuk uygulaması” algısı (hedef kitle 18+).</p>
+  <div class="row">
+    <div class="tile"><img class="master" src="ikon-3-cikartma.svg" alt="ikon 3"><small>1024 ana dosya</small></div>
+    <div class="sep"></div>
+    <div class="tile"><svg class="layer checker" viewBox="0 0 108 108"><use href="#fg3"/><circle cx="54" cy="54" r="33" fill="none" stroke="#E0457B" stroke-width=".5" stroke-dasharray="1.5 1.5"/><rect x="18" y="18" width="72" height="72" fill="none" stroke="#2E7BD6" stroke-width=".4" stroke-dasharray="1 1.5"/></svg><small>Ön plan (saydam)</small></div>
+    <div class="tile"><svg class="layer" viewBox="0 0 108 108" style="border-radius:12px"><use href="#bg3"/></svg><small>Arka plan <code>#6D4AFF</code> + nokta dokusu</small></div>
+    <div class="sep"></div>
+    <div class="tile"><span class="m circle s96"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span><small>Daire</small></div>
+    <div class="tile"><span class="m squircle s96"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span><small>Squircle</small></div>
+    <div class="tile"><span class="m rsq s96"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span><small>Yuvarlak kare</small></div>
+    <div class="tile"><div class="themed" style="background:#EDE7F6"><span class="m circle s48" style="background:#D6CCF2; color:#3B2A7A"><svg viewBox="18 18 72 72"><use href="#mono3"/></svg></span><span class="m circle s48" style="background:#2C2640; color:#CFC3FF"><svg viewBox="18 18 72 72"><use href="#mono3"/></svg></span></div><small>Monochrome (kontur + h)</small></div>
+  </div>
+  <div class="row">
+    <div class="tile"><span class="m circle s192"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span><small>192 px</small></div>
+    <div class="tile"><span class="m circle s96"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span><small>96 px</small></div>
+    <div class="tile"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span><small>48 px</small></div>
+    <div class="tile"><img src="ikon-3-cikartma.svg" width="48" height="48" style="border-radius:11px" alt=""><small>48 px (eski tip)</small></div>
+    <div class="tile"><span class="m circle s36"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span><small>36 px</small></div>
+    <div class="sep"></div>
+    <div class="play"><span class="m"><svg viewBox="18 18 72 72" width="64" height="64"><use href="#full3"/></svg></span><div><b>Haftik</b><span>Haftanın emoji karnesi · Yaşam tarzı</span></div></div>
+  </div>
+</section>
+
+<!-- ======================= Başlatıcı testi ======================= -->
+<div class="label-tr">BAŞLATICI TESTİ · 48 PX · DİĞERLERİ YER TUTUCU UYGULAMALAR</div>
+<div class="compare">
+  <div class="launcher dark">
+    <div class="app"><span class="ph" style="background:#34A853"><svg viewBox="0 0 24 24"><path d="M6 4h4l1.5 4-2.5 1.5a11 11 0 0 0 5.5 5.5L16 12.5l4 1.5v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 2-2z" fill="#fff"/></svg></span>Telefon</div>
+    <div class="app"><span class="ph" style="background:#1A73E8"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" fill="#fff"/></svg></span>Mesajlar</div>
+    <div class="app"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span>Haftik 1</div>
+    <div class="app"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span>Haftik 2</div>
+    <div class="app"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span>Haftik 3</div>
+    <div class="app"><span class="ph" style="background:#fff"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="#EA4335" stroke-width="3"/><circle cx="12" cy="12" r="2.5" fill="#FBBC04"/></svg></span>Kamera</div>
+  </div>
+  <div class="launcher light">
+    <div class="app"><span class="ph" style="background:#34A853"><svg viewBox="0 0 24 24"><path d="M6 4h4l1.5 4-2.5 1.5a11 11 0 0 0 5.5 5.5L16 12.5l4 1.5v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 2-2z" fill="#fff"/></svg></span>Telefon</div>
+    <div class="app"><span class="ph" style="background:#1A73E8"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" fill="#fff"/></svg></span>Mesajlar</div>
+    <div class="app"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full1"/></svg></span>Haftik 1</div>
+    <div class="app"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full2"/></svg></span>Haftik 2</div>
+    <div class="app"><span class="m circle s48"><svg viewBox="18 18 72 72"><use href="#full3"/></svg></span>Haftik 3</div>
+    <div class="app"><span class="ph" style="background:#fff"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="#EA4335" stroke-width="3"/><circle cx="12" cy="12" r="2.5" fill="#FBBC04"/></svg></span>Kamera</div>
+  </div>
+</div>
+
+</body>
+</html>

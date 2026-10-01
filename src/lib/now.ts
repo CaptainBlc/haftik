@@ -14,6 +14,9 @@
  * `__DEV__` koruması var — ikinci, bağımsız bir güvence katmanı.
  */
 import { useEffect, useState } from 'react';
+import { AppState } from 'react-native';
+
+import { CARD_UNLOCK_HOUR } from '@/domain/week';
 
 type Listener = () => void;
 
@@ -53,20 +56,64 @@ function subscribe(listener: Listener): () => void {
   };
 }
 
+/** Zamanlayıcı tam sınırda uyanıp bir önceki saniyede kalmasın diye küçük tampon. */
+const TICK_BUFFER_MS = 500;
+const MIN_TICK_MS = 1000;
+
 /**
- * Bileşeni, dev panelinden zaman değiştiğinde yeniden render eden hook.
- * Üretimde (override hiç değişmediğinden) pratikte hiç tetiklenmez; her
- * render'da gerçek `Date.now()`'a otomatik "tick" YAPMAZ — ekranlar zaten
- * odak/veri değişiminde yeniden render olur, saniye saniye güncellenen bir
- * saat bu ürünün kapsamında değil (basit tutuldu, bkz. görev talimatı
- * "basit bir context/store").
+ * Bir sonraki "önemli an"a kadar süre (ms): ertesi gün 00:00 (gün/hafta
+ * dönümü) ve bu haftanın Pazar 20:00'i (kart açılışı) — hangisi önce ise.
+ * Saniye saniye güncelleme yok; ekran açıkken yalnızca bu iki an yakalanır
+ * (QA BLG-03). Yerel saat kullanır (DST'de `Date` kurucuları doğru çözer).
+ */
+export function msUntilNextTick(now: Date): number {
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const d = now.getDate();
+  let target = new Date(y, m, d + 1, 0, 0, 0, 0).getTime();
+  const daysToSunday = (7 - now.getDay()) % 7;
+  const unlock = new Date(y, m, d + daysToSunday, CARD_UNLOCK_HOUR, 0, 0, 0).getTime();
+  if (unlock > now.getTime() && unlock < target) {
+    target = unlock;
+  }
+  return Math.max(MIN_TICK_MS, target - now.getTime() + TICK_BUFFER_MS);
+}
+
+/**
+ * Bileşeni "şimdi" değiştiğinde yeniden render eden hook. Güncellenme:
+ * (1) dev panelinden override değişince, (2) uygulama öne gelince
+ * (`AppState` 'active'), (3) gece yarısı / Pazar 20:00'de bir zamanlayıcıyla
+ * (her tetiklenişte yeniden kurulur). Dev override aktifken `getNow()` aynı
+ * nesneyi döndürdüğünden zamanlayıcı/öne gelme fazladan render üretmez ve dev
+ * menü davranışı değişmez (zamanlayıcı süresi gerçek saate göre hesaplanır).
  */
 export function useNow(): Date {
   const [value, setValue] = useState<Date>(() => getNow());
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     return subscribe(() => setValue(getNow()));
   }, []);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        setValue(getNow());
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setValue(getNow());
+      setTick((t) => t + 1);
+    }, msUntilNextTick(new Date()));
+    // Node/Jest'te (unmount edilmemiş test ağaçları) uzun zamanlayıcı süreci
+    // açık tutmasın; React Native'de `unref` yoktur, no-op.
+    (timer as unknown as { unref?: () => void }).unref?.();
+    return () => clearTimeout(timer);
+  }, [tick]);
 
   return value;
 }

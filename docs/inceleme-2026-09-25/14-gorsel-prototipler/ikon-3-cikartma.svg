@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Haftik ikon alternatifi 3: "Çıkartma h" (Yön C). Kendi çizimim.
+       Mor albüm zemini, beyaz kesim kenarlı sarı çıkartma, sert gölge, küçük harf h.
+       Yuvarlatılmış köşeler sayesinde en uzak nokta ~290/512 (gölge dahil ~318). -->
+  <defs>
+    <pattern id="dots" width="48" height="48" patternUnits="userSpaceOnUse">
+      <circle cx="24" cy="24" r="4.5" fill="#FFFFFF" fill-opacity=".14"/>
+    </pattern>
+  </defs>
+  <rect width="1024" height="1024" fill="#6D4AFF"/>
+  <rect width="1024" height="1024" fill="url(#dots)"/>
+  <g transform="rotate(-8 512 512)">
+    <rect x="303" y="307" width="470" height="470" rx="118" fill="#15121F"/>
+    <rect x="277" y="277" width="470" height="470" rx="118" fill="#FFFFFF"/>
+    <rect x="297" y="297" width="430" height="430" rx="100" fill="#FFE347" stroke="#15121F" stroke-width="24"/>
+    <path d="M434 340V668M434 548C434 480 474 456 512 456C552 456 590 480 590 548V668" fill="none" stroke="#15121F" stroke-width="76" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M662 330c5 32 21 48 53 53-32 5-48 21-53 53-5-32-21-48-53-53 32-5 48-21 53-53z" fill="#FFFFFF" stroke="#15121F" stroke-width="12" stroke-linejoin="round"/>
+  </g>
+</svg>

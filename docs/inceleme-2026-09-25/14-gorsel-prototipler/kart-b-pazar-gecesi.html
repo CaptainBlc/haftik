@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik · Kart B · Pazar gecesi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:ital,opsz,wght@0,14..32,400..800;1,14..32,400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1A1726; font-family: Inter, system-ui, sans-serif; color: #EDE9F7; padding: 40px; }
+  .page-head { max-width: 1180px; margin: 0 auto 32px; }
+  .page-head h1 { font: 700 22px/1.2 Inter, sans-serif; color: #fff; }
+  .page-head p { font: 400 14px/1.55 Inter, sans-serif; color: #BDB6D3; max-width: 780px; margin-top: 6px; }
+  .stage { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; align-items: flex-start; }
+  figure { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  figcaption { font: 600 12px/1.4 Inter, sans-serif; color: #BDB6D3; text-align: center; max-width: 360px; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-weight: 400; font-style: normal; line-height: 1; }
+  .notes { max-width: 1180px; margin: 40px auto 0; font: 400 13px/1.6 Inter, sans-serif; color: #BDB6D3; }
+  .notes h2 { font: 700 15px/1.3 Inter, sans-serif; margin: 18px 0 6px; color: #fff; }
+  .notes li { margin-left: 18px; }
+  .embed body { background: transparent; padding: 20px; }
+  .embed .page-head, .embed .notes, .embed .extra, .embed figcaption { display: none; }
+
+  /* ---------- KART B · token'lar ---------- */
+  .card-b {
+    --night0: #0A0918; --night1: #120E2E; --night2: #22145A;
+    --text: #FFFFFF; --text2: #F4F0FF; --muted: #C9C1EA; --amber: #FFB36B; --lilac: #A99BFF;
+    position: relative; width: 360px; height: 640px; overflow: hidden; flex: none; color: var(--text);
+    background:
+      radial-gradient(120% 55% at 50% 108%, rgba(255,146,92,.40) 0%, rgba(255,146,92,0) 60%),
+      radial-gradient(75% 45% at 84% 14%, rgba(125,92,255,.55) 0%, rgba(125,92,255,0) 70%),
+      linear-gradient(172deg, var(--night0) 0%, var(--night1) 42%, var(--night2) 100%);
+    box-shadow: 0 30px 70px -24px rgba(0,0,0,.7);
+  }
+  .card-b .grain {
+    position: absolute; inset: 0; opacity: .22; pointer-events: none; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  }
+  .b-stars { position: absolute; left: 0; top: 0; width: 360px; height: 320px; }
+  .b-orbit { position: absolute; left: 196px; top: 0; width: 192px; height: 192px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.10); }
+  .b-orb { position: absolute; left: 226px; top: 30px; width: 132px; height: 132px; border-radius: 50%;
+    background: radial-gradient(circle at 36% 32%, #FFE7C4 0%, #FFB37A 30%, #E4739C 62%, #7D5CFF 100%);
+    box-shadow: 0 0 50px 8px rgba(255,150,110,.35), 0 0 140px 40px rgba(125,92,255,.30); }
+
+  .b-head { position: absolute; top: 34px; left: 28px; }
+  .b-kicker { font: 800 10px/1 Inter, sans-serif; letter-spacing: .26em; color: var(--amber); }
+  .b-week { margin-top: 8px; font: 500 13px/1 Inter, sans-serif; color: var(--muted); }
+
+  .b-titlewrap { position: absolute; top: 166px; left: 28px; right: 24px; }
+  .b-label { font: 700 9px/1 Inter, sans-serif; letter-spacing: .22em; color: var(--muted); }
+  .b-title { margin-top: 10px; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 56px;
+    line-height: .92; letter-spacing: -.035em; color: var(--text); text-shadow: 0 0 28px rgba(169,155,255,.45); }
+  .b-title em { font-style: normal; color: var(--amber); text-shadow: 0 0 28px rgba(255,160,100,.45); }
+
+  .b-glass { position: absolute; top: 300px; left: 18px; right: 18px; height: 234px; border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    border: 1px solid rgba(255,255,255,.14);
+    -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 24px 40px -22px rgba(0,0,0,.65); list-style: none; }
+  .b-glass li { height: 58px; display: flex; align-items: center; gap: 12px; padding: 0 16px; }
+  .b-glass li + li { border-top: 1px solid rgba(255,255,255,.08); }
+  .b-chip { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 42%, rgba(169,155,255,.38), rgba(169,155,255,.08) 72%);
+    border: 1px solid rgba(255,255,255,.14); box-shadow: 0 0 18px rgba(169,155,255,.25); }
+  .b-chip .emo { font-size: 22px; }
+  .b-txt { flex: 1; min-width: 0; }
+  .b-meta { display: flex; align-items: center; gap: 6px; height: 12px; }
+  .b-meta b { font: 800 9px/1 Inter, sans-serif; letter-spacing: .16em; color: var(--muted); }
+  .b-meta .lv { font: 600 12px/1 Inter, sans-serif; color: var(--text); }
+  .pips { margin-left: auto; display: flex; gap: 3px; }
+  .pips i { width: 6px; height: 6px; border-radius: 50%; border: 1.2px solid var(--lilac); }
+  .pips.p1 i:nth-child(-n+1), .pips.p2 i:nth-child(-n+2), .pips.p3 i:nth-child(-n+3) { background: var(--lilac); box-shadow: 0 0 6px rgba(169,155,255,.8); }
+  .b-txt p { margin-top: 4px; font: 400 13px/17px Inter, sans-serif; color: var(--text2);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .b-summary { position: absolute; top: 548px; left: 28px; right: 28px; border-left: 2px solid var(--amber); padding-left: 12px; }
+  .b-summary p { font: italic 500 14px/19px Inter, sans-serif; color: var(--text2);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .b-foot { position: absolute; left: 28px; right: 28px; bottom: 20px; height: 22px; display: flex; align-items: center; justify-content: space-between; }
+  .b-brand { display: flex; align-items: center; gap: 8px; font: 800 20px/1 "Bricolage Grotesque", sans-serif; letter-spacing: -.02em; }
+  .b-brand svg { width: 30px; height: 16px; }
+  .b-link { font: 500 10px/1 Inter, sans-serif; color: var(--muted); }
+
+  /* gizli: buzlu cam */
+  .frost { position: relative; overflow: hidden; border-radius: 12px; height: 44px;
+    background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.16);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); display: flex; align-items: center; padding-left: 14px; gap: 7px; }
+  .frost::after { content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(115deg, rgba(255,255,255,0) 0 10px, rgba(255,255,255,.07) 10px 12px); }
+  .frost.f1 { width: 250px; margin-top: 16px; }
+  .frost.f2 { width: 160px; margin-top: 10px; }
+  .frost span { position: relative; z-index: 1; font: 800 9px/1 Inter, sans-serif; letter-spacing: .22em; color: var(--amber); }
+  .frost svg { position: relative; z-index: 1; width: 10px; height: 11px; }
+  .frost.small { height: 16px; width: 170px; border-radius: 8px; margin-top: 6px; padding: 0; }
+  .b-chip.hid { background: rgba(255,255,255,.05); box-shadow: none; border: 1px dashed rgba(255,255,255,.3); }
+  .b-chip.hid svg { width: 14px; height: 16px; }
+
+  .thumb { width: 90px; height: 160px; overflow: hidden; border-radius: 6px; }
+  .thumb > .card-b { transform: scale(.25); transform-origin: 0 0; box-shadow: none; }
+  .bubble { background: #005C4B; padding: 4px; border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="b-stars-s" viewBox="0 0 360 320">
+      <g fill="#fff">
+        <circle cx="24" cy="98" r=".9" opacity=".7"/><circle cx="62" cy="128" r=".6" opacity=".5"/><circle cx="118" cy="22" r="1" opacity=".8"/>
+        <circle cx="150" cy="84" r=".6" opacity=".45"/><circle cx="196" cy="40" r=".8" opacity=".6"/><circle cx="182" cy="130" r=".5" opacity=".4"/>
+        <circle cx="96" cy="150" r=".7" opacity=".5"/><circle cx="210" cy="176" r=".6" opacity=".35"/><circle cx="342" cy="210" r=".8" opacity=".5"/>
+        <circle cx="330" cy="18" r=".7" opacity=".6"/><circle cx="14" cy="22" r=".6" opacity=".45"/><circle cx="250" cy="228" r=".6" opacity=".35"/>
+        <circle cx="300" cy="262" r=".7" opacity=".4"/><circle cx="140" cy="54" r=".5" opacity=".5"/><circle cx="46" cy="60" r=".5" opacity=".4"/>
+        <path d="M168 104l1.1 3 3 1.1-3 1.1-1.1 3-1.1-3-3-1.1 3-1.1z" opacity=".85"/>
+        <path d="M34 150l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" opacity=".6"/>
+      </g>
+    </symbol>
+    <symbol id="b-smile" viewBox="0 0 30 16">
+      <g fill="#F4F0FF"><circle cx="2.5" cy="4" r="1.7"/><circle cx="5.6" cy="9.2" r="1.7"/><circle cx="10.2" cy="12.6" r="1.7"/><circle cx="15" cy="13.6" r="1.7"/><circle cx="19.8" cy="12.6" r="1.7"/><circle cx="24.4" cy="9.2" r="1.7"/></g>
+      <circle cx="27.4" cy="3.6" r="2.6" fill="#FFB36B"/>
+    </symbol>
+    <symbol id="b-lock" viewBox="0 0 14 16"><rect x="1" y="7" width="12" height="8.4" rx="1.8" fill="#C9C1EA"/><path d="M3.6 7.2V5a3.4 3.4 0 0 1 6.8 0v2.2" fill="none" stroke="#C9C1EA" stroke-width="1.6"/></symbol>
+  </defs>
+</svg>
+
+<header class="page-head">
+  <h1>Yön B · Pazar gecesi (koyu, parlayan gradyan, cam)</h1>
+  <p>Fikir: “Kart, pazar akşamı ufukta doğan bir güneş gibi açılır.” Gece laciverti zemin, ufukta amber ışık, tek bir parlayan küre,
+  satırlar buzlu cam panelde. İmza: sağ üstteki küre ve yedi noktalı “hafta gülüşü”. Gizli unvan buzlu cam şerit olur.</p>
+</header>
+
+<main class="stage">
+
+  <!-- ============ 1. NORMAL ============ -->
+  <figure>
+    <div class="card-b" id="b-normal">
+      <svg class="b-stars"><use href="#b-stars-s"/></svg>
+      <div class="b-orbit"></div>
+      <div class="b-orb"></div>
+      <div class="grain"></div>
+
+      <header class="b-head">
+        <div class="b-kicker">PAZAR GECESİ</div>
+        <div class="b-week">Pazartesi — Pazar</div>
+      </header>
+
+      <div class="b-titlewrap">
+        <div class="b-label">BU HAFTANIN UNVANI</div>
+        <h2 class="b-title">Konforun <em>Kalesi</em></h2>
+      </div>
+
+      <ul class="b-glass">
+        <li><span class="b-chip"><span class="emo">🐢</span></span>
+          <div class="b-txt"><div class="b-meta"><b>HAREKET</b><span class="lv">durgun</span><span class="pips p1"><i></i><i></i><i></i></span></div>
+          <p>Kanepe bu hafta seni pek bırakmadı.</p></div></li>
+        <li><span class="b-chip"><span class="emo">😴</span></span>
+          <div class="b-txt"><div class="b-meta"><b>UYKU</b><span class="lv">iyi</span><span class="pips p3"><i></i><i></i><i></i></span></div>
+          <p>Yastığınla resmen kader birliği yaptınız.</p></div></li>
+        <li><span class="b-chip"><span class="emo">💳</span></span>
+          <div class="b-txt"><div class="b-meta"><b>HARCAMA</b><span class="lv">orta</span><span class="pips p2"><i></i><i></i><i></i></span></div>
+          <p>Ne cimri ne çılgın, tam kararında harcadın.</p></div></li>
+        <li><span class="b-chip"><span class="emo">👥</span></span>
+          <div class="b-txt"><div class="b-meta"><b>SOSYAL</b><span class="lv">ölçülü</span><span class="pips p2"><i></i><i></i><i></i></span></div>
+          <p>Sosyallik dozun tam kıvamındaydı bu hafta.</p></div></li>
+      </ul>
+
+      <div class="b-summary"><p>Bu hafta terazi hem sağa hem sola salındı.</p></div>
+
+      <footer class="b-foot">
+        <div class="b-brand"><svg><use href="#b-smile"/></svg>haftik</div>
+        <div class="b-link">[mağaza bağlantısı]</div>
+      </footer>
+    </div>
+    <figcaption>B1 · Normal: küre + dev grotesk unvan (son kelime amber), cam panelde 4 satır.</figcaption>
+  </figure>
+
+  <!-- ============ 2. GİZLİ ============ -->
+  <figure>
+    <div class="card-b">
+      <svg class="b-stars"><use href="#b-stars-s"/></svg>
+      <div class="b-orbit"></div>
+      <div class="b-orb"></div>
+      <div class="grain"></div>
+
+      <header class="b-head">
+        <div class="b-kicker">PAZAR GECESİ</div>
+        <div class="b-week">Pazartesi — Pazar</div>
+      </header>
+
+      <div class="b-titlewrap">
+        <div class="b-label">BU HAFTANIN UNVANI</div>
+        <div class="frost f1">
+          <svg viewBox="0 0 10 11"><rect x=".5" y="4.6" width="9" height="6" rx="1.2" fill="#FFB36B"/><path d="M2.5 4.8V3.3a2.5 2.5 0 0 1 5 0v1.5" fill="none" stroke="#FFB36B" stroke-width="1.3"/></svg>
+          <span>GİZLİ</span>
+        </div>
+        <div class="frost f2"></div>
+      </div>
+
+      <ul class="b-glass">
+        <li><span class="b-chip"><span class="emo">🐢</span></span>
+          <div class="b-txt"><div class="b-meta"><b>HAREKET</b><span class="lv">durgun</span><span class="pips p1"><i></i><i></i><i></i></span></div>
+          <p>Kanepe bu hafta seni pek bırakmadı.</p></div></li>
+        <li><span class="b-chip hid"><svg><use href="#b-lock"/></svg></span>
+          <div class="b-txt"><div class="b-meta"><b>UYKU</b></div><div class="frost small"></div></div></li>
+        <li><span class="b-chip hid"><svg><use href="#b-lock"/></svg></span>
+          <div class="b-txt"><div class="b-meta"><b>HARCAMA</b></div><div class="frost small"></div></div></li>
+        <li><span class="b-chip"><span class="emo">👥</span></span>
+          <div class="b-txt"><div class="b-meta"><b>SOSYAL</b><span class="lv">ölçülü</span><span class="pips p2"><i></i><i></i><i></i></span></div>
+          <p>Sosyallik dozun tam kıvamındaydı bu hafta.</p></div></li>
+      </ul>
+
+      <div class="b-summary"><p>Bu hafta terazi hem sağa hem sola salındı.</p></div>
+
+      <footer class="b-foot">
+        <div class="b-brand"><svg><use href="#b-smile"/></svg>haftik</div>
+        <div class="b-link">[mağaza bağlantısı]</div>
+      </footer>
+    </div>
+    <figcaption>B2 · Varsayılan gizleme: unvan ve gizli satırlar buzlu cam şerit; kilit ikonu, sabit genişlik.</figcaption>
+  </figure>
+
+  <figure class="extra">
+    <div class="bubble"><div class="thumb" id="b-thumb"></div></div>
+    <figcaption>B3 · %25 ölçek: küre ve unvan okunur; koyu zemin sohbet ekranında öne çıkar.</figcaption>
+  </figure>
+
+</main>
+
+<section class="notes">
+  <h2>Kontrast (elle hesap, K1; metnin arkasındaki en açık zemin bölgesine göre)</h2>
+  <ul>
+    <li>Beyaz / en açık cam bölgesi (≈<code>#3D2F75</code>): 11,3:1 · <code>#C9C1EA</code> / aynı bölge: 6,6:1</li>
+    <li>Amber <code>#FFB36B</code> / aynı bölge: 6,4:1 (unvanın son kelimesi, üst etiket, gizli etiketi)</li>
+    <li>Küre ile metin çakışmaz: üst etiketler x≤150, küre x≥226; unvan y≥166, küre y≤162.</li>
+    <li>Seviye: kelime + dolu nokta sayısı. Parlama dekoratif, anlam taşımaz.</li>
+  </ul>
+</section>
+
+<script>
+  (function () {
+    var s = document.getElementById('b-normal'), t = document.getElementById('b-thumb');
+    if (s && t) { var c = s.cloneNode(true); c.removeAttribute('id'); t.appendChild(c); }
+  })();
+</script>
+</body>
+</html>

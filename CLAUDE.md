@@ -629,6 +629,87 @@ testlerde saat dilimi sabitlenir; kartta ham sayı/tutar/konum asla yok.>`
   (KVKK/hukuki görüş); yer tutucular ve yayınlama adımları `site/README.md`'de.
   Metinde deneme raporu "anonim" değil, "kimlik/içerik yok, takma adlı olabilir".
 
+- (2026-09-24, MOB, emülatör turu) **Android 13+ bildirim izni durumu:**
+  `expo-notifications` (`NotificationPermissionsModule.kt`, API 33+) henüz hiç
+  sorulmamış izni `status: 'undetermined'` DEĞİL, `denied` + `canAskAgain: true`
+  döndürür (`areAllDenied`/`!areEnabled` dalları `UNDETERMINED`den önce gelir).
+  Bu yüzden "yalnızca `undetermined` iken iste" mantığı diyaloğu HİÇ göstermiyordu
+  (BLG-01). Karar `granted` ve `canAskAgain`e göre verilir
+  (`scheduler.getPermissionState`, `wiring.requestPermissionAndSync`): izin yok +
+  `canAskAgain` -> kanalı oluştur, isteği yap; `canAskAgain: false` -> istek YOK,
+  yalnızca "Ayarları aç". Ayarlar anahtarı izin yokken kapalı çizilir; izin
+  odakta ve AppState `active`te yeniden okunur. Mock'lu Jest testleri bu farkı
+  yakalamaz: fake-notifications'a `canAskAgain` alanı eklendi, gerçek durum
+  `__tests__/notify/permission-android13.test.ts`te taklit ediliyor.
+- (2026-09-24, MOB) **`useNow` artık canlıdır:** yalnızca dev override'ı dinleyen
+  eski sürüm, uygulama açık kalınca gün/hafta dönümünü ve Pazar 20:00'yi
+  kaçırıyor, check-in eski güne yazılıyordu (BLG-03). Şimdi AppState `active` +
+  gece yarısı/Pazar 20:00 `setTimeout` zinciri (`msUntilNextTick`); zamanlayıcı
+  `unref` edilir (unmount edilmeyen Jest ağaçları işçiyi açık tutmasın).
+  `today.tsx` "dün" seçimini gün anahtarına bağlar. Sekme ekranları, başka
+  sekmede değişen veriyi görsün diye `useFocusEffect` ile yükler (`week.tsx`);
+  `today.tsx` yarım seçim kaybolmasın diye bilerek yüklemez.
+- (2026-09-24, MOB) **Kart kesilmesi (BLG-04) ve view-shot:** `numberOfLines` yalnızca
+  metni sınırlar, kapsayıcı yüksekliğini büyütmez; kart bölümleri sabit piksel
+  olduğundan (48px özet) 2 satır + pill dolgusu sığmıyordu ve PNG'de de kesik
+  çıkıyordu. Ölçüler `layout.ts`te (`SummaryTextLayout`) ve testte "alan >=
+  satır x yükseklik + dolgu" olarak bağlandı; toplam 640 korunur. Kart metinleri
+  `allowFontScaling={false}` (PNG sistem yazı tipi ölçeğinden bağımsız). Kart
+  ekranında kart ölçeği yalnızca görünümdür (`computeCardDisplayScale`), PNG hep
+  360x640'tan yakalanır; Kapat/Paylaş mutlak konumlu değil sabit üst/alt çubukta.
+- (2026-09-24, MOB) **"Tüm verilerimi sil" sonrası onboarding:** (main) layout'unun
+  kapı hook'u yalnızca mount'ta okur; silme sonrası ekranda kalınırsa eski durum
+  görünür, sonraki check-in `onboarding_done` yokken yazılır (bildirim planı ve
+  `first_open_date` olmadan). Silme akışı `router.replace('/')` ile kapıyı yeni
+  mount'ta yeniden okutur (`useOnboardingGate` `loading` ile başlar, hata ->
+  `needed`). Onboarding'in "İzin ver"/"Şimdi değil" düğmeleri çift dokunuşa
+  karşı korunur. Temiz veriyle "onboarding'i atlama" QA'da yeniden üretilemedi
+  (adb eşzamanlı tap şüphesi); kodda yarış bulunmadı.
+- (2026-09-24, MOB) **Türkçe karakterli proje yolu:** Gradle/React Native derlemesi
+  `C:\Users\Pc\Desktop\Geliştirme için\...` yolunda (ş, ü, boşluk) kırılır;
+  derleme ASCII yollu kopyadan (`C:\hhk\haftik`) yapılır, kod düzeltmeleri
+  ASIL repoya yazılır ve şu komutla senkronlanır (`node_modules`, `android`,
+  `ios`, `.git`, `.expo` korunur; `/MIR` hedefteki diğer fazlalıkları siler):
+  `robocopy "C:\Users\Pc\Desktop\Geliştirme için\haftalik-hayat-karti" "C:\hhk\haftik" /MIR /XD node_modules android ios .git .expo /NFL /NDL /NJH /NJS /NP`
+  (robocopy çıkış kodu 0-7 başarıdır, 8+ hata). `package.json` bağımlılıkları
+  değiştiyse kopyada `npm ci` gerekir; değişmediyse gerekmez. Metro CI modunda
+  hot reload kapalıdır: senkron sonrası Metro/uygulama yeniden başlatılmalıdır.
+- (2026-09-24, MOB) **B14 karar bekliyor (kod DEĞİŞMEDİ): v1 yalnızca açık tema mı?**
+  `locked-card-placeholder.tsx` iskelet renkleri (`#D1D1D6`, `#8E8E93`) ve silme
+  düğmesi (`#D7263D`) tema dışı sabit; koyu modda parlak kutu ve düşük kontrast
+  (~3.9:1) oluşur. Seçenekler: (a) v1'de açık temaya kilitle (`userInterfaceStyle:
+  light`) ya da (b) renkleri `theme`ten türet. Emülatörde `adb shell cmd uimode
+  night yes` ile üç ekran yeniden görüntülenmeli. Batuhan kararı.
+- (2026-09-24, MOB) `expo-doctor` bugün 20/21: Expo yeni yama sürümleri yayınladı
+  (expo, expo-linking, expo-notifications, expo-router, expo-sharing bir yama
+  geride; `package.json` bu turda DEĞİŞMEDİ). `npx expo install --check` ile
+  yükseltme ayrı karardır (yeniden derleme gerekir).
+
+- (2026-09-24, MOB, emülatör yeniden doğrulama) **Üst güvenli alan:** Android
+  edge-to-edge'de ekran içeriği durum çubuğunun altına iner ve o bölgedeki
+  dokunuşlar sisteme gider (YB-1). Ekranlar `useTopInset()`
+  (`src/hooks/use-top-inset.ts`) ile üst dolgu alır; `useSafeAreaInsets`
+  sağlayıcı yokken fırlattığından (birim testleri) bağlam doğrudan okunur.
+  Yeni ekranlar bunu kullanmalı. Durum çubuğu ikon rengi kökteki
+  `<StatusBar style="auto" />` ile (expo-status-bar).
+- (2026-09-24, MOB) **Kilit dairesi** `locked-card-placeholder`te akışta (pill ile
+  damga arasında); iskeletin üstüne mutlak konumlu katman konmaz (B6).
+- (2026-09-24, MOB) **Hafta ekranı kart kaydı varsa** "Kartın açıldı." / "Kartını
+  tekrar görmek için dokun" gösterir (`getCard(weekStart)`); `week-route` testinin
+  `card-repo` mock'una `getCard` eklendi.
+- (2026-09-24, MOB, AÇIK/bilgi) **Yapılandırma değişimi (`wm size/density`, font
+  ölçeği) rotayı Bugün'e sıfırlıyor** (YB-6); kart ekranı açıksa yeniden açmak
+  gerekir. Gerçek kullanımda nadir, düzeltilmedi. YB-4 (font 2.0'da sekme çubuğu
+  etiketi ikonla bitişik) da açık.
+
+- (2026-09-24, MOB) **Ekran düzeni değişikliklerinde 411x914dp'de tek ekrana
+  sığma kontrolü yap.** Bugün ekranında üst güvenli alan + ayrı "‹ Dün" satırı +
+  büyük tarih başlığı + `aspectRatio: 1` emoji kutuları (~110dp) birikince 4.
+  kategori (Sosyal) ekranın altında kesildi. Kural: emoji kutusu sabit
+  yükseklik (72dp), dikey bütçe `docs/ux/ekran-akisi.md` Ekran 2'de yazılı;
+  bütçeyi bozan bir değişiklik `__tests__/components/checkin-single-screen-fit.test.tsx`'i
+  kırar. Genişliğe bağlı `aspectRatio` yükseklik bütçesinde tuzaktır.
+
 ## Doğrulama ("done" ne demek)
 
 Bir görev bitmiş sayılmadan önce:

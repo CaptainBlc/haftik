@@ -35,8 +35,17 @@ export default function TodayScreen() {
   const { returnToCardWeekStart } = useLocalSearchParams<{ returnToCardWeekStart?: string }>();
   const now = useNow();
   const today = useMemo(() => toLocalDateString(now), [now]);
-  /** 0 = bugün, 1 = dün (spec: düzenleme penceresi yalnızca bugün/dün). */
-  const [dayOffset, setDayOffset] = useState<0 | 1>(0);
+  /**
+   * 0 = bugün, 1 = dün (spec: düzenleme penceresi yalnızca bugün/dün). Seçim,
+   * seçildiği "bugün"e bağlı tutulur: gün değişince (BLG-03) otomatik bugüne
+   * döner, eski güne göre "dün" kalmaz.
+   */
+  const [offsetState, setOffsetState] = useState<{ day: string; offset: 0 | 1 }>({
+    day: '',
+    offset: 0,
+  });
+  const dayOffset: 0 | 1 = offsetState.day === today ? offsetState.offset : 0;
+  const setDayOffset = (offset: 0 | 1) => setOffsetState({ day: today, offset });
   const selectedDate = useMemo(() => addLocalDays(today, -dayOffset), [today, dayOffset]);
 
   const [selection, setSelection] = useState<CategorySelection>({});

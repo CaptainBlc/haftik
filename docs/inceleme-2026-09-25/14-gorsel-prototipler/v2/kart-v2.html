@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik · Kart v2 · Çıkartma albümü (yetişkin)</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #E9E5EF; font-family: Inter, system-ui, sans-serif; color: #17131F; padding: 40px; }
+  .page-head { max-width: 1240px; margin: 0 auto 20px; }
+  .page-head h1 { font: 800 28px/1.2 Fraunces, Georgia, serif; }
+  .page-head p { font: 400 14px/1.55 Inter, sans-serif; color: #4a4560; max-width: 900px; margin-top: 6px; }
+  .modes { max-width: 1240px; margin: 0 auto 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font: 700 12px/1 Inter, sans-serif; color: #5E5870; }
+  .modes a { padding: 10px 14px; border-radius: 999px; border: 1.5px solid #3D2E7C; color: #3D2E7C; text-decoration: none; min-height: 40px; display: inline-flex; align-items: center; }
+  .modes a.on { background: #3D2E7C; color: #FFFDF8; }
+  .stage { display: flex; flex-wrap: wrap; gap: 36px; justify-content: center; align-items: flex-start; max-width: 1240px; margin: 0 auto; }
+  h2.sec { max-width: 1240px; margin: 44px auto 16px; font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; color: #5E5870; }
+  figure { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  figcaption { font: 600 12px/1.45 Inter, sans-serif; color: #3a3550; text-align: center; max-width: 360px; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-weight: 400; font-style: normal; line-height: 1; }
+  .notes { max-width: 1240px; margin: 44px auto 0; font: 400 13px/1.6 Inter, sans-serif; color: #3a3550; }
+  .notes h3 { font: 700 15px/1.3 Inter, sans-serif; margin: 18px 0 6px; color: #17131F; }
+  .notes li { margin-left: 18px; }
+  .notes table { border-collapse: collapse; margin-top: 6px; font-size: 12.5px; background: #fff; }
+  .notes td, .notes th { border: 1px solid #D5CFE0; padding: 4px 8px; text-align: left; vertical-align: top; }
+  .embed body { background: transparent; padding: 16px; }
+  .embed .page-head, .embed .notes, .embed .extra, .embed figcaption, .embed h2.sec, .embed .modes { display: none; }
+  .embed .stage { gap: 20px; }
+
+  /* =================== KART v2 · token'lar =================== */
+  .card {
+    --album: #3D2E7C; --albumDeep: #211850; --ink: #17131F; --paper: #FFFDF8; --sun: #FFD84D;
+    --liner: #E7E4EE; --muted: #5E5870; --onAlbum: #EDE8FF;
+    position: relative; isolation: isolate; width: 360px; height: 640px; overflow: hidden; flex: none; color: var(--ink);
+    background:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .07 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+      radial-gradient(rgba(255,255,255,.085) 1.1px, rgba(255,255,255,0) 1.6px) 7px 7px / 14px 14px,
+      radial-gradient(120% 70% at 50% 0%, rgba(255,255,255,.07), rgba(255,255,255,0) 65%),
+      var(--album);
+  }
+  .card.sq { height: 360px; }
+  .tape { position: absolute; left: 24px; top: 44px; height: 24px; padding: 0 16px; background: rgba(255,216,77,.93);
+    font: 800 10px/24px Inter, sans-serif; letter-spacing: .18em; color: var(--ink); white-space: nowrap;
+    clip-path: polygon(0 0,100% 0,97.5% 25%,100% 50%,97.5% 75%,100% 100%,0 100%,2.5% 75%,0 50%,2.5% 25%); }
+  .seal { position: absolute; left: 260px; top: 26px; width: 76px; height: 76px; transform: rotate(8deg); }
+  .title { position: absolute; left: 24px; top: 88px; width: 312px; height: 116px; transform: rotate(-1.5deg);
+    background: var(--sun); border-radius: 18px; padding: 12px 16px 8px; display: flex; flex-direction: column;
+    box-shadow: 0 0 0 3px var(--paper), 3px 4px 0 3px var(--albumDeep); }
+  .lbl { font: 800 9px/9px Inter, sans-serif; letter-spacing: .16em; white-space: nowrap; }
+  .tbox { flex: 1; display: flex; align-items: center; min-height: 0; }
+  .title h2 { font-family: Fraunces, Georgia, serif; font-weight: 800; font-size: 38px; line-height: 40px; letter-spacing: -.012em;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .title h2.t2 { font-size: 31px; line-height: 33px; }
+  .title h2.t3 { font-size: 25px; line-height: 28px; }
+  .rows { position: absolute; left: 24px; top: 218px; width: 312px; list-style: none; }
+  .row { position: relative; height: 56px; margin-bottom: 6px; background: var(--paper); border-radius: 14px;
+    box-shadow: 0 3px 0 var(--albumDeep); display: flex; align-items: center; gap: 10px; padding: 0 12px 0 10px; }
+  .row:last-child { margin-bottom: 0; }
+  .dw { position: relative; width: 52px; height: 44px; flex: none; }
+  .disc, .ly { position: absolute; border-radius: 50%; }
+  .disc { z-index: 3; display: grid; place-items: center; box-shadow: 0 0 0 2px var(--paper); }
+  .ly { box-shadow: 0 0 0 2px var(--paper); }
+  .txt { flex: 1; min-width: 0; }
+  .meta { display: flex; align-items: center; gap: 8px; height: 14px; }
+  .meta b { font: 800 9px/1 Inter, sans-serif; letter-spacing: .14em; }
+  .meta i { font: italic 600 13px/1 Fraunces, Georgia, serif; }
+  .meta .sp { flex: 1; }
+  .txt p { margin-top: 2px; font: 500 12.5px/16px Inter, sans-serif;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .pos { position: relative; width: 40px; height: 12px; flex: none; }
+  .pos::before { content: ""; position: absolute; left: 2px; right: 2px; top: 5px; height: 2px; border-radius: 1px; background: rgba(23,19,31,.2); }
+  .pos i { position: absolute; top: 4px; width: 4px; height: 4px; border-radius: 50%; background: rgba(23,19,31,.32); }
+  .pos i:nth-child(1) { left: 0; } .pos i:nth-child(2) { left: 18px; } .pos i:nth-child(3) { right: 0; }
+  .pos b { position: absolute; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px var(--paper); }
+  .pos[data-l="1"] b { left: -4px; } .pos[data-l="2"] b { left: 14px; } .pos[data-l="3"] b { right: -4px; }
+
+  .liner { background-color: var(--liner) !important;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'><g fill='none' stroke='%2317131F' stroke-opacity='.08' stroke-width='3' stroke-linecap='round' transform='translate(3 3) scale(.42)'><path d='M6 3V21M6 13C6 9 8.5 7.5 12 7.5C15.5 7.5 18 9 18 13V21'/></g><g fill='none' stroke='%2317131F' stroke-opacity='.08' stroke-width='3' stroke-linecap='round' transform='translate(17 17) scale(.42)'><path d='M6 3V21M6 13C6 9 8.5 7.5 12 7.5C15.5 7.5 18 9 18 13V21'/></g></svg>") !important;
+    box-shadow: none !important; outline: 1.5px dashed rgba(23,19,31,.38); outline-offset: -5px; }
+  .title.liner { transform: none; }
+  .disc.hid { background: transparent !important; box-shadow: none; border: 1.5px dashed rgba(23,19,31,.45); }
+  .chip { font: 800 8.5px/1 Inter, sans-serif; letter-spacing: .14em; background: var(--ink); color: var(--paper); padding: 3px 6px 3px 7px; border-radius: 4px; }
+  .row.liner .txt p { color: var(--muted); }
+  .title.liner h2 { font: italic 600 27px/30px Fraunces, Georgia, serif; }
+  .title.liner .sub { font: 500 12px/16px Inter, sans-serif; color: var(--muted); margin-top: 2px; }
+  .sum { position: absolute; left: 40px; top: 472px; width: 280px; height: 48px; background: var(--paper); border-radius: 16px;
+    box-shadow: 0 3px 0 var(--albumDeep); display: flex; align-items: center; justify-content: center; padding: 0 14px; }
+  .sum::before, .sum::after { content: ""; position: absolute; left: 30px; top: 45px; width: 16px; height: 12px; clip-path: polygon(0 0,100% 0,15% 100%); background: var(--paper); }
+  .sum::after { z-index: -1; transform: translateY(3px); background: var(--albumDeep); }
+  .sum p { font: italic 500 14.5px/17px Fraunces, Georgia, serif; text-align: center;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .foot { position: absolute; left: 24px; right: 24px; top: 560px; height: 40px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .wm { font: 800 28px/1 Fraunces, Georgia, serif; color: var(--paper); letter-spacing: -.01em; }
+  .tag { font: 800 10px/1 Inter, sans-serif; letter-spacing: .14em; color: var(--onAlbum); padding-bottom: 6px; }
+  .tag.dip { letter-spacing: 0; font: 600 11px/1 Inter, sans-serif; }
+  .ornek { position: absolute; left: -40px; top: 318px; width: 440px; height: 40px; transform: rotate(-14deg); z-index: 5;
+    background: rgba(255,216,77,.95); box-shadow: 0 3px 0 var(--albumDeep);
+    font: 800 15px/40px Inter, sans-serif; letter-spacing: .32em; text-align: center; color: var(--ink); white-space: nowrap;
+    clip-path: polygon(0 0,100% 0,98.8% 25%,100% 50%,98.8% 75%,100% 100%,0 100%,1.2% 75%,0 50%,1.2% 25%); }
+  /* kare */
+  .sq .tape { left: 20px; top: 22px; } .sq .seal { left: 272px; top: 10px; }
+  .sq .title { left: 20px; top: 64px; width: 320px; height: 104px; }
+  .sq .title h2 { font-size: 36px; line-height: 38px; } .sq .title h2.t2 { font-size: 29px; line-height: 31px; } .sq .title h2.t3 { font-size: 24px; line-height: 27px; }
+  .minis { position: absolute; left: 20px; top: 194px; width: 320px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .mini { height: 110px; background: var(--paper); border-radius: 14px; box-shadow: 0 3px 0 var(--albumDeep); display: flex; flex-direction: column; align-items: center; padding-top: 12px; }
+  .mini .dw { width: 52px; margin-left: 6px; }
+  .mini b { margin-top: 8px; font: 800 8.5px/1 Inter, sans-serif; letter-spacing: .12em; }
+  .mini i { margin-top: 5px; font: italic 600 13px/1 Fraunces, Georgia, serif; }
+  .mini .pos { margin-top: 7px; }
+  .mini.liner { outline-offset: -4px; } .mini .chip { margin-top: 6px; }
+  .sq .foot { left: 20px; right: 20px; top: 318px; height: 28px; } .sq .wm { font-size: 22px; } .sq .tag { padding-bottom: 4px; }
+  /* story katmanı */
+  .zone { position: absolute; left: 0; right: 0; z-index: 20; background: repeating-linear-gradient(135deg, rgba(255,70,70,.22) 0 6px, rgba(255,70,70,.10) 6px 12px);
+    border-color: rgba(255,90,90,.9); border-style: dashed; border-width: 0; font: 700 10px/1.3 Inter, sans-serif; color: #fff;
+    display: flex; align-items: center; justify-content: center; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+  .zone.top { top: 0; height: 83px; border-bottom-width: 1.5px; } .zone.bot { bottom: 0; height: 113px; border-top-width: 1.5px; }
+  .ui { position: absolute; z-index: 21; }
+  .ui.prog { left: 8px; right: 8px; top: 8px; height: 2px; background: rgba(255,255,255,.7); border-radius: 2px; }
+  .ui.av { left: 12px; top: 18px; display: flex; align-items: center; gap: 8px; font: 600 12px/1 Inter, sans-serif; color: #fff; }
+  .ui.av span { width: 28px; height: 28px; border-radius: 50%; background: #C9B8FF; display: block; border: 1.5px solid #fff; }
+  .ui.reply { left: 12px; right: 56px; top: 594px; height: 36px; border: 1.2px solid rgba(255,255,255,.85); border-radius: 18px; font: 500 12px/34px Inter, sans-serif; color: #fff; padding-left: 14px; }
+  /* küçük önizleme */
+  .thumb { width: 90px; height: 160px; overflow: hidden; border-radius: 6px; } .thumb.sqt { height: 90px; }
+  .thumb > .card { transform: scale(.25); transform-origin: 0 0; }
+  .half { width: 180px; height: 320px; overflow: hidden; border-radius: 8px; } .half > .card { transform: scale(.5); transform-origin: 0 0; }
+  .bubble { background: #D9FDD3; padding: 4px; border-radius: 10px; box-shadow: 0 1px 1px rgba(0,0,0,.15); }
+  .chat { background: #EFEAE2; padding: 14px; border-radius: 14px; display: flex; gap: 14px; align-items: flex-end; }
+</style>
+</head>
+<body>
+<header class="page-head">
+  <h1>Kart v2 · Çıkartma albümü, yetişkin sürüm</h1>
+  <p>Fikir: <b>“Haftan, derin mor bir albüm sayfasına yapıştırılmış kesim çıkartmalar.”</b> 360×640 mantıksal → 1080×1920 PNG. C v1'e göre:
+  siyah kalın kontur yerine beyaz kesim kenarı; elektrik moru yerine derin albüm moru; Baloo yerine Fraunces + Inter; patlama rozeti ve
+  pırıltı yerine tek yuvarlak mühür; yalnız iki eğik öğe (unvan −1,5°, mühür +8°); seviye noktası yerine konum işareti. İçerik
+  <code>tr.ts</code> havuzundan (19'un önerdiği yeni seviye kelimeleriyle). Kartta tarih, ham sayı, tutar, konum yok.</p>
+</header>
+<nav class="modes" id="modes">Seviye gösterimi:
+  <a href="?lv=pos">L1 Konum (önerilen)</a><a href="?lv=stack">L2 Katman</a><a href="?lv=size">L3 Boy</a><a href="?lv=none">Yalnız kelime</a>
+</nav>
+
+<h2 class="sec">1 · DÖRT DURUM (NORMAL · UNVAN GİZLİ · UZUN UNVAN · HEPSİ DÜŞÜK)</h2>
+<main class="stage">
+  <figure><div id="k-normal"></div><figcaption>K1 · Normal. Kategori tonu sabit (nane, lavanta, kayısı, gül); seviye yalnız kelime + konum işaretiyle.</figcaption></figure>
+  <figure><div id="k-gizli"></div><figcaption>K2 · Varsayılan gizleme (uyku + harcama; unvan uykudan türediği için o da gizli). Gizli çıkartma = arka kâğıt + kesik kesim çizgisi, düz (yapışmamış), gölgesiz, tonsuz. Tüm gizli satırlar birebir aynı.</figcaption></figure>
+  <figure><div id="k-uzun"></div><figcaption>K3 · Stres: en uzun unvan (33 karakter, “İ” ve “ı”), kademe 3 (25/28). En uzun satırlar, gizleme kapalı.</figcaption></figure>
+  <figure><div id="k-dusuk"></div><figcaption>K4 · Hepsi düşük: zemin, tonlar ve çıkartmalar aynen; sayfa “boş” ya da “kırmızı” görünmez. Yalnız işaretler solda.</figcaption></figure>
+</main>
+
+<h2 class="sec">2 · ÖRNEK KART · STORY GÜVENLİ ALANI · KARE (1:1)</h2>
+<section class="stage">
+  <figure><div id="k-ornek"></div><figcaption>K5 · Onboarding örneği (19 §3.3): bant “ÖRNEK”, havuzda olmayan unvan, seviye kelimesi ve işareti yok, iki gizli çıkartma (gizlemeyi baştan öğretir), −14° ÖRNEK şeridi, dipnot. Paylaşılamaz.</figcaption></figure>
+  <figure><div id="k-story"></div><figcaption>K6 · Story katmanı (varsayım: üst ~250, alt ~340 px @1080×1920; ikincil kaynak, K5'te doğrulanacak). Unvan, satırlar ve özet 88–532 bandında; mühür ve altbilgi dekoratif, dışarıda kalabilir. Marka iki yerde (mühür + wordmark), biri her katmanda görünür.</figcaption></figure>
+  <figure><div id="k-kare"></div><figcaption>K7 · Kare 1:1 (360×360 → 1080×1080): “unvan kartı”; satır metni ve özet yok (sohbet ve akış için).</figcaption></figure>
+  <figure><div id="k-kare-gizli"></div><figcaption>K8 · Kare, varsayılan gizleme.</figcaption></figure>
+</section>
+
+<h2 class="sec extra">3 · KÜÇÜK BOYUT (WHATSAPP BALONU ~%25 VE SEÇİCİ ÖNİZLEMESİ %50)</h2>
+<section class="stage extra">
+  <figure><div class="chat"><div class="bubble"><div class="thumb" data-clone="k-normal"></div></div><div class="bubble"><div class="thumb" data-clone="k-gizli"></div></div><div class="bubble"><div class="thumb sqt" data-clone="k-kare"></div></div></div>
+    <figcaption>%25: sarı unvan çıkartması, beyaz satır şeritleri ve dört ton okunur; unvan kelime olarak zor (kare varyantın gerekçesi). Gizli unvan gri blok olarak ayrışır.</figcaption></figure>
+  <figure><div class="half" data-clone="k-normal"></div><figcaption>%50: unvan 19 px okunur, satır metni 6 px (okunmaz, beklenen).</figcaption></figure>
+</section>
+
+<section class="notes">
+  <h3>Yerleşim (mantıksal px; 1080×1920 için ×3), K1 hesap</h3>
+  <table>
+    <tr><th>Öğe</th><th>x</th><th>y</th><th>Not</th></tr>
+    <tr><td>Bant</td><td>24 → ~170</td><td>44–68</td><td>Sabit metin, tırtıklı uç = PNG maskesi ya da düz uç</td></tr>
+    <tr><td>Mühür (76 kutu, r 34)</td><td>260–336</td><td>26–102</td><td>+8°, sabit PNG @4x. Unvanın sağ üst köşesine ~14 px biner; unvan metni y ≥ 115, çakışmaz</td></tr>
+    <tr><td>Unvan çıkartması</td><td>24–336 (+3 kenar)</td><td>88–204</td><td>−1,5°: köşeler ±4,1 px oynar. Metin 280 px, 2 satır; kademe 38/40 · 31/33 · 25/28 (≤18 · 19–26 · 27–36 karakter)</td></tr>
+    <tr><td>Satırlar 4×56, ara 6</td><td>24–336</td><td>218–460 (+3 gölge)</td><td>Disk 40; metin sütunu 228 px, 12,5/16, en çok 2 satır (60 karakter ≈ 396 px &lt; 456)</td></tr>
+    <tr><td>Konum işareti</td><td>sağ, satır içi</td><td>meta satırı</td><td>40×12, düğme 12 (2 px kâğıt halka), iz 2 px %20 mürekkep</td></tr>
+    <tr><td>Özet balonu</td><td>40–320</td><td>472–520 (+kuyruk 532)</td><td>Fraunces italik 14,5/17, 2 satır</td></tr>
+    <tr><td>Altbilgi</td><td>24–336</td><td>560–600</td><td>Wordmark 28 + etiket 10/800</td></tr>
+    <tr><td>ÖRNEK şeridi</td><td>−40–400</td><td>318–358, −14°</td><td>Yalnız örnek kart</td></tr>
+  </table>
+  <h3>Mühür metni taşmaz: <code>textLength</code></h3>
+  <ul><li>Yol: r 25 çember, çevre 2π·25 = 157,1. Metin “HAFTİK · HAFTALIK KART ·” (24 karakter), <code>textLength="150"</code> +
+  <code>lengthAdjust="spacingAndGlyphs"</code>: font ne olursa olsun metin tam 150 birim kaplar, kalan 7 birim başlangıç ile bitiş arasında boşluk bırakır.
+  Mühür RN'de dinamik değil, bu SVG'den dışa aktarılan PNG'dir; SVG kaynağı değişirse taşma yine imkânsız.</li></ul>
+</section>
+
+<script>
+  var lv = (location.search.match(/lv=(\w+)/) || [])[1] || 'pos';
+  document.querySelectorAll('#modes a').forEach(function (a) { if (a.getAttribute('href') === '?lv=' + lv) a.className = 'on'; });
+  var TONE = { mov: '#BFE8D2', slp: '#D6CEFF', spn: '#FFD4B3', soc: '#FFCADB' };
+  var LBL = { mov: 'HAREKET', slp: 'UYKU', spn: 'HARCAMA', soc: 'SOSYAL' };
+
+  function seal() {
+    return '<svg class="seal" viewBox="0 0 76 76" role="img" aria-label="Haftik mührü"><defs><path id="sp" d="M11 36a25 25 0 1 1 50 0a25 25 0 1 1 -50 0"/></defs>' +
+      '<circle cx="38.5" cy="39.5" r="34" fill="#211850"/><circle cx="36" cy="36" r="34" fill="#FFFDF8"/>' +
+      '<circle cx="36" cy="36" r="30.5" fill="none" stroke="#17131F" stroke-opacity=".22" stroke-width=".8"/>' +
+      '<text font-family="Inter, sans-serif" font-weight="800" font-size="6.6" fill="#17131F"><textPath href="#sp" textLength="150" lengthAdjust="spacingAndGlyphs">HAFTİK · HAFTALIK KART ·</textPath></text>' +
+      '<circle cx="36" cy="36" r="14.5" fill="#FFD84D"/><g transform="translate(36 36) scale(.04) translate(-512 -512)" fill="none" stroke="#17131F" stroke-width="88" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M421 321V703M421 563C421 484 468 456 512 456C559 456 603 484 603 563V703"/></g></svg>';
+  }
+  function tier(t) { var n = t.length; return n <= 18 ? '' : n <= 26 ? 't2' : 't3'; }
+  function mark(l) { return '<span class="pos" data-l="' + l + '" aria-hidden="true"><i></i><i></i><i></i><b></b></span>'; }
+  function discw(r, mode) {
+    var t = TONE[r.c];
+    if (r.h) return '<div class="dw"><span class="disc hid" style="left:0;top:2px;width:40px;height:40px"></span></div>';
+    if (mode === 'size') { var s = [30, 36, 42][r.l - 1], o = (44 - s) / 2;
+      return '<div class="dw"><span class="disc" style="left:' + o + 'px;top:' + o + 'px;width:' + s + 'px;height:' + s + 'px;background:' + t + '"><span class="emo" style="font-size:' + Math.round(s * .55) + 'px">' + r.e + '</span></span></div>'; }
+    var h = '<div class="dw"><span class="disc" style="left:0;top:2px;width:40px;height:40px;background:' + t + '"><span class="emo" style="font-size:22px">' + r.e + '</span></span>';
+    if (mode === 'stack') for (var k = 1; k < r.l; k++) h += '<span class="ly" style="left:' + (6 * k) + 'px;top:2px;width:40px;height:40px;z-index:' + (3 - k) + ';background:' + t + '"></span>';
+    return h + '</div>';
+  }
+  function card(o) {
+    var mode = o.noLevel ? 'none' : lv, h = '<div class="card' + (o.sq ? ' sq' : '') + '">';
+    h += '<div class="tape">' + (o.tape || 'HAFTALIK KART') + '</div>' + seal();
+    if (o.hideTitle) h += '<div class="title liner"><div class="lbl">HAFTANIN UNVANI</div><div class="tbox"><div><h2>Gizli çıkartma</h2><div class="sub">bilerek saklandı</div></div></div></div>';
+    else h += '<div class="title"><div class="lbl">HAFTANIN UNVANI</div><div class="tbox"><h2 class="' + tier(o.title) + '">' + o.title + '</h2></div></div>';
+    if (!o.sq) {
+      h += '<ul class="rows">' + o.rows.map(function (r) {
+        if (r.h) return '<li class="row liner">' + discw(r) + '<div class="txt"><div class="meta"><b>' + LBL[r.c] + '</b><span class="chip">GİZLİ</span></div><p>Gizli çıkartma</p></div></li>';
+        var m = mode === 'none' ? '' : '<i>' + r.w + '</i>' + (mode === 'pos' ? '<span class="sp"></span>' + mark(r.l) : '');
+        if (o.noLevel) m = '';
+        return '<li class="row">' + discw(r, mode) + '<div class="txt"><div class="meta"><b>' + LBL[r.c] + '</b>' + (mode === 'none' && !o.noLevel ? '<i>' + r.w + '</i>' : m) + '</div><p>' + r.t + '</p></div></li>';
+      }).join('') + '</ul>';
+      if (o.ornek) h += '<div class="ornek">ÖRNEK · ÖRNEK · ÖRNEK · ÖRNEK</div>';
+      h += '<div class="sum"><p>' + o.sum + '</p></div>';
+    } else {
+      h += '<div class="minis">' + o.rows.map(function (r) {
+        if (r.h) return '<div class="mini liner">' + discw(r) + '<b>' + LBL[r.c] + '</b><span class="chip">GİZLİ</span></div>';
+        return '<div class="mini">' + discw(r, mode === 'size' ? 'size' : mode === 'stack' ? 'stack' : 'pos') + '<b>' + LBL[r.c] + '</b><i>' + r.w + '</i>' + (mode === 'pos' ? mark(r.l) : '') + '</div>';
+      }).join('') + '</div>';
+    }
+    h += '<footer class="foot"><div class="wm">haftik</div>' + (o.dip ? '<div class="tag dip">' + o.dip + '</div>' : '<div class="tag">HER PAZAR BİR KART</div>') + '</footer></div>';
+    return h;
+  }
+  var N = { title: 'Konforun Kalesi', sum: 'Bu hafta terazi hem sağa hem sola salındı.', rows: [
+    { c: 'mov', l: 1, e: '🐢', w: 'durgun', t: 'Kanepe bu hafta seni pek bırakmadı.' },
+    { c: 'slp', l: 3, e: '😴', w: 'uzun', t: 'Yastığınla resmen kader birliği yaptınız.' },
+    { c: 'spn', l: 2, e: '💳', w: 'orta', t: 'Ne cimri ne çılgın, tam kararında harcadın.' },
+    { c: 'soc', l: 2, e: '👥', w: 'orta', t: 'Sosyallik dozun tam kıvamındaydı bu hafta.' }] };
+  function clone(o, ext) { var r = JSON.parse(JSON.stringify(o)); for (var k in ext) r[k] = ext[k]; return r; }
+  var G = clone(N, { hideTitle: true }); G.rows[1].h = true; G.rows[2].h = true;
+  var U = { title: 'Daha İlk Haftadan Parlayan Yıldız', sum: 'Bu ilk kartın, önceki haftayla kıyas henüz yok.', rows: [
+    { c: 'mov', l: 3, e: '🏃', w: 'yoğun', t: 'Enerjin taşmış, hareket resmen sende bu hafta.' },
+    { c: 'slp', l: 2, e: '😌', w: 'orta', t: 'Ne baykuş ne tarla kuşu, ortada bir haftaydın.' },
+    { c: 'spn', l: 1, e: '🐷', w: 'az', t: 'Cüzdanın bu hafta minik bir tatil yaptı.' },
+    { c: 'soc', l: 3, e: '🎉', w: 'kalabalık', t: 'Bu hafta etrafın seninle şenlendi.' }] };
+  var D = { title: 'Dinlenme Modu Sonuna Kadar Açık', sum: 'Genel gidişat aşağı yönlü, sakin bir dinlenme haftası.', rows: [
+    { c: 'mov', l: 1, e: '🐢', w: 'durgun', t: 'Adımların bu hafta grev ilan etti.' },
+    { c: 'slp', l: 1, e: '😪', w: 'kısa', t: 'Uyku bu hafta sana biraz küstü galiba.' },
+    { c: 'spn', l: 1, e: '🐷', w: 'az', t: 'Cüzdanın bu hafta soğuk kaldı.' },
+    { c: 'soc', l: 1, e: '👤', w: 'sakin', t: 'Sosyal hayatın bu hafta sessiz moddaydı.' }] };
+  var O = { tape: 'ÖRNEK', ornek: true, noLevel: true, dip: 'Bu kart yalnızca örnektir.', title: 'Ara Sıra Maraton', sum: 'Bu hafta geçen haftadan biraz daha hızlı geçti.', rows: [
+    { c: 'mov', l: 3, e: '🏃', w: '', t: 'Adım sayar bu hafta kendini maraton sandı.' },
+    { c: 'slp', h: true }, { c: 'spn', h: true },
+    { c: 'soc', l: 2, e: '👥', w: '', t: 'Telefonun rehberi bu hafta hafifçe ısındı.' }] };
+  function put(id, o) { var el = document.getElementById(id); el.innerHTML = card(o); el.firstChild.id = id + '-c'; }
+  put('k-normal', N); put('k-gizli', G); put('k-uzun', U); put('k-dusuk', D); put('k-ornek', O);
+  put('k-kare', clone(N, { sq: true })); put('k-kare-gizli', clone(G, { sq: true }));
+  var st = document.getElementById('k-story'); st.innerHTML = card(N);
+  st.firstChild.insertAdjacentHTML('beforeend', '<div class="zone top">Story üst ~250 px (varsayım)</div><div class="zone bot">Story alt ~340 px (varsayım)</div><div class="ui prog"></div><div class="ui av"><span></span>ayse</div><div class="ui reply">Mesaj gönder</div>');
+  document.querySelectorAll('[data-clone]').forEach(function (t) { t.appendChild(document.getElementById(t.getAttribute('data-clone') + '-c').cloneNode(true)); });
+</script>
+</body>
+</html>

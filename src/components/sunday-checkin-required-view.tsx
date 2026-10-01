@@ -14,6 +14,7 @@ import { Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useTopInset } from '@/hooks/use-top-inset';
 import { useTheme } from '@/hooks/use-theme';
 
 export interface SundayCheckinRequiredViewProps {
@@ -26,9 +27,10 @@ export function SundayCheckinRequiredView({
   onBack,
 }: SundayCheckinRequiredViewProps) {
   const theme = useTheme();
+  const topInset = useTopInset();
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { paddingTop: Spacing.four + topInset }]}>
       <ThemedText type="subtitle" style={styles.heading}>
         Kartını açmadan önce bugünü de ekleyelim.
       </ThemedText>

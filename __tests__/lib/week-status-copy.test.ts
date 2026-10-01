@@ -32,7 +32,7 @@ describe('weekStatusHeadline', () => {
       timeMet: false,
       unlocked: false,
     });
-    expect(weekStatusHeadline(s)).toBe("Kartın hazırlanıyor, Pazar 20:00'de açılacak.");
+    expect(weekStatusHeadline(s)).toBe('Kartın hazırlanıyor.');
   });
 
   it('unlocked ise "Kartın hazır!" der', () => {
@@ -53,9 +53,23 @@ describe('weekStatusHeadline', () => {
 });
 
 describe('lockedBoxCaption', () => {
-  it('eşik dolu değilse "ekran-akisi.md" ile birebir metni yazar', () => {
+  it('eşik dolu değilse kalan gün başlıkta kalır, kutu altı yalnızca zamanı söyler (B5)', () => {
     const s = state({ filledDays: 2, requiredDays: 3, thresholdMet: false, timeMet: false });
-    expect(lockedBoxCaption(s)).toBe('Kartın için 1 gün daha lazım.');
+    expect(lockedBoxCaption(s)).toBe("Pazar 20:00'de açılıyor");
+    expect(lockedBoxCaption(s)).not.toBe(weekStatusHeadline(s));
+  });
+
+  it('başlık ile kutu altı hiçbir durumda aynı cümle değildir (B5)', () => {
+    const cases: Partial<WeekState>[] = [
+      { filledDays: 1, requiredDays: 3, thresholdMet: false, timeMet: false },
+      { filledDays: 1, requiredDays: 3, thresholdMet: false, timeMet: true },
+      { filledDays: 4, requiredDays: 4, thresholdMet: true, timeMet: false },
+      { filledDays: 4, requiredDays: 4, thresholdMet: true, timeMet: true, unlocked: true },
+    ];
+    for (const c of cases) {
+      const s = state(c);
+      expect(lockedBoxCaption(s)).not.toBe(weekStatusHeadline(s));
+    }
   });
 
   it('eşik dolu ama saat gelmediyse "Pazar 20:00\'de açılıyor" der (ekran-akisi.md birebir)', () => {

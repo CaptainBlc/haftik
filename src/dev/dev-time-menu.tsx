@@ -16,6 +16,7 @@ import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { addDays, addHours, currentWeekSunday2000 } from '@/dev/dev-time-helpers';
+import { useTopInset } from '@/hooks/use-top-inset';
 import { getNow, isDevNowOverrideActive, setDevNowOverride, useNow } from '@/lib/now';
 
 function formatDisplay(date: Date): string {
@@ -27,6 +28,7 @@ function formatDisplay(date: Date): string {
 export function DevTimeMenu() {
   const [open, setOpen] = useState(false);
   const now = useNow();
+  const topInset = useTopInset();
 
   if (!__DEV__) {
     // İkinci güvence: bu bileşen yanlışlıkla üretime sızsa bile hiçbir şey
@@ -41,7 +43,7 @@ export function DevTimeMenu() {
         accessibilityLabel="Zaman simülasyonu (yalnızca geliştirme)"
         testID="dev-time-menu-fab"
         onPress={() => setOpen(true)}
-        style={styles.fab}>
+        style={[styles.fab, { top: topInset + 72 }]}>
         <ThemedText style={styles.fabLabel}>{'\u{1F552}'}</ThemedText>
       </Pressable>
 
@@ -109,7 +111,8 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 16,
-    bottom: 16,
+    // YB-5: altta Kaydet/sekme etiketlerini örtüyordu; üstte, başlık satırının altında sağ kenarda
+    // (durum çubuğu bölgesine konmaz: orada dokunuşlar sisteme gider). `top` bileşende inset'le verilir.
     width: 44,
     height: 44,
     borderRadius: 22,

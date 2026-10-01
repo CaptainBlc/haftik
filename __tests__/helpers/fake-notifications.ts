@@ -12,6 +12,10 @@ export interface FakeNotifications extends ExpoNotificationsLike {
   failScheduleFor: Set<string>;
   failCancel: boolean;
   requestCount: number;
+  /** Android 13+ gerçek davranışı: hiç sorulmamış izin = denied + canAskAgain true. Tanımsız = alan hiç dönmez. */
+  canAskAgain?: boolean;
+  /** İstek sonrası canAskAgain (ör. ikinci ret -> false). */
+  canAskAgainAfterRequest?: boolean;
 }
 
 export function createFakeNotifications(permission = 'granted'): FakeNotifications {
@@ -26,12 +30,17 @@ export function createFakeNotifications(permission = 'granted'): FakeNotificatio
     SchedulableTriggerInputTypes: { DATE: 'date' },
     AndroidImportance: { DEFAULT: 3 },
     async getPermissionsAsync() {
-      return { status: fake.permission };
+      return fake.canAskAgain === undefined
+        ? { status: fake.permission }
+        : { status: fake.permission, granted: fake.permission === 'granted', canAskAgain: fake.canAskAgain };
     },
     async requestPermissionsAsync() {
       fake.requestCount++;
       fake.permission = fake.requestResult;
-      return { status: fake.permission };
+      if (fake.canAskAgainAfterRequest !== undefined) fake.canAskAgain = fake.canAskAgainAfterRequest;
+      return fake.canAskAgain === undefined
+        ? { status: fake.permission }
+        : { status: fake.permission, granted: fake.permission === 'granted', canAskAgain: fake.canAskAgain };
     },
     async scheduleNotificationAsync(req) {
       fake.calls.push('schedule');

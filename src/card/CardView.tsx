@@ -39,6 +39,11 @@
  * Ekran 4'ün reveal akışı, `capture.test.ts`teki eski çağrılar) davranış
  * S7a ile birebir aynıdır — hiçbir satır gizlenmez, geriye dönük uyumludur.
  *
+ * **Yazı tipi ölçeği (QA BLG-08):** kart sabit 360x640 mantıksal tasarımdır ve
+ * PNG'ye dondurulur; bu yüzden TÜM kart metinleri `allowFontScaling={false}`
+ * ile kullanıcının sistem yazı tipi ölçeğinden bağımsızdır (aksi halde 2.0
+ * ölçekte satırlar kesilir, paylaşılan PNG'nin görünümü cihaz ayarına bağlı olurdu).
+ *
  * **Saf sunum bileşeni:** `CardSnapshot`'ı prop olarak alır, veri/SQLite/
  * router'a dokunmaz. `sectionOpacity` yalnızca S7a'nın reveal animasyonu
  * (`docs/ux/ekran-akisi.md` "wow anı") için görsel bir katmandır — hangi
@@ -55,7 +60,7 @@ import { CATEGORIES } from '@/domain/types';
 import type { Category, CardSnapshot } from '@/domain/types';
 
 import { CARD_FONT_FAMILY } from './fonts';
-import { CARD_LOGICAL_HEIGHT, CARD_LOGICAL_WIDTH, CardLayout } from './layout';
+import { CARD_LOGICAL_HEIGHT, CARD_LOGICAL_WIDTH, CardLayout, SummaryTextLayout } from './layout';
 import { LEVEL_TO_VALUE, levelFromLineId } from './line-level';
 import { shouldHideTitle } from './title-visibility';
 
@@ -107,7 +112,8 @@ export const CardView = forwardRef<ViewShotRef, CardViewProps>(function CardView
         <Animated.Text
           testID="card-title"
           style={[styles.title, { opacity: sectionOpacity?.title ?? 1 }]}
-          numberOfLines={2}>
+          numberOfLines={2}
+          allowFontScaling={false}>
           {titleHidden ? HIDDEN_TEXT : snapshot.title.text}
         </Animated.Text>
 
@@ -122,10 +128,10 @@ export const CardView = forwardRef<ViewShotRef, CardViewProps>(function CardView
                 key={category}
                 testID={`card-line-${category}`}
                 style={[styles.lineRow, { opacity: sectionOpacity?.[category] ?? 1 }]}>
-                <Text style={styles.emoji}>
+                <Text style={styles.emoji} allowFontScaling={false}>
                   {hidden ? HIDDEN_LINE_EMOJI : categoryEmoji(category, line.id)}
                 </Text>
-                <Text style={styles.lineText} numberOfLines={2}>
+                <Text style={styles.lineText} numberOfLines={2} allowFontScaling={false}>
                   {hidden ? HIDDEN_TEXT : line.text}
                 </Text>
               </Animated.View>
@@ -139,7 +145,12 @@ export const CardView = forwardRef<ViewShotRef, CardViewProps>(function CardView
           testID="card-summary"
           style={[styles.summaryWrapper, { opacity: sectionOpacity?.summary ?? 1 }]}>
           <View style={styles.summaryPill}>
-            <Text style={styles.summaryText} numberOfLines={2}>
+            <Text
+              style={styles.summaryText}
+              numberOfLines={SummaryTextLayout.maxLines}
+              adjustsFontSizeToFit
+              minimumFontScale={0.85}
+              allowFontScaling={false}>
               {snapshot.summary.text}
             </Text>
           </View>
@@ -148,7 +159,7 @@ export const CardView = forwardRef<ViewShotRef, CardViewProps>(function CardView
         <View style={{ height: CardLayout.gapAfterSummary }} />
 
         <View style={styles.stampWrapper}>
-          <Text testID="card-stamp" style={styles.stampText}>
+          <Text testID="card-stamp" style={styles.stampText} allowFontScaling={false}>
             {CARD_STAMP_TEXT}
           </Text>
         </View>
@@ -212,11 +223,13 @@ const styles = StyleSheet.create({
   summaryPill: {
     borderRadius: 12,
     backgroundColor: PILL_BACKGROUND,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: SummaryTextLayout.pillPaddingHorizontal,
+    paddingVertical: SummaryTextLayout.pillPaddingVertical,
+    maxWidth: '100%',
   },
   summaryText: {
-    fontSize: 16,
+    fontSize: SummaryTextLayout.fontSize,
+    lineHeight: SummaryTextLayout.lineHeight,
     fontStyle: 'italic',
     fontFamily: CARD_FONT_FAMILY.italic,
     color: TEXT_COLOR,

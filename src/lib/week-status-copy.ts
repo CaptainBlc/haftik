@@ -3,9 +3,10 @@
  * seçimi. `WeekState`'ten (domain, S2) UI metnine saf bir eşleme; React/RN'e
  * dokunmaz.
  *
- * `docs/ux/ekran-akisi.md`in birebir belirttiği iki durum:
- * - eşik dolu değilse: "Kartın için X gün daha lazım."
- * - eşik dolu ama saat gelmediyse: "Pazar 20:00'de açılıyor"
+ * `docs/ux/ekran-akisi.md` (emülatör UX B5 sonrası güncel): başlık ve kutu
+ * altı yazısı AYRI bilgi taşır, aynı cümle iki kez görünmez:
+ * - başlık = ilerleme ("Kartın için X gün daha lazım." / "Kartın hazırlanıyor.")
+ * - kutu altı = zaman ("Pazar 20:00'de açılıyor")
  *
  * **Dokümante edilmemiş üçüncü durum (S6 kararı):** `unlocked === true`
  * iken (kullanıcı henüz kutuya dokunmadan önce) gösterilecek metin
@@ -27,15 +28,17 @@
 import type { WeekState } from '@/domain/types';
 
 /** Nokta/kutu üstündeki bağımsız durum satırı. */
-export function weekStatusHeadline(state: WeekState): string {
+export function weekStatusHeadline(state: WeekState, cardSeen = false): string {
   if (!state.thresholdMet) {
     const remaining = state.requiredDays - state.filledDays;
     return `Kartın için ${remaining} gün daha lazım.`;
   }
   if (!state.timeMet) {
-    return "Kartın hazırlanıyor, Pazar 20:00'de açılacak.";
+    // Zaman bilgisi kutu altındaki yazıda (`lockedBoxCaption`), burada tekrarlanmaz.
+    return 'Kartın hazırlanıyor.';
   }
-  return 'Kartın hazır!';
+  // Kart bu hafta zaten açılıp kaydedildiyse "hazır" demek yanıltıcı (QA YB-7).
+  return cardSeen ? 'Kartın açıldı.' : 'Kartın hazır!';
 }
 
 /**
@@ -45,13 +48,20 @@ export function weekStatusHeadline(state: WeekState): string {
  *   olsa bile bugün bu haftanın Pazar'ıysa ve bugünün check-in'i eksikse
  *   `true` verilir (`needsTodayCheckinBeforeCard`, `src/lib/card-flow.ts`).
  */
-export function lockedBoxCaption(state: WeekState, needsTodayCheckin = false): string {
+export function lockedBoxCaption(
+  state: WeekState,
+  needsTodayCheckin = false,
+  cardSeen = false
+): string {
   if (!state.thresholdMet) {
-    const remaining = state.requiredDays - state.filledDays;
-    return `Kartın için ${remaining} gün daha lazım.`;
+    // Kalan gün sayısı başlıkta; kutu altı yalnızca zamanı söyler (B5).
+    return state.timeMet ? 'Yeterli gün dolunca açılır' : "Pazar 20:00'de açılıyor";
   }
   if (!state.timeMet) {
     return "Pazar 20:00'de açılıyor";
+  }
+  if (cardSeen) {
+    return 'Kartını tekrar görmek için dokun';
   }
   if (needsTodayCheckin) {
     return 'Bugünü işaretlemeden kartın açılmaz';

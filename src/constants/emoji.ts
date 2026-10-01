@@ -26,4 +26,17 @@ export const CATEGORY_EMOJI: Record<Category, Record<CategoryValue, string>> = {
   social: { 1: '👤', 2: '👥', 3: '🎉' },
 };
 
+/**
+ * Seviye adları (erişilebilirlik etiketi + seçili seviyenin kısa gösterimi).
+ * Kaynak: `spec.md` "Veri modeli" örnekleri (hareket durgun/hafif/yoğun, uyku
+ * kötü/idare/iyi, harcama az/orta/çok, sosyal yalnız/ölçülü/kalabalık) —
+ * sıralı yoğunluk anlatımı, tavsiye/yargı taşımaz (emülatör UX B2).
+ */
+export const CATEGORY_LEVEL_LABELS_TR: Record<Category, Record<CategoryValue, string>> = {
+  movement: { 1: 'durgun', 2: 'hafif', 3: 'yoğun' },
+  sleep: { 1: 'kötü', 2: 'idare', 3: 'iyi' },
+  spending: { 1: 'az', 2: 'orta', 3: 'çok' },
+  social: { 1: 'yalnız', 2: 'ölçülü', 3: 'kalabalık' },
+};
+
 export const CATEGORY_VALUES: readonly CategoryValue[] = [1, 2, 3];

@@ -111,7 +111,9 @@ export default function CardScreen() {
   return (
     <CardRevealView
       snapshot={result.value.card}
-      onClose={() => router.back()}
+      // BLG-06: çıkış her zaman Hafta ekranına; `back()` yığında kalan "Bugünü
+      // işaretle" ara ekranına düşerdi (ara ekran yalnızca ilk açma girişiminde).
+      onClose={() => router.dismissTo('/week')}
       onShare={() => setMode('preview')}
     />
   );

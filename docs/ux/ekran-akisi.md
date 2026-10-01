@@ -106,7 +106,9 @@ sonra açabilir.
 
 ```
 +-----------------------------------+
-| < 23 Eylül, Çarşamba              |
+| ‹ Dün                  Bugün ›    |
+| Bugün                             |
+| 23 Eylül, Çarşamba                |
 |                                   |
 | Hareket                           |
 |  [ 🐢 ]   [ 🚶 ]   [ 🏃 ]          |
@@ -125,14 +127,33 @@ sonra açabilir.
 ```
 - Kategori sırası spec/`types.ts` ile birebir: hareket → uyku → harcama →
   sosyal.
-- Seçili emoji: kalın çerçeve + hafif dolgu rengi; diğer ikisi soluk. Seçim
-  tek dokunuşla değişir (yanlış basınca yeniden dokunup düzeltilebilir).
+- Seçili emoji: kalın çerçeve + hafif dolgu rengi; **aynı kategoride bir seçim
+  varken** diğer ikisi soluk (seçim yokken hepsi tam opaklıkta — emülatör UX B1).
+  Seçim tek dokunuşla değişir (yanlış basınca yeniden dokunup düzeltilebilir).
+  Seçili seviyenin adı kategori başlığının yanında yazar ("Hareket · hafif") ve
+  her düğmenin erişilebilirlik etiketi "Hareket: hafif" biçimindedir (B2).
 - "Kaydet" dördü de seçilene kadar **devre dışı** (gri, dokunulamaz) —
   gerekçe: spec "kısmi kayıt yok, dört kategorinin dördü de seçilince dolu
   gün sayılır"; UI bu kuralı buton durumuyla önceden gösterir, kullanıcı
   Kaydet'e basıp "eksik" hatası almaz.
-- Üstte `<` ile bugün/dün arası geçiş (spec: düzenleme penceresi bugün ve
-  dün); daha eski gün için bu ok görünmez/pasif.
+- Kaydet'in üstünde tavsiyesiz bir ipucu ("2 kategori kaldı") kalan sayıyı
+  söyler (B3).
+- Üstte "‹ Dün" / "Bugün ›" düğmeleriyle bugün/dün arası geçiş (>= 48dp,
+  açık etiketli; spec: düzenleme penceresi bugün ve dün); daha eski gün için
+  düğme görünmez/pasif. Başlık hangi günün düzenlendiğini yazar ("Bugün" /
+  "Dün" + tarih) — yanlış güne kayıt riskini azaltır (B4). (Önceki taslak
+  yalnızca `<` glifiydi; emülatörde "geri" gibi okunduğu için değişti.)
+- **Tek ekrana sığma (kabul ölçütü):** 411x914dp'de (durum çubuğu ~24dp, alt
+  sekme ~60-80dp) 4 kategori + ipucu + Kaydet kaydırmadan görünür. Ölçüler:
+  üst boşluk 8dp + durum çubuğu inset'i; "‹ Dün / Bugün ›" satırı 48dp;
+  "Bugün/Dün" etiketi 20dp + tarih başlığı 24pt/30dp (subtitle'dan bir kademe
+  küçük); kategori başlığı 20dp + 4dp boşluk; **emoji kutusu 72dp sabit
+  yükseklik** (kare/aspectRatio DEĞİL; ~110dp'ye çıkıp 4. kategoriyi
+  kesiyordu), emoji 40pt; kategoriler arası 12dp; ipucu 20dp; Kaydet >= 48dp;
+  alt boşluk 16dp. Toplam ~670dp < ~830dp kullanılabilir. Kısa ekranda
+  (360x640) kategoriler ScrollView'da kayar, ipucu + Kaydet sabit altta kalır;
+  büyük font ölçeğinde taşma yerine kaydırma olur. Dev saat düğmesi
+  (inset+72dp, sağ kenar) yalnızca tarih bloğunun boş sağ tarafına denk gelir.
 - Hedef 8 sn = 4 kategori dokunuşu + 1 Kaydet dokunuşu; ekstra onay diyaloğu
   yok (Kaydet = kesin kayıt, geri almak istenirse tekrar açıp değiştirilir).
 
@@ -168,10 +189,11 @@ sonra açabilir.
     veri akışı seviyesinde de doğru: bu ekran `buildCard`'ı hiç çağırmaz.
   - Ortada kilit ikonu (🔒 yerine sabit bir vektör ikon kullanılabilir —
     bu ikon karta gömülmez, yalnızca uygulama arayüzü elemanıdır).
-  - Alt satır: eşik dolu ama saat gelmediyse "Pazar 20:00'de açılıyor";
-    eşik dolu değilse "Kartın için X gün daha lazım" (üstteki metinle aynı,
-    tekrar burada da gösterilir çünkü kullanıcı doğrudan bu kutuya
-    odaklanabilir).
+  - Alt satır (kutu altı) YALNIZCA zamanı söyler: "Pazar 20:00'de açılıyor"
+    (eşik dolu olmasa da; saat geçmişse "Yeterli gün dolunca açılır").
+    İlerleme ("Kartın için X gün daha lazım." / "Kartın hazırlanıyor.")
+    üstteki başlıkta kalır — aynı cümle iki kez GÖSTERİLMEZ (emülatör UX B5;
+    önceki taslak tekrarı bilerek istiyordu).
 - Kilitli kutuya dokunma: eşik+saat sağlanmadıysa **hiçbir şey açılmaz**
   (hafif bir "shake" geri bildirimi + aynı metin); sağlandıysa kart açılış
   akışı başlar (bkz. Ekran 4, `pazar-akisi.md`).

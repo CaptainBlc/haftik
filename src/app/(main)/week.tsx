@@ -8,12 +8,12 @@
  * doğrudan orada (`openOrBuildCard` → `needsTodayCheckinBeforeCard`)
  * yapılır; bu dosya yalnızca navigasyonu tetikler.
  */
-import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { LoadingView } from '@/components/loading-view';
 import { WeekStatusView } from '@/components/week-status-view';
-import { hasAnyPriorCard } from '@/data/card-repo';
+import { getCard, hasAnyPriorCard } from '@/data/card-repo';
 import { getCheckins } from '@/data/checkin-repo';
 import type { Checkin } from '@/domain/types';
 import { addLocalDays, getWeekStart, getWeekState, toLocalDateString } from '@/domain/week';
@@ -41,20 +41,29 @@ export default function WeekScreen() {
     weekStart: string;
     checkins: Checkin[];
     hasPrior: boolean;
+    hasCard: boolean;
   } | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    Promise.all([getCheckins(weekStart, weekEnd), hasAnyPriorCard()]).then(([c, prior]) => {
-      if (cancelled) {
-        return;
-      }
-      setData({ weekStart, checkins: c, hasPrior: prior });
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [weekStart, weekEnd]);
+  // BLG-02: sekme odağa her gelişinde yeniden yükle (Bugün'de kaydedilen
+  // check-in'ler bayat kalmasın). Hafta değişince de (weekStart/weekEnd) yeniden kurulur.
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      Promise.all([
+        getCheckins(weekStart, weekEnd),
+        hasAnyPriorCard(),
+        getCard(weekStart),
+      ]).then(([c, prior, card]) => {
+        if (cancelled) {
+          return;
+        }
+        setData({ weekStart, checkins: c, hasPrior: prior, hasCard: card !== null });
+      });
+      return () => {
+        cancelled = true;
+      };
+    }, [weekStart, weekEnd])
+  );
 
   // S9: kart bu hafta ilk kez açılabilir görüldüğünde bir kez say (hafta başına tek kayıt, DB'de dedupe).
   // Hook, erken `return`'den ÖNCE olmalı (hook sırası sabit kalsın).
@@ -72,7 +81,7 @@ export default function WeekScreen() {
     return <LoadingView />;
   }
 
-  const { checkins, hasPrior } = data;
+  const { checkins, hasPrior, hasCard } = data;
   const weekState = getWeekState({ weekStart, now, checkins, hasAnyPriorCard: hasPrior });
   const today = toLocalDateString(now);
   const dots = computeWeekDots(weekStart, checkins, today);
@@ -90,8 +99,8 @@ export default function WeekScreen() {
   return (
     <WeekStatusView
       dots={dots}
-      headline={weekStatusHeadline(weekState)}
-      caption={lockedBoxCaption(weekState, needsTodayCheckin)}
+      headline={weekStatusHeadline(weekState, hasCard)}
+      caption={lockedBoxCaption(weekState, needsTodayCheckin, hasCard)}
       unlocked={weekState.unlocked}
       onLockedPress={handleLockedPress}
     />

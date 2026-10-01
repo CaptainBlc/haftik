@@ -1,4 +1,5 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { AppState, useColorScheme } from 'react-native';
@@ -66,6 +67,8 @@ export default function RootLayout() {
         <Stack.Screen name="(main)" />
         <Stack.Screen name="card/[weekStart]" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
+      {/* YB-1: açık zeminde koyu, koyu zeminde açık durum çubuğu ikonları (JS'te, native derleme gerekmez). */}
+      <StatusBar style="auto" />
       {DevTimeMenu ? <DevTimeMenu /> : null}
     </ThemeProvider>
   );

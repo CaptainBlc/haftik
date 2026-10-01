@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik v2 · Ton sistemi ve kontrast</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #F5F2EC; font: 400 14px/1.55 Inter, system-ui, sans-serif; color: #17131F; padding: 40px; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  h1 { font: 800 30px/1.15 Fraunces, Georgia, serif; letter-spacing: -.01em; }
+  h2 { font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; color: #5E5870; margin: 44px 0 14px; }
+  p.lead { max-width: 820px; margin-top: 8px; color: #3a3550; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; line-height: 1; }
+  code { font: 500 12px/1 ui-monospace, Consolas, monospace; background: #EAE5F7; padding: 2px 5px; border-radius: 4px; }
+  .embed body { padding: 16px; } .embed .hide-embed { display: none; }
+
+  .sw { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
+  .s { background: #FFFDF8; border-radius: 14px; overflow: hidden; border: 1px solid #E2DCE8; }
+  .s .c { height: 76px; display: flex; align-items: flex-end; padding: 8px 10px; font: 800 10px/1 Inter, sans-serif; letter-spacing: .14em; }
+  .s .m { padding: 9px 10px 11px; font-size: 12px; line-height: 1.4; }
+  .s .m b { display: block; font: 700 13px/1.3 Inter, sans-serif; }
+  .s .m span { color: #5E5870; }
+
+  .cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .cat { background: #FFFDF8; border-radius: 16px; padding: 16px; border: 1px solid #E2DCE8; }
+  .cat h3 { font: 800 10px/1 Inter, sans-serif; letter-spacing: .16em; display: flex; align-items: center; gap: 8px; }
+  .cat h3 i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 1.5px #FFFDF8, 0 0 0 2.5px rgba(23,19,31,.18); }
+  .cat .nm { font: italic 600 18px/1.2 Fraunces, Georgia, serif; margin: 8px 0 12px; }
+  .lv { display: flex; gap: 10px; }
+  .lv div { flex: 1; text-align: center; }
+  .disc { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto; display: grid; place-items: center; }
+  .disc .emo { font-size: 24px; }
+  .lv small { display: block; margin-top: 6px; font: italic 600 13px/1 Fraunces, Georgia, serif; }
+  .cat .hex { margin-top: 12px; font: 500 11.5px/1.45 Inter, sans-serif; color: #5E5870; }
+
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filters button { font: 700 12px/1 Inter, sans-serif; padding: 10px 14px; border-radius: 999px; border: 1.5px solid #3D2E7C; background: #FFFDF8; color: #3D2E7C; cursor: pointer; min-height: 40px; }
+  .filters button[aria-pressed="true"] { background: #3D2E7C; color: #FFFDF8; }
+  #sim.gray { filter: grayscale(1); } #sim.p { filter: url(#f-p); } #sim.d { filter: url(#f-d); } #sim.t { filter: url(#f-t); }
+
+  table { border-collapse: collapse; width: 100%; background: #FFFDF8; border-radius: 12px; overflow: hidden; font-size: 13px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid #ECE7F0; text-align: left; vertical-align: middle; }
+  th { font: 800 10px/1.2 Inter, sans-serif; letter-spacing: .12em; color: #5E5870; background: #F2EEF6; }
+  td.chip span { display: inline-flex; align-items: center; justify-content: center; min-width: 96px; height: 30px; border-radius: 8px; font: 700 13px/1 Inter, sans-serif; padding: 0 8px; }
+  td.r { font: 800 14px/1 Inter, sans-serif; font-variant-numeric: tabular-nums; }
+  .ok { color: #1E6B45; } .bad { color: #B42318; }
+  td.n { color: #5E5870; font-size: 12px; }
+
+  .rows { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .album { background: radial-gradient(rgba(255,255,255,.085) 1.1px, rgba(255,255,255,0) 1.6px) 7px 7px / 14px 14px, #3D2E7C; border-radius: 18px; padding: 18px; }
+  .album h4 { font: 800 10px/1 Inter, sans-serif; letter-spacing: .16em; color: #EDE8FF; margin-bottom: 12px; }
+  .row { position: relative; height: 56px; margin-bottom: 6px; background: #FFFDF8; border-radius: 14px; box-shadow: 0 3px 0 #211850; display: flex; align-items: center; gap: 10px; padding: 0 12px 0 10px; }
+  .row .d { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+  .row .d .emo { font-size: 22px; }
+  .row .t { flex: 1; min-width: 0; }
+  .meta { display: flex; align-items: center; gap: 8px; height: 14px; }
+  .meta b { font: 800 9px/1 Inter, sans-serif; letter-spacing: .14em; }
+  .meta i { font: italic 600 13px/1 Fraunces, Georgia, serif; }
+  .row p { margin-top: 2px; font: 500 12.5px/16px Inter, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row.liner { background-color: #E7E4EE; box-shadow: none; outline: 1.5px dashed rgba(23,19,31,.38); outline-offset: -5px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28'><g fill='none' stroke='%2317131F' stroke-opacity='.08' stroke-width='3' stroke-linecap='round' transform='translate(3 3) scale(.42)'><path d='M6 3V21M6 13C6 9 8.5 7.5 12 7.5C15.5 7.5 18 9 18 13V21'/></g><g fill='none' stroke='%2317131F' stroke-opacity='.08' stroke-width='3' stroke-linecap='round' transform='translate(17 17) scale(.42)'><path d='M6 3V21M6 13C6 9 8.5 7.5 12 7.5C15.5 7.5 18 9 18 13V21'/></g></svg>"); }
+  .row.liner .d { border: 1.5px dashed rgba(23,19,31,.45); }
+  .row.liner p { color: #5E5870; }
+  .chipg { font: 800 8.5px/1 Inter, sans-serif; letter-spacing: .14em; background: #17131F; color: #FFFDF8; padding: 3px 6px 3px 7px; border-radius: 4px; }
+  ol.rules { margin: 6px 0 0 20px; } ol.rules li { margin: 6px 0; }
+  .note { font-size: 12.5px; color: #3a3550; margin-top: 10px; max-width: 900px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="f-p"><feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/></filter>
+  <filter id="f-d"><feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"/></filter>
+  <filter id="f-t"><feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"/></filter>
+</svg>
+<div class="wrap">
+  <h1>Ton sistemi · kategori başına sabit ton</h1>
+  <p class="lead hide-embed">Kural tek cümle: <b>ton kategoriyi tanıtır, seviyeyi asla.</b> Her kategorinin tek bir tonu var; seviye 1, 2 ve 3'te
+  aynı kalır. Dört ton eşit parlaklıkta (göreli parlaklık 0,66–0,73) seçildi; hiçbiri “uyarı” ya da “başarı” rengi değil
+  (kırmızı, yeşil-onay, turuncu-alarm yok). Ton yalnızca emoji diskinin zemininde kullanılır: metin, çerçeve ve satır tonlanmaz.</p>
+
+  <h2>1 · ÇEKİRDEK PALET (KART VE KABUK)</h2>
+  <div class="sw" id="core"></div>
+
+  <h2>2 · KATEGORİ TONLARI (SEVİYEYLE DEĞİŞMEZ)</h2>
+  <div class="filters hide-embed" role="group" aria-label="Görme simülasyonu">
+    <button data-f="" aria-pressed="true">Normal</button>
+    <button data-f="gray" aria-pressed="false">Gri tonlama</button>
+    <button data-f="p" aria-pressed="false">Protan (yaklaşık)</button>
+    <button data-f="d" aria-pressed="false">Döteran (yaklaşık)</button>
+    <button data-f="t" aria-pressed="false">Tritan (yaklaşık)</button>
+  </div>
+  <div id="sim">
+    <div class="cats">
+      <div class="cat"><h3><i style="background:#BFE8D2"></i>HAREKET</h3><div class="nm">nane</div>
+        <div class="lv"><div><span class="disc" style="background:#BFE8D2"><span class="emo">🐢</span></span><small>durgun</small></div><div><span class="disc" style="background:#BFE8D2"><span class="emo">🚶</span></span><small>hafif</small></div><div><span class="disc" style="background:#BFE8D2"><span class="emo">🏃</span></span><small>yoğun</small></div></div>
+        <div class="hex"><code>tone.movement</code> #BFE8D2 · L 0,734</div></div>
+      <div class="cat"><h3><i style="background:#D6CEFF"></i>UYKU</h3><div class="nm">lavanta</div>
+        <div class="lv"><div><span class="disc" style="background:#D6CEFF"><span class="emo">😪</span></span><small>kısa</small></div><div><span class="disc" style="background:#D6CEFF"><span class="emo">😌</span></span><small>orta</small></div><div><span class="disc" style="background:#D6CEFF"><span class="emo">😴</span></span><small>uzun</small></div></div>
+        <div class="hex"><code>tone.sleep</code> #D6CEFF · L 0,657</div></div>
+      <div class="cat"><h3><i style="background:#FFD4B3"></i>HARCAMA</h3><div class="nm">kayısı</div>
+        <div class="lv"><div><span class="disc" style="background:#FFD4B3"><span class="emo">🐷</span></span><small>az</small></div><div><span class="disc" style="background:#FFD4B3"><span class="emo">💳</span></span><small>orta</small></div><div><span class="disc" style="background:#FFD4B3"><span class="emo">💸</span></span><small>çok</small></div></div>
+        <div class="hex"><code>tone.spending</code> #FFD4B3 · L 0,716</div></div>
+      <div class="cat"><h3><i style="background:#FFCADB"></i>SOSYAL</h3><div class="nm">gül</div>
+        <div class="lv"><div><span class="disc" style="background:#FFCADB"><span class="emo">👤</span></span><small>sakin</small></div><div><span class="disc" style="background:#FFCADB"><span class="emo">👥</span></span><small>orta</small></div><div><span class="disc" style="background:#FFCADB"><span class="emo">🎉</span></span><small>kalabalık</small></div></div>
+        <div class="hex"><code>tone.social</code> #FFCADB · L 0,686</div></div>
+    </div>
+  </div>
+  <p class="note hide-embed">Gri tonlamada dört ton neredeyse aynı griye düşer; <b>bu bilinçli</b>: kategori, etiket (HAREKET…) ve emoji ile
+  zaten tanınır, ton yalnızca ikinci bir ipucudur. Renk körlüğü filtreleri kaba yaklaşımlardır (Viénot tipi matrisler), ölçüm değildir.
+  Seviye kelimeleri 19-metin-ve-icerik-v2 önerisidir (uyku kısa/orta/uzun, sosyal sakin/orta/kalabalık); kod bugün hâlâ eski kelimeleri taşıyor.</p>
+
+  <h2>3 · KONTRAST TABLOSU (WCAG 2.x, SAYFA CANLI HESAPLAR)</h2>
+  <table id="ct"><thead><tr><th>Ön plan / zemin</th><th>Örnek</th><th>Oran</th><th>Eşik</th><th>Nerede</th></tr></thead><tbody></tbody></table>
+  <p class="note hide-embed">Oranlar göreli parlaklık formülüyle bu sayfada hesaplanır (K1); raporda aynı değerler elle de hesaplandı.
+  Ekranda/cihazda ölçülmedi (K4 bekliyor). Tonların kâğıt üstündeki oranı (≈1,3:1) bilgi taşımadığı için eşiğe tabi değil; disk dekoratiftir.</p>
+
+  <h2>4 · GİZLİ KATEGORİ: GÖRSEL DİLDE SIZMAMA</h2>
+  <div class="rows">
+    <div class="album"><h4>GÖRÜNÜR</h4>
+      <div class="row"><span class="d" style="background:#BFE8D2"><span class="emo">🐢</span></span><div class="t"><div class="meta"><b>HAREKET</b><i>durgun</i></div><p>Kanepe bu hafta seni pek bırakmadı.</p></div></div>
+      <div class="row"><span class="d" style="background:#D6CEFF"><span class="emo">😴</span></span><div class="t"><div class="meta"><b>UYKU</b><i>uzun</i></div><p>Yastığınla resmen kader birliği yaptınız.</p></div></div>
+      <div class="row"><span class="d" style="background:#FFD4B3"><span class="emo">💳</span></span><div class="t"><div class="meta"><b>HARCAMA</b><i>orta</i></div><p>Ne cimri ne çılgın, tam kararında harcadın.</p></div></div>
+      <div class="row"><span class="d" style="background:#FFCADB"><span class="emo">👥</span></span><div class="t"><div class="meta"><b>SOSYAL</b><i>orta</i></div><p>Sosyallik dozun tam kıvamındaydı bu hafta.</p></div></div>
+    </div>
+    <div class="album"><h4>HEPSİ GİZLİ (DÖRT SATIR BİREBİR AYNI)</h4>
+      <div class="row liner"><span class="d"></span><div class="t"><div class="meta"><b>HAREKET</b><span class="chipg">GİZLİ</span></div><p>Gizli çıkartma</p></div></div>
+      <div class="row liner"><span class="d"></span><div class="t"><div class="meta"><b>UYKU</b><span class="chipg">GİZLİ</span></div><p>Gizli çıkartma</p></div></div>
+      <div class="row liner"><span class="d"></span><div class="t"><div class="meta"><b>HARCAMA</b><span class="chipg">GİZLİ</span></div><p>Gizli çıkartma</p></div></div>
+      <div class="row liner"><span class="d"></span><div class="t"><div class="meta"><b>SOSYAL</b><span class="chipg">GİZLİ</span></div><p>Gizli çıkartma</p></div></div>
+    </div>
+  </div>
+  <ol class="rules">
+    <li><b>Gizli satır tonsuzdur.</b> Disk boş ve kesik konturlu; zemin nötr arka kâğıt <code>#E7E4EE</code>. Kategori tonu gizli satırın hiçbir pikselinde yok.</li>
+    <li><b>Gizli satırda seviye izi yok:</b> emoji, seviye kelimesi, seviye işareti (konum/katman/boy) render ağacına girmez; yükseklik sabit 56.</li>
+    <li><b>Gizli satır metni sabit ve tek:</b> “Gizli çıkartma”. Satır metninin uzunluğu gerçek metnin uzunluğunu ele vermez.</li>
+    <li><b>Unvan çıkartması her zaman sarı</b> (<code>sun</code>); rengi <code>basedOnCategories</code>'a bağlı değildir. Gizlenince arka kâğıda döner; hangi kategoriden türediği renkten okunamaz.</li>
+    <li><b>Albüm zemini, özet balonu, mühür ve bant hiçbir veriye bağlı değildir</b> (haftaya/seviyeye göre renk değiştirmez).</li>
+    <li>Kategori etiketi (UYKU) gizli satırda kalır: satır sırası zaten sabit olduğu için ek sızıntı değildir (copywriter 19 §3.6 ile aynı karar).</li>
+    <li>Paylaşım seçicisindeki önizleme ve kare (1:1) varyant aynı kuralları uygular. Test: gizli satırın alt ağacında <code>tone.*</code> değeri ve <code>LevelMark</code> olmamalı (render ağacı testi).</li>
+  </ol>
+</div>
+
+<script>
+  var core = [
+    ['album', '#3D2E7C', '#FFFDF8', 'Albüm zemini (kart), marka ana rengi, birincil düğme (açık)'],
+    ['albumDeep', '#211850', '#FFFDF8', 'Sert gölge (kart içinde), mühür gölgesi'],
+    ['ink', '#17131F', '#FFFDF8', 'Metin, GİZLİ çipi, koyu tema zemini'],
+    ['paper', '#FFFDF8', '#17131F', 'Çıkartma yüzü, satırlar, kabukta yüzey'],
+    ['sun', '#FFD84D', '#17131F', 'Unvan çıkartması, bant. Tek vurgu'],
+    ['liner', '#E7E4EE', '#17131F', 'Arka kâğıt (gizli), pasif düğme'],
+    ['muted', '#5E5870', '#FFFDF8', 'İkincil metin (açık)'],
+    ['onAlbum', '#EDE8FF', '#3D2E7C', 'Albüm üstü küçük metin'],
+    ['shellBg', '#F5F2EC', '#17131F', 'Uygulama zemini (açık)'],
+    ['selFill', '#EAE5F7', '#17131F', 'Seçili kutu dolgusu (açık)'],
+    ['danger', '#B42318', '#FFFDF8', 'Yalnız “Tüm verilerimi sil”'],
+    ['d.bg', '#17131F', '#F3EFFA', 'Koyu kabuk zemini'],
+    ['d.surface', '#231D33', '#F3EFFA', 'Koyu yüzey'],
+    ['d.text', '#F3EFFA', '#17131F', 'Koyu metin'],
+    ['d.muted', '#B3ABC6', '#17131F', 'Koyu ikincil metin'],
+    ['d.accent', '#B7A8FF', '#17131F', 'Koyu vurgu, seçili çerçeve, birincil düğme'],
+    ['d.selFill', '#3A2F63', '#F3EFFA', 'Koyu seçili dolgu'],
+    ['d.danger', '#FF8A80', '#17131F', 'Koyu silme metni']
+  ];
+  var host = document.getElementById('core');
+  core.forEach(function (c) {
+    var d = document.createElement('div'); d.className = 's';
+    d.innerHTML = '<div class="c" style="background:' + c[1] + ';color:' + c[2] + '">' + c[0].toUpperCase() + '</div><div class="m"><b>' + c[1] + '</b><span>' + c[3] + '</span></div>';
+    host.appendChild(d);
+  });
+
+  function lin(v) { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+  function L(hex) { var n = parseInt(hex.slice(1), 16); return 0.2126 * lin(n >> 16 & 255) + 0.7152 * lin(n >> 8 & 255) + 0.0722 * lin(n & 255); }
+  function cr(a, b) { var x = L(a), y = L(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  var pairs = [
+    ['#17131F', '#FFFDF8', 4.5, 'Satır metni, unvan etiketi (kart)'],
+    ['#17131F', '#FFD84D', 4.5, 'Unvan (sarı çıkartma)'],
+    ['#17131F', '#E7E4EE', 4.5, 'Gizli satır etiketi'],
+    ['#5E5870', '#E7E4EE', 4.5, '“Gizli çıkartma” metni'],
+    ['#5E5870', '#FFFDF8', 4.5, 'İkincil metin (kâğıt)'],
+    ['#FFFDF8', '#3D2E7C', 4.5, 'Wordmark, beyaz metin albüm üstünde'],
+    ['#EDE8FF', '#3D2E7C', 4.5, 'Altbilgi etiketi albüm üstünde'],
+    ['#FFFDF8', '#17131F', 4.5, 'GİZLİ çipi'],
+    ['#17131F', '#BFE8D2', 4.5, 'Emoji yok, disk içi metin olursa (hareket)'],
+    ['#17131F', '#D6CEFF', 4.5, '(uyku)'],
+    ['#17131F', '#FFD4B3', 4.5, '(harcama)'],
+    ['#17131F', '#FFCADB', 4.5, '(sosyal)'],
+    ['#17131F', '#F5F2EC', 4.5, 'Kabuk metni (açık)'],
+    ['#5E5870', '#F5F2EC', 4.5, 'Kabuk ikincil metni (açık)'],
+    ['#3D2E7C', '#F5F2EC', 3, 'Seçili çerçeve, sekme ikonu (açık, UI öğesi)'],
+    ['#FFFDF8', '#3D2E7C', 4.5, 'Kaydet düğmesi metni (açık)'],
+    ['#5E5870', '#E7E4EE', 4.5, 'Pasif Kaydet metni (açık)'],
+    ['#17131F', '#EAE5F7', 4.5, 'Seçili kutu içi kelime (açık)'],
+    ['#B42318', '#F5F2EC', 4.5, 'Silme metni (açık)'],
+    ['#F3EFFA', '#17131F', 4.5, 'Koyu metin / zemin'],
+    ['#F3EFFA', '#231D33', 4.5, 'Koyu metin / yüzey'],
+    ['#B3ABC6', '#231D33', 4.5, 'Koyu ikincil / yüzey'],
+    ['#B7A8FF', '#231D33', 3, 'Koyu seçili çerçeve (UI öğesi)'],
+    ['#17131F', '#B7A8FF', 4.5, 'Koyu Kaydet metni'],
+    ['#F3EFFA', '#3A2F63', 4.5, 'Koyu seçili kutu içi kelime'],
+    ['#FF8A80', '#231D33', 4.5, 'Koyu silme metni']
+  ];
+  var tb = document.querySelector('#ct tbody');
+  pairs.forEach(function (p) {
+    var r = cr(p[0], p[1]); var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + p[0] + ' / ' + p[1] + '</td><td class="chip"><span style="color:' + p[0] + ';background:' + p[1] + '">Aa Şİğı</span></td>' +
+      '<td class="r ' + (r >= p[2] ? 'ok' : 'bad') + '">' + r.toFixed(2).replace('.', ',') + ':1</td><td class="n">≥ ' + String(p[2]).replace('.', ',') + '</td><td class="n">' + p[3] + '</td>';
+    tb.appendChild(tr);
+  });
+
+  document.querySelectorAll('.filters button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.filters button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      document.getElementById('sim').className = b.getAttribute('data-f');
+    });
+  });
+</script>
+</body>
+</html>

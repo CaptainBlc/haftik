@@ -3,6 +3,7 @@ import type { ColorValue } from 'react-native';
 
 import { LoadingView } from '@/components/loading-view';
 import { ThemedText } from '@/components/themed-text';
+import { useTheme } from '@/hooks/use-theme';
 import { ONBOARDING_ROUTE, useOnboardingGate } from '@/lib/onboarding-gate';
 
 function TabIcon({ glyph, color }: { glyph: string; color: ColorValue }) {
@@ -13,6 +14,7 @@ function TabIcon({ glyph, color }: { glyph: string; color: ColorValue }) {
 export default function MainLayout() {
   // S10 N-4: derin bağlantı (`haftik://today`, `haftik://week`) onboarding'i atlayamaz.
   const gate = useOnboardingGate();
+  const theme = useTheme();
   if (gate === 'loading') {
     return <LoadingView />;
   }
@@ -21,7 +23,14 @@ export default function MainLayout() {
   }
 
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        // B13: etiket kontrastı (pasif etiket >= 4.5:1, tema `textSecondary`).
+        tabBarActiveTintColor: theme.text,
+        tabBarInactiveTintColor: theme.textSecondary,
+        tabBarLabelStyle: { fontSize: 12 },
+      }}>
       <Tabs.Screen
         name="today"
         options={{

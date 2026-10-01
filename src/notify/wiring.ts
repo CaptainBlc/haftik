@@ -8,7 +8,7 @@ import { getCheckins } from '@/data/checkin-repo';
 import { getAllSettings } from '@/data/setting-repo';
 import { addLocalDays, getWeekStart } from '@/domain/week';
 import { getNow } from '@/lib/now';
-import { getDefaultScheduler, type NotificationScheduler, type PermissionStatus } from './scheduler';
+import { getDefaultScheduler, type NotificationScheduler, type PermissionState, type PermissionStatus } from './scheduler';
 import { runExclusiveNotify, syncNotifications, type NotifyState, type SyncResult } from './sync';
 
 export async function readNotifyState(now: Date): Promise<NotifyState> {
@@ -43,15 +43,24 @@ export function syncNotificationsNow(overrides: Overrides = {}): Promise<SyncRes
   });
 }
 
-/** Kullanıcı akışından: izin `undetermined` ise ister, sonra yeniden planlar. */
+/**
+ * Kullanıcı akışından (onboarding "İzin ver" / Ayarlar anahtarı): izin yok VE
+ * sistem tekrar sorabiliyorsa (`canAskAgain`) sistem diyaloğunu ister, sonra
+ * yeniden planlar. Kalıcı reddedilmişse (`canAskAgain: false`) istek YAPILMAZ
+ * (Android diyalog göstermez); UI yalnızca "Ayarları aç" yönlendirmesi sunar.
+ * Android 13'te kanal, ilk bildirimden önce yoksa diyalog çıkmayabildiğinden
+ * kanal istekten ÖNCE oluşturulur (en iyi çaba).
+ */
 export async function requestPermissionAndSync(
   overrides: Overrides = {}
 ): Promise<PermissionStatus> {
   const scheduler = overrides.scheduler ?? getDefaultScheduler();
   let status: PermissionStatus = 'undetermined';
   try {
-    status = await scheduler.getPermission();
-    if (status === 'undetermined') {
+    const state = await scheduler.getPermissionState();
+    status = state.status;
+    if (!state.granted && state.canAskAgain) {
+      await scheduler.ensureChannel().catch(() => undefined);
       status = await scheduler.requestPermission();
     }
   } catch {
@@ -68,6 +77,17 @@ export async function getNotificationPermission(
     return await (overrides.scheduler ?? getDefaultScheduler()).getPermission();
   } catch {
     return 'undetermined';
+  }
+}
+
+/** Ayarlar UI'ı için: durum + tekrar sorulabilir mi. Hata -> `undetermined`, sorulabilir. */
+export async function getNotificationPermissionState(
+  overrides: Overrides = {}
+): Promise<PermissionState> {
+  try {
+    return await (overrides.scheduler ?? getDefaultScheduler()).getPermissionState();
+  } catch {
+    return { status: 'undetermined', granted: false, canAskAgain: true };
   }
 }
 

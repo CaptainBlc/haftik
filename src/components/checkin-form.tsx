@@ -9,8 +9,10 @@ import { CategoryPicker } from '@/components/category-picker';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { useTopInset } from '@/hooks/use-top-inset';
 import { useTheme } from '@/hooks/use-theme';
 import type { Category, CategoryValue } from '@/domain/types';
+import { CATEGORIES } from '@/domain/types';
 import { isSelectionComplete, type CategorySelection } from '@/lib/checkin-form';
 
 export interface CheckinFormProps {
@@ -38,36 +40,56 @@ export function CheckinForm({
   disabledExtra = false,
 }: CheckinFormProps) {
   const theme = useTheme();
+  const topInset = useTopInset();
   const complete = isSelectionComplete(selection);
   const saveDisabled = !complete || disabledExtra;
+  const remaining = CATEGORIES.filter((category) => selection[category] === undefined).length;
+  // Hangi günün düzenlendiği başlıkta açıkça yazar (yanlış güne kayıt riski, B4).
+  const dayCaption = canGoToToday ? 'Dün' : 'Bugün';
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { paddingTop: Spacing.two + topInset }]}>
       <View style={styles.header}>
         <Pressable
           testID="date-nav-back"
           accessibilityRole="button"
+          accessibilityLabel="Dünü düzenle"
           disabled={!canGoToYesterday}
           onPress={onGoToYesterday}
-          style={styles.navButton}>
-          <ThemedText style={!canGoToYesterday && styles.navButtonDisabled}>{'<'}</ThemedText>
+          style={[styles.navButton, !canGoToYesterday && styles.navButtonDisabled]}>
+          <ThemedText type="smallBold">{'‹ Dün'}</ThemedText>
         </Pressable>
-        <ThemedText type="subtitle" style={styles.dateLabel}>
-          {dateLabel}
-        </ThemedText>
         <Pressable
           testID="date-nav-forward"
           accessibilityRole="button"
+          accessibilityLabel="Bugüne dön"
           disabled={!canGoToToday}
           onPress={onGoToToday}
-          style={styles.navButton}>
-          <ThemedText style={!canGoToToday && styles.navButtonDisabled}>{'>'}</ThemedText>
+          style={[styles.navButton, !canGoToToday && styles.navButtonDisabled]}>
+          <ThemedText type="smallBold">{'Bugün ›'}</ThemedText>
         </Pressable>
+      </View>
+
+      <View>
+        <ThemedText type="small" themeColor="textSecondary" testID="day-caption">
+          {dayCaption}
+        </ThemedText>
+        <ThemedText type="subtitle" style={styles.dateLabel} testID="date-label">
+          {dateLabel}
+        </ThemedText>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <CategoryPicker selection={selection} onSelect={onSelect} />
       </ScrollView>
+
+      <ThemedText
+        type="small"
+        themeColor="textSecondary"
+        testID="save-hint"
+        style={styles.saveHint}>
+        {complete ? ' ' : `${remaining} kategori kaldı`}
+      </ThemedText>
 
       <Pressable
         testID="save-button"
@@ -92,8 +114,9 @@ export function CheckinForm({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: Spacing.four,
-    gap: Spacing.three,
+    paddingHorizontal: Spacing.four,
+    paddingBottom: Spacing.three,
+    gap: Spacing.two,
   },
   header: {
     flexDirection: 'row',
@@ -101,21 +124,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   dateLabel: {
-    textAlign: 'center',
+    textAlign: 'left',
+    fontSize: 24, // subtitle (32) bir kademe küçük: dikey yer tasarrufu
+    lineHeight: 30,
   },
   navButton: {
-    padding: Spacing.two,
-    minWidth: 32,
+    paddingHorizontal: Spacing.three,
+    minWidth: 48,
+    minHeight: 48, // B4: dokunma hedefi >= 48dp
+    justifyContent: 'center',
     alignItems: 'center',
+  },
+  saveHint: {
+    textAlign: 'center',
   },
   navButtonDisabled: {
     opacity: 0,
   },
   scrollContent: {
-    gap: Spacing.three,
+    gap: Spacing.two,
   },
   saveButton: {
-    paddingVertical: Spacing.three,
+    minHeight: 48,
+    justifyContent: 'center',
+    paddingVertical: Spacing.two,
     borderRadius: Spacing.two,
     alignItems: 'center',
   },

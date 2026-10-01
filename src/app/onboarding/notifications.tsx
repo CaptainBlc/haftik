@@ -7,6 +7,7 @@
  * sonra açabilir).
  */
 import { useRouter } from 'expo-router';
+import { useRef } from 'react';
 
 import { OnboardingScreen } from '@/components/onboarding-screen';
 import { getFirstOpenDate, setFirstOpenDate, setOnboardingDone } from '@/data/setting-repo';
@@ -27,8 +28,14 @@ async function completeOnboarding(router: ReturnType<typeof useRouter>): Promise
 
 export default function NotificationsScreen() {
   const router = useRouter();
+  // Çift dokunuş korunması: akış (izin isteği + onboardingDone + yönlendirme) bir kez çalışır.
+  const busy = useRef(false);
 
   async function handleAllow() {
+    if (busy.current) {
+      return;
+    }
+    busy.current = true;
     try {
       await requestPermissionAndSync();
     } catch {
@@ -36,11 +43,24 @@ export default function NotificationsScreen() {
       // onboarding akışı kesilmemeli — kullanıcı sonra Ayarlar'dan tekrar
       // deneyebilir (spec: "İstediğin an kapatabilirsin").
     }
-    await completeOnboarding(router);
+    await finish();
+  }
+
+  async function finish() {
+    try {
+      await completeOnboarding(router);
+    } catch (error) {
+      busy.current = false; // yazma başarısızsa kullanıcı yeniden deneyebilsin
+      throw error;
+    }
   }
 
   async function handleNotNow() {
-    await completeOnboarding(router);
+    if (busy.current) {
+      return;
+    }
+    busy.current = true;
+    await finish();
   }
 
   return (

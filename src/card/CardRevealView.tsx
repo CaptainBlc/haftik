@@ -32,7 +32,8 @@
  * çağıran ekran (`src/app/card/[weekStart].tsx`) `onShare` ile oraya geçer.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ViewShotRef } from 'react-native-view-shot';
 
 import { ThemedText } from '@/components/themed-text';
@@ -40,6 +41,13 @@ import { Spacing } from '@/constants/theme';
 import type { CardSnapshot } from '@/domain/types';
 
 import { CardView } from './CardView';
+import {
+  CARD_LOGICAL_HEIGHT,
+  CARD_LOGICAL_WIDTH,
+  CARD_SCREEN_BOTTOM_BAR,
+  CARD_SCREEN_TOP_BAR,
+  computeCardDisplayScale,
+} from './layout';
 
 const BLUR_FADE_MS = 400;
 const CONTENT_REVEAL_MS = 1200;
@@ -78,6 +86,10 @@ export function CardRevealView({
   const animationRef = useRef<Animated.CompositeAnimation | null>(null);
   const viewShotRef = useRef<ViewShotRef>(null);
   const [revealed, setRevealed] = useState(false);
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const scale = computeCardDisplayScale(windowWidth, windowHeight);
+  const scaledWidth = Math.round(CARD_LOGICAL_WIDTH * scale);
+  const scaledHeight = Math.round(CARD_LOGICAL_HEIGHT * scale);
 
   useEffect(() => {
     const sequence = Animated.sequence([
@@ -127,7 +139,7 @@ export function CardRevealView({
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {!revealed && (
         <Pressable
           testID="card-reveal-skip-overlay"
@@ -138,68 +150,109 @@ export function CardRevealView({
         />
       )}
 
-      <Animated.View style={[styles.cardWrapper, { opacity: blurFade }]}>
-        <CardView
-          ref={viewShotRef}
-          snapshot={snapshot}
-          sectionOpacity={{
-            title: sectionOpacity(0, 0.15),
-            movement: sectionOpacity(0.1, 0.25),
-            sleep: sectionOpacity(0.22, 0.37),
-            spending: sectionOpacity(0.34, 0.49),
-            social: sectionOpacity(0.46, 0.61),
-            summary: sectionOpacity(0.6, 0.75),
-          }}
-        />
-      </Animated.View>
-
-      <Pressable
-        testID="card-reveal-close"
-        accessibilityRole="button"
-        accessibilityLabel="Kapat"
-        onPress={onClose}
-        style={styles.closeButton}>
-        <ThemedText style={styles.closeText}>✕</ThemedText>
-      </Pressable>
-
-      {revealed && onShare && (
+      {/* Üst çubuk: Kapat kartla/unvanla çakışmaz (QA BLG-07). */}
+      <View style={styles.topBar}>
         <Pressable
-          testID="card-reveal-share"
+          testID="card-reveal-close"
           accessibilityRole="button"
-          onPress={onShare}
-          style={styles.shareButton}>
-          <ThemedText type="smallBold" style={styles.shareButtonText}>
-            Paylaş
-          </ThemedText>
+          accessibilityLabel="Kapat"
+          onPress={onClose}
+          style={styles.closeButton}>
+          <ThemedText style={styles.closeText}>✕</ThemedText>
         </Pressable>
-      )}
-    </View>
+      </View>
+
+      <View style={styles.center}>
+        <Animated.View
+          testID="card-scale-wrapper"
+          style={[
+            styles.cardWrapper,
+            { width: scaledWidth, height: scaledHeight, opacity: blurFade },
+          ]}>
+          {/* Kart hep 360x640 mantıksal çizilir; ekran küçükse yalnızca görünüm ölçeklenir. */}
+          <View
+            style={[
+              styles.cardScaler,
+              {
+                left: (scaledWidth - CARD_LOGICAL_WIDTH) / 2,
+                top: (scaledHeight - CARD_LOGICAL_HEIGHT) / 2,
+                transform: [{ scale }],
+              },
+            ]}>
+            <CardView
+              ref={viewShotRef}
+              snapshot={snapshot}
+              sectionOpacity={{
+                title: sectionOpacity(0, 0.15),
+                movement: sectionOpacity(0.1, 0.25),
+                sleep: sectionOpacity(0.22, 0.37),
+                spending: sectionOpacity(0.34, 0.49),
+                social: sectionOpacity(0.46, 0.61),
+                summary: sectionOpacity(0.6, 0.75),
+              }}
+            />
+          </View>
+        </Animated.View>
+      </View>
+
+      {/* Alt çubuk: Paylaş sabit alanda, özetle/damgayla çakışmaz; yer, buton görünmeden de ayrılır. */}
+      <View style={styles.bottomBar}>
+        {revealed && onShare && (
+          <Pressable
+            testID="card-reveal-share"
+            accessibilityRole="button"
+            onPress={onShare}
+            style={styles.shareButton}>
+            <ThemedText type="smallBold" style={styles.shareButtonText}>
+              Paylaş
+            </ThemedText>
+          </Pressable>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  topBar: {
+    height: CARD_SCREEN_TOP_BAR,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.two,
+  },
+  center: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: Spacing.four,
+  },
+  bottomBar: {
+    height: CARD_SCREEN_BOTTOM_BAR,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cardWrapper: {
     borderRadius: Spacing.three,
     overflow: 'hidden',
   },
-  closeButton: {
+  cardScaler: {
     position: 'absolute',
-    top: Spacing.six,
-    left: Spacing.four,
-    padding: Spacing.two,
+    width: CARD_LOGICAL_WIDTH,
+    height: CARD_LOGICAL_HEIGHT,
+  },
+  closeButton: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   closeText: {
     fontSize: 22,
   },
   shareButton: {
-    position: 'absolute',
-    bottom: Spacing.six,
+    minHeight: 48,
+    justifyContent: 'center',
     paddingVertical: Spacing.three,
     paddingHorizontal: Spacing.five,
     borderRadius: Spacing.two,

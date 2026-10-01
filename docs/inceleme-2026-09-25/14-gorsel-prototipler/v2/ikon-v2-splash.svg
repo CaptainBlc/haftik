@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="576" height="576" viewBox="0 0 288 288">
+  <!-- Splash görseli (saydam). Android 12+ splash ikon alanı: arka plansız ikon 288 dp tuval, içerik 192 dp çaplı daire
+       içinde (Android geliştirici belgesi, K3; cihazda doğrulanmadı). En uzak nokta ≈ 31,7 x 2,8 = 88,8 < 96. -->
+  <g transform="translate(144 144) scale(2.8) translate(-54 -54)">
+    <g transform="rotate(-6 54 54)">
+      <rect x="31.7" y="32.1" width="49" height="49" rx="13.5" fill="#211850"/>
+      <rect x="29.5" y="29.5" width="49" height="49" rx="13.5" fill="#FFFDF8"/>
+      <rect x="32" y="32" width="44" height="44" rx="11" fill="#FFD84D"/>
+      <path d="M434 340V668M434 548C434 480 474 456 512 456C552 456 590 480 590 548V668" transform="translate(54 54) scale(.0619) translate(-512 -504)"
+        fill="none" stroke="#17131F" stroke-width="76" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

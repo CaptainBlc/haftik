@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik · Görsel prototip galerisi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { --bg: #ECE9F1; --fg: #1B1824; --muted: #5F5B70; --panel: #FFFFFF; --line: #DDD9E5;
+    background: var(--bg); color: var(--fg); font-family: Inter, system-ui, sans-serif; padding: 36px 40px 80px; transition: background .2s; }
+  body:has(#koyu:checked) { --bg: #14121B; --fg: #F1EEF8; --muted: #A9A4BD; --panel: #1E1B28; --line: #2E2A3B; }
+  a { color: inherit; }
+  header.top { max-width: 1500px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  header.top h1 { font: 800 28px/1.1 Inter, sans-serif; letter-spacing: -.02em; }
+  header.top p { font: 400 14px/1.55 Inter, sans-serif; color: var(--muted); max-width: 780px; margin-top: 8px; }
+  .toggle { display: flex; align-items: center; gap: 10px; font: 600 13px/1 Inter, sans-serif; cursor: pointer; user-select: none;
+    padding: 10px 14px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); }
+  .toggle input { width: 16px; height: 16px; accent-color: #4B32C3; }
+
+  section { max-width: 1500px; margin: 40px auto 0; }
+  section > h2 { font: 800 13px/1 Inter, sans-serif; letter-spacing: .16em; color: var(--muted); margin-bottom: 16px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 22px; }
+  .item { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 18px 18px 16px; }
+  .item h3 { font: 700 15px/1.3 Inter, sans-serif; display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
+  .item h3 a { font: 600 12px/1 Inter, sans-serif; color: var(--muted); white-space: nowrap; }
+  .item p { font: 400 12.5px/1.5 Inter, sans-serif; color: var(--muted); margin-top: 4px; max-width: 520px; }
+  .frame { overflow: hidden; margin-top: 12px; }
+  .frame iframe { border: 0; transform-origin: 0 0; display: block; background: transparent; }
+
+  /* kart sayfaları embed modunda: 2 kart yan yana, doğal 800x690 -> ölçek .6 */
+  .f-card { width: 480px; height: 414px; }
+  .f-card iframe { width: 800px; height: 690px; transform: scale(.6); }
+  /* bugün: 2 telefon, doğal 960x1000 -> ölçek .5 */
+  .f-today { width: 480px; height: 500px; }
+  .f-today iframe { width: 960px; height: 1000px; transform: scale(.5); }
+  /* hafta: 4 telefon, doğal 1880x1000 -> ölçek .5 */
+  .f-week { width: 940px; height: 500px; }
+  .f-week iframe { width: 1880px; height: 1000px; transform: scale(.5); }
+
+  .icons { display: flex; gap: 28px; align-items: flex-end; margin-top: 14px; flex-wrap: wrap; }
+  .ic { display: flex; flex-direction: column; align-items: center; gap: 8px; font: 600 11px/1.3 Inter, sans-serif; color: var(--muted); text-align: center; }
+  .ic img { display: block; }
+  .ic .big { width: 132px; height: 132px; border-radius: 30px; box-shadow: 0 10px 24px -12px rgba(0,0,0,.45); }
+  .small-row { display: flex; gap: 14px; align-items: center; padding: 12px 16px; border-radius: 16px; }
+  .small-row.l { background: linear-gradient(135deg, #F7E7D3, #CFD9EA); }
+  .small-row.d { background: linear-gradient(135deg, #3A4A6B, #10141F); }
+  .small-row img { width: 48px; height: 48px; border-radius: 50%; }
+
+  .verdict { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 20px 24px; font: 400 14px/1.6 Inter, sans-serif; }
+  .verdict b { font-weight: 700; }
+  .verdict ul { margin: 8px 0 0 18px; }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Haftik · görsel prototipler</h1>
+      <p>Üç görsel yön, aynı içerikle (“Konforun Kalesi” haftası). Her kutu kendi başına açılabilen tek dosyalık bir HTML; “tam sayfa” bağlantısı
+      stres testini, %25 küçük önizleme testini ve kontrast notlarını da gösterir. Emoji, Android’deki gibi Noto Color Emoji ile çizilir.
+      Kartta tarih, ham sayı, tutar ya da konum yok.</p>
+    </div>
+    <label class="toggle"><input type="checkbox" id="koyu"> Koyu zemin</label>
+  </header>
+
+  <section>
+    <h2>1 · PAYLAŞIM KARTI · ÜÇ YÖN (NORMAL + UNVAN GİZLİ)</h2>
+    <div class="grid">
+      <div class="item">
+        <h3>A · Mühürlü karne <a href="kart-a-muhurlu-karne.html">tam sayfa →</a></h3>
+        <p>Krem kâğıt, mürekkep, mor mühür. Gizli durum: düzeltme bandı.</p>
+        <div class="frame f-card"><iframe src="kart-a-muhurlu-karne.html?embed=1" title="Kart A"></iframe></div>
+      </div>
+      <div class="item">
+        <h3>B · Pazar gecesi <a href="kart-b-pazar-gecesi.html">tam sayfa →</a></h3>
+        <p>Gece gradyanı, parlayan küre, cam panel. Gizli durum: buzlu cam.</p>
+        <div class="frame f-card"><iframe src="kart-b-pazar-gecesi.html?embed=1" title="Kart B"></iframe></div>
+      </div>
+      <div class="item">
+        <h3>C · Çıkartma albümü <a href="kart-c-cikartma-albumu.html">tam sayfa →</a></h3>
+        <p>Mor albüm, kalın kontur, sert gölge. Gizli durum: arka kâğıdı görünen çıkartma.</p>
+        <div class="frame f-card"><iframe src="kart-c-cikartma-albumu.html?embed=1" title="Kart C"></iframe></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2 · BUGÜN (CHECK-IN) · A VE B</h2>
+    <div class="grid">
+      <div class="item">
+        <h3>Bugün ekranı <a href="ekran-bugun.html">tam sayfa + durum lejantı →</a></h3>
+        <p>Seçili = dolgu + kalın çerçeve + ✓ rozeti; pasif = soluk emoji. Kutular 72 dp.</p>
+        <div class="frame f-today"><iframe src="ekran-bugun.html?embed=1" title="Bugün"></iframe></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3 · HAFTA · KİLİTLİ VE AÇIK · A VE B</h2>
+    <div class="grid">
+      <div class="item">
+        <h3>Hafta ekranı <a href="ekran-hafta.html">tam sayfa →</a></h3>
+        <p>A: mühürlü zarf → kırık mühür, zarftan yükselen kart. B: ufkun altındaki küre → doğmuş küre, parlayan kart.</p>
+        <div class="frame f-week"><iframe src="ekran-hafta.html?embed=1" title="Hafta"></iframe></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>4 · UYGULAMA İKONU · 3 ALTERNATİF</h2>
+    <div class="item">
+      <h3>1024 ana dosyalar ve 48 px <a href="ikon.html">adaptive katmanlar, maskeler, monochrome, başlatıcı testi →</a></h3>
+      <div class="icons">
+        <div class="ic"><img class="big" src="ikon-1-muhur.svg" alt="">1 · Mühür (A)</div>
+        <div class="ic"><img class="big" src="ikon-2-hafta-gulusu.svg" alt="">2 · Hafta gülüşü (B)</div>
+        <div class="ic"><img class="big" src="ikon-3-cikartma.svg" alt="">3 · Çıkartma h (C)</div>
+        <div class="ic"><div class="small-row l"><img src="ikon-1-muhur.svg" alt=""><img src="ikon-2-hafta-gulusu.svg" alt=""><img src="ikon-3-cikartma.svg" alt=""></div>48 px · açık duvar kâğıdı</div>
+        <div class="ic"><div class="small-row d"><img src="ikon-1-muhur.svg" alt=""><img src="ikon-2-hafta-gulusu.svg" alt=""><img src="ikon-3-cikartma.svg" alt=""></div>48 px · koyu duvar kâğıdı</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>OKUMA NOTU</h2>
+    <div class="verdict">
+      <b>Tasarımcı önerisi: kart ve uygulama kabuğu için A (Mühürlü karne), ikon olarak 1 (Mühür).</b> B’nin gece atmosferi yalnızca kart açılış
+      anında (reveal) vurgu olarak kullanılabilir. Gerekçe, token’lar ve RN’e aktarım notu <code>README.md</code>’de. Son karar Batuhan’ın.
+      <ul>
+        <li>Kutulardaki önizlemeler küçültülmüş. Kararı “tam sayfa”da, gerçek boyutta verin.</li>
+        <li>Bunlar tarayıcı prototipi. Telefonda (emülatör/cihaz) doğrulanmadı; emoji ve fontlar cihazda farklı kırılabilir.</li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>

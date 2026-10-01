@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Haftik ikon alternatifi 2: "Hafta gülüşü" (Yön B). Kendi çizimim.
+       Yedi nokta = yedi gün, bir gülüş yayı çizer; yedinci nokta (Pazar) amber ve büyük: kartın açıldığı an.
+       Arka plan: gece gradyanı. Ön plan dış yarıçapı 318/512. -->
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2=".35" y2="1">
+      <stop offset="0" stop-color="#0B0A1A"/>
+      <stop offset=".5" stop-color="#150F36"/>
+      <stop offset="1" stop-color="#2A1868"/>
+    </linearGradient>
+    <radialGradient id="violet" cx="82%" cy="10%" r="70%">
+      <stop offset="0" stop-color="#7D5CFF" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#7D5CFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sun" cx="771.8" cy="530" r="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFB36B" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#FFB36B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#night)"/>
+  <rect width="1024" height="1024" fill="url(#violet)"/>
+  <circle cx="771.8" cy="530" r="120" fill="url(#sun)"/>
+  <g fill="#F4F0FF">
+    <rect x="372" y="300" width="64" height="128" rx="32"/>
+    <rect x="588" y="300" width="64" height="128" rx="32"/>
+    <circle cx="252.2" cy="530" r="36"/>
+    <circle cx="319.2" cy="609.8" r="36"/>
+    <circle cx="409.4" cy="661.9" r="36"/>
+    <circle cx="512" cy="680" r="36"/>
+    <circle cx="614.6" cy="661.9" r="36"/>
+    <circle cx="704.8" cy="609.8" r="36"/>
+  </g>
+  <circle cx="771.8" cy="530" r="58" fill="#FFB36B"/>
+</svg>

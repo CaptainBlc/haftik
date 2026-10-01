@@ -73,7 +73,7 @@ export function dedupeByLocalDate(checkins: Checkin[]): Checkin[] {
 }
 
 /** Pazar 20:00 (yerel) — kart açılış saati (spec "Hesaplama kuralları"). */
-const CARD_UNLOCK_HOUR = 20;
+export const CARD_UNLOCK_HOUR = 20;
 
 /**
  * Belirli bir haftanın (parametre olarak verilen `weekStart`) durumunu

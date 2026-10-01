@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik v2 · Bugün ekranı</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>
+  if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';
+  if (location.search.indexOf('theme=dark') > -1) document.documentElement.className += ' dark';
+</script>
+<style>
+  :root { --bg: #F5F2EC; --surface: #FFFDF8; --line: #DDD6E4; --text: #17131F; --muted: #5E5870; --accent: #3D2E7C; --onAccent: #FFFDF8;
+    --selFill: #EAE5F7; --disBg: #E7E4EE; --disText: #5E5870; --banner: #FFF1B8; --bannerText: #17131F; --page: #E9E5EF; --pageText: #3a3550; }
+  .dark { --bg: #17131F; --surface: #231D33; --line: #3A3350; --text: #F3EFFA; --muted: #B3ABC6; --accent: #B7A8FF; --onAccent: #17131F;
+    --selFill: #3A2F63; --disBg: #2C2540; --disText: #B3ABC6; --banner: #2E2744; --bannerText: #F3EFFA; --page: #0E0B15; --pageText: #C9C1DA; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--page); font: 400 14px/1.5 Inter, system-ui, sans-serif; color: var(--pageText); padding: 40px; }
+  .head { max-width: 1320px; margin: 0 auto 24px; }
+  .head h1 { font: 800 28px/1.2 Fraunces, Georgia, serif; color: var(--pageText); }
+  .head p { max-width: 900px; margin-top: 6px; font-size: 14px; }
+  .embed body { padding: 12px; } .embed .head, .embed .cap, .embed .legend-wrap, .embed .notes { display: none; }
+  .row-frames { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; max-width: 1320px; margin: 0 auto; }
+  figure { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .cap { font: 600 12px/1.45 Inter, sans-serif; max-width: 411px; text-align: center; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; line-height: 1; font-style: normal; }
+
+  .phone { width: 411px; height: 914px; background: var(--bg); color: var(--text); border-radius: 28px; overflow: hidden; position: relative;
+    box-shadow: 0 0 0 10px #17131F, 0 24px 60px -20px rgba(0,0,0,.45); display: flex; flex-direction: column; }
+  .sb { height: 52px; flex: none; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 24px 8px; font: 600 13px/1 Inter, sans-serif; color: var(--text); }
+  .sb span:last-child { letter-spacing: .1em; opacity: .8; }
+  .top { height: 48px; flex: none; display: flex; align-items: center; padding: 0 24px; }
+  .pill { height: 36px; padding: 0 14px; border-radius: 999px; background: var(--selFill); color: var(--accent); font: 700 14px/36px Inter, sans-serif; position: relative; }
+  .pill::after { content: ""; position: absolute; inset: -6px -4px; }
+  .date { height: 60px; flex: none; padding: 4px 24px 0; }
+  .date small { display: block; font: 800 10px/12px Inter, sans-serif; letter-spacing: .16em; color: var(--muted); }
+  .date h2 { font: 800 30px/38px Fraunces, Georgia, serif; letter-spacing: -.01em; margin-top: 4px; }
+  .date h2 em { font-style: italic; font-weight: 600; color: var(--muted); font-size: 22px; }
+  .days { height: 52px; flex: none; display: grid; grid-template-columns: repeat(7, 1fr); padding: 0 24px; align-items: center; }
+  .day { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .day small { font: 600 10px/12px Inter, sans-serif; color: var(--muted); }
+  .dot { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+  .dot.f { background: var(--accent); }
+  .dot.f svg { width: 12px; height: 12px; }
+  .dot.e { border: 1.5px dashed var(--muted); opacity: .75; }
+  .dot.u { border: 1.5px solid var(--line); }
+  .dot.t { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+  .banner { height: 56px; flex: none; margin: 0 24px; border-radius: 14px; background: var(--banner); color: var(--bannerText); display: flex; align-items: center; gap: 12px; padding: 0 14px;
+    box-shadow: inset 4px 0 0 #FFD84D; font: 600 14px/1.3 Inter, sans-serif; }
+  .banner .st { width: 28px; height: 28px; border-radius: 8px; background: #FFD84D; transform: rotate(-4deg); box-shadow: 0 0 0 2px var(--surface); flex: none; display: grid; place-items: center; }
+  .cats { flex: none; padding: 0 24px; }
+  .cat { height: 104px; margin-bottom: 12px; } .cat:last-child { margin-bottom: 0; }
+  .ch { height: 24px; display: flex; align-items: center; gap: 8px; font: 700 15px/1 Inter, sans-serif; }
+  .ch i.td { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .ch em { font: italic 600 15px/1 Fraunces, Georgia, serif; color: var(--text); }
+  .ch .sep { color: var(--muted); font-weight: 400; }
+  .boxes { margin-top: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .bx { position: relative; height: 72px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 7px; }
+  .bx .d { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; }
+  .bx .d .emo { font-size: 25px; }
+  .bx small { margin-top: 5px; font: 600 12px/14px Inter, sans-serif; color: var(--muted); }
+  .bx.sel { background: var(--selFill); border: 2.5px solid var(--accent); padding-top: 5.5px; }
+  .bx.sel small { color: var(--text); font-weight: 800; }
+  .bx .ck { position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); display: grid; place-items: center; }
+  .bx .ck svg { width: 12px; height: 12px; }
+  .bx.pas .d { opacity: .5; }
+  .bx.press { transform: scale(.96); }
+  .bx.focus { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+  .bx.dis { background: var(--disBg); } .bx.dis .d { opacity: .45; }
+  .spacer { flex: 1; }
+  .hint { height: 32px; flex: none; display: flex; align-items: center; justify-content: center; gap: 8px; font: 500 14px/1 Inter, sans-serif; color: var(--muted); padding: 0 24px; }
+  .hint.ok { color: var(--text); font-weight: 600; }
+  .hint.ok .c { width: 18px; height: 18px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; flex: none; }
+  .hint.ok .c svg { width: 11px; height: 11px; }
+  .save { flex: none; height: 56px; margin: 0 24px 8px; border-radius: 16px; background: var(--accent); color: var(--onAccent); font: 700 16px/56px Inter, sans-serif; text-align: center; }
+  .save.dis { background: var(--disBg); color: var(--disText); }
+  .save svg { width: 16px; height: 16px; vertical-align: -2px; margin-right: 6px; }
+  .gap16 { height: 16px; flex: none; }
+  .tabs { height: 64px; flex: none; background: var(--surface); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); }
+  .tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font: 600 12px/1 Inter, sans-serif; color: var(--muted); }
+  .tab .ic { width: 56px; height: 28px; border-radius: 14px; display: grid; place-items: center; }
+  .tab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .tab.on { color: var(--accent); font-weight: 800; } .tab.on .ic { background: var(--selFill); }
+  .nav { height: 24px; flex: none; background: var(--surface); display: grid; place-items: center; }
+  .nav i { width: 108px; height: 4px; border-radius: 2px; background: var(--text); opacity: .35; }
+
+  .legend-wrap { max-width: 1320px; margin: 40px auto 0; }
+  .legend-wrap h3 { font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; margin-bottom: 14px; }
+  .legend { display: grid; grid-template-columns: repeat(6, 130px); gap: 16px; background: var(--bg); padding: 24px 20px 20px; border-radius: 18px; color: var(--text); width: max-content; }
+  .legend div > span { display: block; margin-top: 10px; font: 600 12px/1.35 Inter, sans-serif; color: var(--muted); }
+  .legend .bx { width: 115px; }
+  .notes { max-width: 1320px; margin: 24px auto 0; font-size: 13px; line-height: 1.6; }
+  .notes li { margin-left: 18px; }
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>Bugün ekranı v2 · <span id="tn">açık tema</span></h1>
+  <p>Kabuk düz ve sakin (18 §2.9: eğim ve sert gölge yalnız içerikte; düğme, sekme ve kutular düz). Albüm dili üç küçük izle taşınır:
+  kategori tonu diski, sarı çıkartma rozeti (K3 bandı) ve Fraunces tarih. Dikey bütçe 411×914'te 864 dp (18 §3.2); kutular sabit 72 dp.</p>
+</div>
+<div class="row-frames" id="frames"></div>
+
+<div class="legend-wrap">
+  <h3>DURUMLAR (RENK TEK BAŞINA ANLAM TAŞIMAZ)</h3>
+  <div class="legend" id="legend"></div>
+</div>
+<ul class="notes">
+  <li><b>Seçili</b> = dolgu + 2,5 dp çerçeve + köşe onay rozeti + kelime kalınlaşır (gri tonlamada da ayrışır). <b>Pasif</b> = aynı satırda başka seçim varken disk %50; devre dışı gibi görünmez, dokunulabilir.</li>
+  <li>Kutu içi seviye kelimesi 12 sp (18 W2; <code>maxFontSizeMultiplier 1.3</code>). Başlıktaki kelime Fraunces italik: “Hareket · durgun”.</li>
+  <li>Kaydet anı: 80 ms'de düğme “Kaydedildi”, 120 ms'de bugünün noktası dolar (1→1,25→1, 220 ms), 200 ms'de ipucu satırı ilerleme cümlesine döner (metin 19 §3.2). Yalnız <code>opacity</code>/<code>transform</code>, native driver.</li>
+  <li>Sekme ikonları kendi çizimim (çizgi, 1,8 px); RN'de 3 PNG ya da <code>@expo/vector-icons</code> (10 §9). Emoji yalnız içerikte kalır.</li>
+</ul>
+
+<script>
+  var dark = document.documentElement.className.indexOf('dark') > -1;
+  document.getElementById('tn').textContent = dark ? 'koyu tema' : 'açık tema';
+  var TONE = { mov: '#BFE8D2', slp: '#D6CEFF', spn: '#FFD4B3', soc: '#FFCADB' };
+  var CATS = [['mov', 'Hareket', ['🐢', '🚶', '🏃'], ['durgun', 'hafif', 'yoğun']], ['slp', 'Uyku', ['😪', '😌', '😴'], ['kısa', 'orta', 'uzun']],
+    ['spn', 'Harcama', ['🐷', '💳', '💸'], ['az', 'orta', 'çok']], ['soc', 'Sosyal', ['👤', '👥', '🎉'], ['sakin', 'orta', 'kalabalık']]];
+  function CK(c) { return '<svg viewBox="0 0 12 12"><path d="M2.5 6.3 5 8.6 9.6 3.6" fill="none" stroke="' + c + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+  var onAcc = dark ? '#17131F' : '#FFFDF8';
+  var ICON = {
+    today: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M8.5 12.2l2.3 2.3 4.7-5"/></svg>',
+    week: '<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="4"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="8" cy="14.5" r=".6"/><circle cx="12" cy="14.5" r=".6"/><circle cx="16" cy="14.5" r=".6"/></svg>',
+    set: '<svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg>'
+  };
+  function days(states) {
+    var n = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+    return '<div class="days" aria-label="Bu hafta">' + n.map(function (d, i) {
+      var s = states[i], base = s.replace('t', ''), cls = 'dot ' + base + (s.indexOf('t') > -1 ? ' t' : '');
+      return '<div class="day"><small>' + d + '</small><span class="' + cls + '">' + (base === 'f' ? CK(onAcc) : '') + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function cats(sel) {
+    return '<div class="cats">' + CATS.map(function (c, ci) {
+      var s = sel[ci];
+      return '<div class="cat"><div class="ch"><i class="td" style="background:' + TONE[c[0]] + '"></i>' + c[1] + (s ? '<span class="sep">·</span><em>' + c[3][s - 1] + '</em>' : '') + '</div><div class="boxes">' +
+        [0, 1, 2].map(function (k) {
+          var on = s === k + 1, cls = 'bx' + (on ? ' sel' : s ? ' pas' : '');
+          return '<div class="' + cls + '" role="radio" aria-checked="' + on + '" aria-label="' + c[1] + ': ' + c[3][k] + '"><span class="d" style="background:' + TONE[c[0]] + '"><span class="emo">' + c[2][k] + '</span></span><small>' + c[3][k] + '</small>' + (on ? '<span class="ck">' + CK(onAcc) + '</span>' : '') + '</div>';
+        }).join('') + '</div></div>';
+    }).join('') + '</div>';
+  }
+  function tabs() {
+    return '<div class="tabs"><div class="tab on"><span class="ic">' + ICON.today + '</span>Bugün</div><div class="tab"><span class="ic">' + ICON.week + '</span>Hafta</div><div class="tab"><span class="ic">' + ICON.set + '</span>Ayarlar</div></div><div class="nav"><i></i></div>';
+  }
+  function phone(o) {
+    return '<div class="phone"><div class="sb"><span>' + o.time + '</span><span>▾ ▴ ▮</span></div>' +
+      '<div class="top"><span class="pill">‹ Dün</span></div>' +
+      '<div class="date"><small>BUGÜN</small><h2>' + o.day + ' <em>' + o.date + '</em></h2></div>' +
+      (o.banner ? '<div class="banner"><span class="st">' + CK('#17131F') + '</span>Kartın hazır. Bugünü de işaretle, kart açılsın.</div>' : days(o.days)) +
+      cats(o.sel) + '<div class="spacer"></div>' +
+      '<div class="hint' + (o.ok ? ' ok' : '') + '">' + (o.ok ? '<span class="c">' + CK(onAcc) + '</span>' : '') + o.hint + '</div>' +
+      '<div class="save' + (o.dis ? ' dis' : '') + '">' + (o.saved ? CK(onAcc) + 'Kaydedildi' : 'Kaydet') + '</div><div class="gap16"></div>' + tabs() + '</div>';
+  }
+  var F = [
+    { cap: 'B1 · Sabah, boş. Kaydet pasif (liner zemin, 5,39:1 metin); ipucu kaç kategori kaldığını söyler. Geçmiş boş gün kesik halka, gelecek düz ince halka, bugün çift halka.',
+      time: '08:12', day: 'Perşembe', date: '24 Eylül', days: ['f', 'f', 'e', 'ut', 'u', 'u', 'u'], sel: [0, 0, 0, 0], hint: '4 kategori kaldı', dis: true },
+    { cap: 'B2 · Üç seçim yapıldı, biri eksik. Seçili kutu: dolgu + çerçeve + onay rozeti; aynı satırdaki diğerleri pasif (%50 disk).',
+      time: '21:04', day: 'Perşembe', date: '24 Eylül', days: ['f', 'f', 'e', 'ut', 'u', 'u', 'u'], sel: [1, 3, 2, 0], hint: '1 kategori kaldı', dis: true },
+    { cap: 'B3 · Kaydet’ten ~300 ms sonra: düğme “Kaydedildi”, bugünün noktası doldu, ipucu satırı ilerleme cümlesi (19 §3.2 B/C durumu). 900 ms sonra düğme “Kaydet”e döner.',
+      time: '21:05', day: 'Perşembe', date: '24 Eylül', days: ['f', 'f', 'e', 'ft', 'u', 'u', 'u'], sel: [1, 3, 2, 2], hint: 'Yapıştı. Kart bir gün uzakta.', ok: true, saved: true },
+    { cap: 'B4 · Pazar 20:00 sonrası, bugün boş (K3): noktaların yerine 56 dp bant (düz, eğimsiz; sarı çıkartma yalnız küçük rozet). Kaydet = kart otomatik açılır.',
+      time: '20:31', day: 'Pazar', date: '27 Eylül', banner: true, sel: [2, 0, 0, 0], hint: '3 kategori kaldı', dis: true }
+  ];
+  document.getElementById('frames').innerHTML = F.map(function (f) { return '<figure>' + phone(f) + '<div class="cap">' + f.cap + '</div></figure>'; }).join('');
+  var L = [['bx', 'Normal'], ['bx sel', 'Seçili: dolgu + çerçeve + rozet'], ['bx pas', 'Pasif (satırda başka seçim)'], ['bx press', 'Basılı: 0,96 ölçek, 60 ms'], ['bx focus', 'Odak: 2 dp halka, 2 dp boşluk'], ['bx dis', 'Devre dışı (yalnız yükleme)']];
+  document.getElementById('legend').innerHTML = L.map(function (l) {
+    return '<div><div class="' + l[0] + '"><span class="d" style="background:#BFE8D2"><span class="emo">🚶</span></span><small>hafif</small>' + (l[0].indexOf('sel') > -1 ? '<span class="ck">' + CK(onAcc) + '</span>' : '') + '</div><span>' + l[1] + '</span></div>';
+  }).join('');
+</script>
+</body>
+</html>

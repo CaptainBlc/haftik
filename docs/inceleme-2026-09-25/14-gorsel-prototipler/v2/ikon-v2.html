@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik v2 · İkon 3 finalizasyonu</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #E9E5EF; font: 400 14px/1.55 Inter, system-ui, sans-serif; color: #3a3550; padding: 40px; }
+  .wrap { max-width: 1280px; margin: 0 auto; }
+  h1 { font: 800 28px/1.2 Fraunces, Georgia, serif; color: #17131F; }
+  h2 { font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; color: #5E5870; margin: 40px 0 14px; }
+  p.lead { max-width: 920px; margin-top: 6px; }
+  code { font: 500 12px/1 ui-monospace, Consolas, monospace; background: #EAE5F7; padding: 2px 5px; border-radius: 4px; }
+  .embed body { padding: 12px; } .embed .hide-embed { display: none; }
+  .row { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-end; }
+  .it { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .it > span { font: 600 12px/1.35 Inter, sans-serif; text-align: center; max-width: 220px; }
+  .chk { background: repeating-conic-gradient(#D9D4E2 0 25%, #F4F1F7 0 50%) 0 0 / 16px 16px; }
+  .layer { position: relative; width: 216px; height: 216px; }
+  .layer img { width: 216px; height: 216px; display: block; }
+  .layer .safe { position: absolute; left: 42px; top: 42px; width: 132px; height: 132px; border-radius: 50%; border: 1.5px dashed #D7263D; }
+  .layer .view { position: absolute; left: 36px; top: 36px; width: 144px; height: 144px; border: 1px solid rgba(23,19,31,.5); }
+  .ic { position: relative; overflow: hidden; background: #3D2E7C; flex: none; }
+  .ic img { position: absolute; }
+  .m-circle { border-radius: 50%; } .m-sq { border-radius: 22%; } .m-squircle { border-radius: 38%; } .m-tear { border-radius: 50% 50% 50% 14%; }
+  .wall { padding: 24px 28px; border-radius: 22px; display: grid; grid-template-columns: repeat(5, 64px); gap: 22px 20px; }
+  .wall .a { display: flex; flex-direction: column; align-items: center; gap: 6px; font: 500 11px/1 Inter, sans-serif; }
+  .nb { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; }
+  .nb i { display: block; background: #fff; }
+  .phone { width: 206px; height: 458px; border-radius: 22px; background: #3D2E7C; box-shadow: 0 0 0 6px #17131F; display: grid; place-items: center; overflow: hidden; }
+  .phone img { width: 144px; height: 144px; }
+  .sbar { width: 360px; height: 32px; background: #17131F; border-radius: 10px; display: flex; align-items: center; gap: 10px; padding: 0 14px; color: #fff; font: 600 13px/1 Inter, sans-serif; }
+  .sbar img { width: 18px; height: 18px; }
+  .shade { width: 360px; background: #2A2536; border-radius: 18px; padding: 14px; color: #F3EFFA; font: 400 13px/1.4 Inter, sans-serif; display: flex; gap: 12px; }
+  .shade .b { width: 32px; height: 32px; border-radius: 50%; background: #B7A8FF; display: grid; place-items: center; flex: none; }
+  .shade small { color: #B3ABC6; font-size: 11.5px; }
+  .play { width: 360px; background: #fff; border-radius: 18px; padding: 18px; display: flex; gap: 16px; align-items: center; box-shadow: 0 8px 24px -12px rgba(0,0,0,.3); }
+  .play img { width: 96px; height: 96px; border-radius: 20%; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .play b { display: block; font: 600 20px/1.2 Inter, sans-serif; color: #1f1f1f; } .play small { display: block; color: #0b6b4f; font: 600 13px/1.3 Inter, sans-serif; margin-top: 4px; }
+  .play em { display: block; color: #5f6368; font: 400 12px/1.3 Inter, sans-serif; font-style: normal; margin-top: 4px; }
+  pre { background: #17131F; color: #F3EFFA; padding: 14px 16px; border-radius: 12px; font: 500 12px/1.55 ui-monospace, Consolas, monospace; overflow: auto; max-width: 760px; margin-top: 14px; }
+  table { border-collapse: collapse; background: #FFFDF8; font-size: 12.5px; }
+  th, td { padding: 6px 10px; border-bottom: 1px solid #ECE7F0; text-align: left; vertical-align: top; }
+  th { font: 800 10px/1.2 Inter, sans-serif; letter-spacing: .1em; color: #5E5870; background: #F2EEF6; }
+  .note { font-size: 12.5px; max-width: 900px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>İkon 3 “Çıkartma h” · final</h1>
+  <p class="lead hide-embed">Batuhan'ın seçtiği ikon 3, kart v2'nin diliyle yeniden çizildi: <b>siyah kalın kontur yerine beyaz kesim kenarı</b>, elektrik moru yerine
+  derin albüm moru <code>#3D2E7C</code>, pırıltı kaldırıldı (çocuksu duruyordu ve 48 px'te gürültü yapıyordu), eğim −8°'den −6°'ye indi. İşaret: sarı bir çıkartmanın
+  üstünde küçük harf “h”. Aynı “h” kartın mührünün ortasında da var. Tamamı kendi çizimim.</p>
+
+  <h2>1 · ANA DOSYA VE ADAPTIVE KATMANLAR</h2>
+  <div class="row">
+    <div class="it"><img src="ikon-v2-1024.svg" width="216" height="216" alt="1024 ana ikon" style="border-radius:8px"><span>ikon-v2-1024.svg<br>iOS 1024 · Play 512 · eski Android</span></div>
+    <div class="it"><div class="layer chk"><img src="ikon-v2-adaptive-fg.svg" alt=""><i class="view"></i><i class="safe"></i></div><span>Ön plan (108 dp). Kırmızı kesik: güvenli daire r 33; ince çerçeve: görünür 72 dp. En uzak nokta ≈ 31,7.</span></div>
+    <div class="it"><div class="layer" style="background:#3D2E7C"><i class="view"></i></div><span>Arka plan: düz <code>#3D2E7C</code> (<code>backgroundColor</code>; görsel gerekmez)</span></div>
+    <div class="it"><div class="layer chk"><img src="ikon-v2-monochrome.svg" alt=""><i class="view"></i><i class="safe"></i></div><span>Monochrome: dolu çıkartma, oyuk “h”, gölgesiz</span></div>
+  </div>
+
+  <h2>2 · BAŞLATICI MASKELERİ (72 DP GÖRÜNÜR ALAN)</h2>
+  <div class="row" id="masks"></div>
+
+  <h2>3 · BOYUT MERDİVENİ (192 · 96 · 48 · 36 PX)</h2>
+  <div class="row" id="sizes"></div>
+  <p class="note hide-embed">48 px'te (K1 hesap) 1 birim ≈ 0,67 px: “h” çizgisi ≈ 3,1 px, beyaz kenar ≈ 1,7 px, gölge ofseti ≈ 1,5 px. 36 px'te beyaz kenar ~1,3 px'e iner; sarı kare ve “h” okunur kalır. Tarayıcıda çizildi (K1); gerçek başlatıcıda görülmedi (K4 bekliyor).</p>
+
+  <h2>4 · DUVAR KÂĞIDI VE KOMŞU İKONLAR (AYRIŞMA)</h2>
+  <div class="row">
+    <div class="wall" id="wallL" style="background:linear-gradient(160deg,#F3E7D9,#DCCFE8)"></div>
+    <div class="wall" id="wallD" style="background:linear-gradient(160deg,#1B2233,#2B1F3A);color:#fff"></div>
+  </div>
+  <p class="note hide-embed">Komşular genel renkli şekillerdir (marka taklidi yok). Ayrışmayı sağlayan: mor zeminde <b>sarı</b> kare (başlatıcılarda seyrek bir renk çifti) ve eğik duruş. Mağazada benzer “mor + sarı + h” ikon taraması yapılmadı (K0); yayından önce Play'de “haftalık”, “mood”, “günlük” aramalarıyla elle bakılmalı.</p>
+
+  <h2>5 · TEMALI İKON (ANDROID 13+, MONOCHROME)</h2>
+  <div class="row" id="themed"></div>
+
+  <h2>6 · SPLASH · BİLDİRİM · PLAY KARTI</h2>
+  <div class="row">
+    <div class="it"><div class="phone"><img src="ikon-v2-splash.svg" alt=""></div><span>Splash: <code>#3D2E7C</code>, iki temada aynı; beyaz parlama yok.</span></div>
+    <div class="it" style="gap:14px">
+      <div class="sbar">20:00 <img src="ikon-v2-bildirim.svg" alt=""> <span style="margin-left:auto;opacity:.8">▾ ▴ ▮</span></div>
+      <div class="shade"><span class="b" id="nb"></span><div><b>Haftik</b> <small>· şimdi</small><br>Haftanın kartı hazır.<br><small>(metin 19 §5, sabit; veri yok)</small></div></div>
+      <span>Durum çubuğu: beyaz siluet (ikon-v2-bildirim.svg). Bildirim bölmesinde sistem ikonu <code>color</code> ile boyar; öneri <code>#3D2E7C</code>.</span>
+    </div>
+    <div class="it"><div class="play"><img src="ikon-v2-1024.svg" alt=""><div><b>Haftik</b><small>Batuhan</small><em>Günde dört emoji, Pazar akşamı bir kart.</em></div></div><span>Play listesi (512 ikon; Play köşeleri kendisi yuvarlar, tam kare ver)</span></div>
+  </div>
+
+  <h2>7 · DIŞA AKTARIM VE APP.JSON ÖNERİSİ (MÜHENDİS ONAYIYLA)</h2>
+  <table>
+    <tr><th>Dosya (assets/images/)</th><th>Kaynak</th><th>Boyut</th><th>Not</th></tr>
+    <tr><td>icon.png</td><td>ikon-v2-1024.svg</td><td>1024×1024</td><td>Saydamlık yok</td></tr>
+    <tr><td>android-icon-foreground.png</td><td>ikon-v2-adaptive-fg.svg</td><td>432×432</td><td>Saydam</td></tr>
+    <tr><td>android-icon-monochrome.png</td><td>ikon-v2-monochrome.svg</td><td>432×432</td><td>Siyah + alfa</td></tr>
+    <tr><td>android-icon-background.png</td><td>kaldır</td><td>—</td><td><code>backgroundColor</code> yeter</td></tr>
+    <tr><td>splash-icon.png</td><td>ikon-v2-splash.svg</td><td>576 ya da 864 kare</td><td>Saydam</td></tr>
+    <tr><td>notification-icon.png</td><td>ikon-v2-bildirim.svg</td><td>96×96</td><td>Bağlama yolunu platform uzmanı seçer (config plugin bilerek eklenmedi, CLAUDE.md S8)</td></tr>
+    <tr><td>Play: icon-512.png</td><td>ikon-v2-1024.svg</td><td>512×512</td><td>32 bit PNG</td></tr>
+  </table>
+  <pre>"icon": "./assets/images/icon.png",
+"android": {
+  "adaptiveIcon": {
+    "foregroundImage": "./assets/images/android-icon-foreground.png",
+    "monochromeImage": "./assets/images/android-icon-monochrome.png",
+    "backgroundColor": "#3D2E7C"
+  }
+},
+"plugins": [
+  ["expo-splash-screen", {
+    "image": "./assets/images/splash-icon.png",
+    "imageWidth": 200,
+    "backgroundColor": "#3D2E7C",
+    "dark": { "backgroundColor": "#3D2E7C" }
+  }]
+]
+// iOS: "ios.icon" bugün "./assets/expo.icon" (Icon Composer biçimi). iOS koşullu; S11'de yeniden üretilir.</pre>
+</div>
+<script>
+  var H = 'M434 340V668M434 548C434 480 474 456 512 456C552 456 590 480 590 548V668';
+  var uid = 0;
+  function monoSvg(size, fg) {
+    uid++;
+    return '<svg width="' + size + '" height="' + size + '" viewBox="18 18 72 72"><defs><mask id="mm' + uid + '" maskUnits="userSpaceOnUse" x="0" y="0" width="108" height="108"><rect width="108" height="108" fill="#000"/><g transform="rotate(-6 54 54)"><rect x="29.5" y="29.5" width="49" height="49" rx="13.5" fill="#fff"/><path d="' + H + '" transform="translate(54 54) scale(.0619) translate(-512 -504)" fill="none" stroke="#000" stroke-width="76" stroke-linecap="round" stroke-linejoin="round"/></g></mask></defs><rect width="108" height="108" fill="' + fg + '" mask="url(#mm' + uid + ')"/></svg>';
+  }
+  function notifSvg(size, fg) {
+    uid++;
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24"><defs><mask id="nm' + uid + '" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#000"/><g transform="rotate(-6 12 12)"><rect x="3" y="3" width="18" height="18" rx="5" fill="#fff"/><path d="' + H + '" transform="translate(12 12) scale(.0272) translate(-512 -504)" fill="none" stroke="#000" stroke-width="76" stroke-linecap="round" stroke-linejoin="round"/></g></mask></defs><rect width="24" height="24" fill="' + fg + '" mask="url(#nm' + uid + ')"/></svg>';
+  }
+  function ic(D, mask) {
+    var k = D / 72, s = 108 * k, o = -18 * k;
+    return '<div class="ic ' + mask + '" style="width:' + D + 'px;height:' + D + 'px"><img src="ikon-v2-adaptive-fg.svg" alt="" style="width:' + s + 'px;height:' + s + 'px;left:' + o + 'px;top:' + o + 'px"></div>';
+  }
+  document.getElementById('masks').innerHTML = [['m-circle', 'Daire (Pixel)'], ['m-squircle', 'Squircle'], ['m-sq', 'Yuvarlak kare (%22)'], ['m-tear', 'Damla']].map(function (m) {
+    return '<div class="it">' + ic(144, m[0]) + '<span>' + m[1] + '</span></div>';
+  }).join('');
+  document.getElementById('sizes').innerHTML = [192, 96, 48, 36].map(function (d) { return '<div class="it">' + ic(d, 'm-circle') + '<span>' + d + ' px</span></div>'; }).join('');
+  document.getElementById('themed').innerHTML = [['#E8DEF8', '#4A4458', 'Açık tema tonu'], ['#4A4458', '#E8DEF8', 'Koyu tema tonu'], ['#D7E8CD', '#3C4B35', 'Yeşil duvar kâğıdı tonu']].map(function (t) {
+    return '<div class="it"><div style="width:48px;height:48px;border-radius:50%;overflow:hidden;background:' + t[0] + '">' + monoSvg(48, t[1]) + '</div><div style="width:96px;height:96px;border-radius:50%;overflow:hidden;background:' + t[0] + '">' + monoSvg(96, t[1]) + '</div><span>' + t[2] + '</span></div>';
+  }).join('');
+  document.getElementById('nb').innerHTML = notifSvg(20, '#17131F');
+  function wall(id) {
+    var nb = [['#1A73E8', 'border-radius:4px;width:18px;height:18px'], ['#E94235', 'border-radius:50%;width:18px;height:18px'], ['#111', 'width:22px;height:6px;border-radius:3px'], ['#F29900', 'width:18px;height:18px;clip-path:polygon(50% 0,100% 100%,0 100%)'],
+      ['#0F9D58', 'border-radius:6px;width:20px;height:14px'], ['#7B61FF', 'border-radius:50%;width:16px;height:16px'], ['#FBBC04', 'border-radius:50%;width:20px;height:20px'], ['#263238', 'border-radius:2px;width:16px;height:20px']];
+    var h = '', names = ['Takvim', 'Kamera', 'Notlar', 'Harita', 'Mesaj', 'Günlük', 'Foto', 'Dosya'], i = 0;
+    for (var k = 0; k < 10; k++) {
+      if (k === 6) { h += '<div class="a">' + ic(48, 'm-circle') + 'Haftik</div>'; continue; }
+      var n = nb[i % nb.length]; h += '<div class="a"><span class="nb" style="background:' + n[0] + '"><i style="' + n[1] + '"></i></span>' + names[i % names.length] + '</div>'; i++;
+    }
+    document.getElementById(id).innerHTML = h;
+  }
+  wall('wallL'); wall('wallD');
+</script>
+</body>
+</html>

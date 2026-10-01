@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik v2 · Koyu tema</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0E0B15; font: 400 14px/1.55 Inter, system-ui, sans-serif; color: #C9C1DA; padding: 40px; }
+  .wrap { max-width: 1400px; margin: 0 auto; }
+  h1 { font: 800 28px/1.2 Fraunces, Georgia, serif; color: #F3EFFA; }
+  h2 { font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; color: #B3ABC6; margin: 36px 0 14px; }
+  p.lead { max-width: 940px; margin-top: 6px; }
+  .fwrap { position: relative; overflow: hidden; border-radius: 16px; background: #0E0B15; width: 870px; }
+  .fwrap iframe { border: 0; transform-origin: 0 0; position: absolute; left: 0; top: 0; transform: scale(.6); }
+  table { border-collapse: collapse; width: 100%; background: #17131F; font-size: 13px; border-radius: 12px; overflow: hidden; color: #F3EFFA; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid #2C2540; text-align: left; vertical-align: middle; }
+  th { font: 800 10px/1.2 Inter, sans-serif; letter-spacing: .12em; color: #B3ABC6; background: #231D33; }
+  td i { display: inline-block; width: 18px; height: 18px; border-radius: 5px; vertical-align: -4px; margin-right: 8px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.15); }
+  code { font: 500 12px/1 ui-monospace, Consolas, monospace; background: #231D33; padding: 2px 5px; border-radius: 4px; color: #F3EFFA; }
+  ul { margin: 8px 0 0 18px; } li { margin: 5px 0; }
+  .cmp { display: flex; gap: 24px; flex-wrap: wrap; }
+  .cmp > div { padding: 24px; border-radius: 16px; }
+  .cmp .c { width: 180px; height: 320px; border-radius: 4px; background: radial-gradient(rgba(255,255,255,.085) 1px, rgba(255,255,255,0) 1.4px) 4px 4px / 8px 8px, #3D2E7C; position: relative; }
+  .cmp .c::after { content: ""; position: absolute; left: 12px; right: 12px; top: 44px; height: 58px; border-radius: 10px; background: #FFD84D; box-shadow: 0 0 0 2px #FFFDF8, 2px 2px 0 2px #211850; transform: rotate(-1.5deg); }
+  .cmp span { display: block; margin-top: 10px; font: 600 12px/1.4 Inter, sans-serif; max-width: 200px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Koyu tema · kabuk koyulaşır, kart asla</h1>
+  <p class="lead"><b>Karar bekliyor (B14; 18 §2.9 madde 7):</b> UX, v1 için “yalnız açık tema” öneriyor. Bu sayfa (b) seçeneğinin ne kadar ucuz olduğunu
+  göstermek için çizildi: tüm renkler token'dan geldiğinde koyu tema ek bileşen gerektirmez, yalnız ikinci bir token sütunudur.
+  <b>Paylaşılan kart ve kart ekranı iki temada da aynıdır</b> (albüm moru); PNG kullanıcının tema ayarına bağlı olamaz.
+  Tam boy için: <a style="color:#B7A8FF" href="ekran-bugun-v2.html?theme=dark">Bugün koyu</a> · <a style="color:#B7A8FF" href="ekran-hafta-v2.html?theme=dark">Hafta koyu</a>.</p>
+
+  <h2>1 · BUGÜN (KOYU, %60)</h2>
+  <div class="fwrap" style="height:1176px"><iframe src="ekran-bugun-v2.html?theme=dark&amp;embed" width="1450" height="1960" title="Bugün koyu"></iframe></div>
+
+  <h2>2 · HAFTA (KOYU, %60)</h2>
+  <div class="fwrap" style="height:1176px"><iframe src="ekran-hafta-v2.html?theme=dark&amp;embed" width="1450" height="1960" title="Hafta koyu"></iframe></div>
+
+  <h2>3 · KOYU TOKEN'LAR (KONTRAST ELLE HESAPLANDI, K1)</h2>
+  <table>
+    <tr><th>Token</th><th>Açık</th><th>Koyu</th><th>Kullanım</th><th>Koyu kontrast</th></tr>
+    <tr><td><code>bg</code></td><td><i style="background:#F5F2EC"></i>#F5F2EC</td><td><i style="background:#17131F"></i>#17131F</td><td>Ekran zemini</td><td>—</td></tr>
+    <tr><td><code>surface</code></td><td><i style="background:#FFFDF8"></i>#FFFDF8</td><td><i style="background:#231D33"></i>#231D33</td><td>Kutu, sekme çubuğu, segment</td><td>—</td></tr>
+    <tr><td><code>text</code></td><td><i style="background:#17131F"></i>#17131F</td><td><i style="background:#F3EFFA"></i>#F3EFFA</td><td>Metin</td><td>bg 16,13 · surface 14,32</td></tr>
+    <tr><td><code>muted</code></td><td><i style="background:#5E5870"></i>#5E5870</td><td><i style="background:#B3ABC6"></i>#B3ABC6</td><td>İkincil metin</td><td>surface 7,38 · disBg 6,61</td></tr>
+    <tr><td><code>accent</code></td><td><i style="background:#3D2E7C"></i>#3D2E7C</td><td><i style="background:#B7A8FF"></i>#B7A8FF</td><td>Seçili çerçeve, Kaydet, aktif sekme</td><td>surface 7,77 · üstünde ink 8,75</td></tr>
+    <tr><td><code>onAccent</code></td><td><i style="background:#FFFDF8"></i>#FFFDF8</td><td><i style="background:#17131F"></i>#17131F</td><td>Kaydet metni</td><td>8,75</td></tr>
+    <tr><td><code>selFill</code></td><td><i style="background:#EAE5F7"></i>#EAE5F7</td><td><i style="background:#3A2F63"></i>#3A2F63</td><td>Seçili kutu, aktif sekme hapı</td><td>text 10,49</td></tr>
+    <tr><td><code>disBg</code></td><td><i style="background:#E7E4EE"></i>#E7E4EE</td><td><i style="background:#2C2540"></i>#2C2540</td><td>Pasif Kaydet</td><td>muted 6,61</td></tr>
+    <tr><td><code>line</code></td><td><i style="background:#DDD6E4"></i>#DDD6E4</td><td><i style="background:#3A3350"></i>#3A3350</td><td>Dekoratif kenar</td><td>dekoratif</td></tr>
+    <tr><td><code>danger</code></td><td><i style="background:#B42318"></i>#B42318</td><td><i style="background:#FF8A80"></i>#FF8A80</td><td>Yalnız silme</td><td>surface 7,10</td></tr>
+    <tr><td><code>tone.*</code></td><td colspan="2">Aynı (#BFE8D2 · #D6CEFF · #FFD4B3 · #FFCADB)</td><td>Emoji diski</td><td>bilgi taşımaz</td></tr>
+  </table>
+
+  <h2>4 · KART KOYU ZEMİNDE</h2>
+  <div class="cmp">
+    <div style="background:#F5F2EC"><div class="c"></div><span style="color:#3a3550">Açık kabukta kart: albüm moru kendiliğinden ayrışır.</span></div>
+    <div style="background:#17131F"><div class="c" style="box-shadow:0 0 0 1px rgba(255,255,255,.10)"></div><span>Koyu kabukta mor/koyu oranı ≈1,5:1; bu yüzden 1 px %10 beyaz kenar (yalnız ekranda, PNG'de yok).</span></div>
+  </div>
+  <ul>
+    <li>Koyu temada gölge yok; yükseklik yalnız yüzey tonuyla (<code>bg</code> → <code>surface</code>) anlatılır. Kart içindeki sert gölgeler kartın parçası olduğu için aynen kalır.</li>
+    <li>Sistem çubuğu ikonları: kökte <code>StatusBar style="auto"</code> zaten var; kart ekranı iki temada da <code>light</code>.</li>
+    <li>Splash iki temada da albüm moru; tema geçişinde beyaz parlama olmaz.</li>
+    <li>Kontrol: <code>adb shell cmd uimode night yes</code> ile üç ekran (CLAUDE.md B14 notu), K4. Yapılmadı.</li>
+  </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik v2 · Seviye gösterimi (3 alternatif)</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=Inter:wght@400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #F5F2EC; font: 400 14px/1.55 Inter, system-ui, sans-serif; color: #17131F; padding: 40px; }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  h1 { font: 800 30px/1.15 Fraunces, Georgia, serif; }
+  h2 { font: 800 12px/1 Inter, sans-serif; letter-spacing: .16em; color: #5E5870; margin: 40px 0 14px; }
+  p.lead { max-width: 860px; margin-top: 8px; color: #3a3550; }
+  code { font: 500 12px/1 ui-monospace, Consolas, monospace; background: #EAE5F7; padding: 2px 5px; border-radius: 4px; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; line-height: 1; font-style: normal; }
+  .embed body { padding: 16px; } .embed .hide-embed { display: none; }
+
+  .alts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .alt { background: #FFFDF8; border-radius: 18px; border: 1px solid #E2DCE8; padding: 18px; }
+  .alt h3 { font: 800 20px/1.2 Fraunces, Georgia, serif; }
+  .alt h3 small { font: 800 10px/1 Inter, sans-serif; letter-spacing: .14em; color: #3D2E7C; display: block; margin-bottom: 6px; }
+  .alt p { font-size: 13px; color: #3a3550; margin: 6px 0 12px; }
+  .alt ul { font-size: 12.5px; margin: 10px 0 0 16px; color: #3a3550; }
+  .rec { outline: 3px solid #3D2E7C; outline-offset: 3px; }
+
+  .album { background: radial-gradient(rgba(255,255,255,.085) 1.1px, rgba(255,255,255,0) 1.6px) 7px 7px / 14px 14px, #3D2E7C; border-radius: 14px; padding: 14px 12px 12px; width: 336px; }
+  .row { position: relative; height: 56px; margin-bottom: 6px; background: #FFFDF8; border-radius: 14px; box-shadow: 0 3px 0 #211850; display: flex; align-items: center; gap: 10px; padding: 0 12px 0 10px; }
+  .row:last-child { margin-bottom: 0; }
+  .dw { position: relative; width: 52px; height: 44px; flex: none; }
+  .disc, .ly { position: absolute; border-radius: 50%; }
+  .disc { display: grid; place-items: center; box-shadow: 0 0 0 2px #FFFDF8; z-index: 3; }
+  .ly { box-shadow: 0 0 0 2px #FFFDF8; }
+  .txt { flex: 1; min-width: 0; }
+  .meta { display: flex; align-items: center; gap: 8px; height: 14px; }
+  .meta b { font: 800 9px/1 Inter, sans-serif; letter-spacing: .14em; }
+  .meta i { font: italic 600 13px/1 Fraunces, Georgia, serif; }
+  .meta .sp { flex: 1; }
+  .txt p { margin-top: 2px; font: 500 12.5px/16px Inter, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .pos { position: relative; width: 40px; height: 12px; flex: none; }
+  .pos::before { content: ""; position: absolute; left: 2px; right: 2px; top: 5px; height: 2px; border-radius: 1px; background: rgba(23,19,31,.2); }
+  .pos i { position: absolute; top: 4px; width: 4px; height: 4px; border-radius: 50%; background: rgba(23,19,31,.32); }
+  .pos i:nth-child(1) { left: 0; } .pos i:nth-child(2) { left: 18px; } .pos i:nth-child(3) { right: 0; }
+  .pos b { position: absolute; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #17131F; box-shadow: 0 0 0 2px #FFFDF8; }
+  .pos[data-l="1"] b { left: -4px; } .pos[data-l="2"] b { left: 14px; } .pos[data-l="3"] b { right: -4px; }
+
+  .scale { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+  .sc { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  .sc span { font: 700 11px/1.3 Inter, sans-serif; color: #5E5870; }
+  .box { overflow: hidden; border-radius: 8px; }
+  .box > .album { transform-origin: 0 0; }
+  table { border-collapse: collapse; width: 100%; background: #FFFDF8; font-size: 13px; border-radius: 12px; overflow: hidden; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid #ECE7F0; text-align: left; vertical-align: top; }
+  th { font: 800 10px/1.2 Inter, sans-serif; letter-spacing: .12em; color: #5E5870; background: #F2EEF6; }
+  .note { font-size: 12.5px; color: #3a3550; margin-top: 10px; max-width: 920px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Seviye gösterimi · “puan” gibi okunmayan üç çıkartma dili</h1>
+  <p class="lead hide-embed">Sorun (18 §2.3, 16 Karar 6): 1-3 dolu nokta bir <i>sayım</i>; “3 nokta = daha iyi” okunur. Harcama “çok” bir övgü değil.
+  Üç alternatifte de <b>kelime birincil taşıyıcıdır</b>; işaret ikincildir, renk kullanmaz, ekran okuyucudan gizlenir
+  (<code>importantForAccessibility="no"</code>) ve gizli satırda hiç çizilmez. Kelimeler: 19 §3.1 önerisi.</p>
+
+  <h2>1 · ÜÇ ALTERNATİF (AYNI DÖRT SATIR: HAREKET 1 · UYKU 3 · HARCAMA 2 · SOSYAL 3)</h2>
+  <div class="alts">
+    <div class="alt rec"><h3><small>L1 · ÖNERİLEN</small>Konum işareti</h3>
+      <p>İnce bir cetvel ve tek bir mürekkep düğme: sol, orta ya da sağ. Hiçbir şey dolmaz ve birikmez. “Kaç puan” değil,
+      “yelpazenin neresi” okunur. 18'deki konum çizgisinin çıkartma diline çevrilmiş, daha ince hâli.</p>
+      <div class="album" data-mode="pos"></div>
+      <ul><li>Uçlar simetrik; orta “en iyi” değil.</li><li>Satır yüksekliğini değiştirmez; hizayı bozmaz.</li><li>Risk: ortanın “ideal” okunması (5 kişilik testle ölçülür).</li></ul></div>
+    <div class="alt"><h3><small>L2</small>Çıkartma katmanı</h3>
+      <p>Diskin arkasında 1, 2 ya da 3 kat çıkartma. Miktar kelimeleriyle (az/orta/çok) uyumlu, çok “elle yapılmış” duruyor.</p>
+      <div class="album" data-mode="stack"></div>
+      <ul><li>Albüm metaforunda <b>“daha çok çıkartma = daha iyi koleksiyon”</b> okunur: puan riskini geri getirir.</li><li>Harcama “çok” = en kalın yığın: övgü gibi.</li></ul></div>
+    <div class="alt"><h3><small>L3</small>Rozet boyu</h3>
+      <p>Disk 30, 36 ya da 42 px. Yoğunluk büyüklükle anlatılır.</p>
+      <div class="album" data-mode="size"></div>
+      <ul><li>Büyük = öne çıkan = “yıldız” okuması.</li><li>Emoji boyu ve sol hiza satırdan satıra oynar; kart düzeni dağınık görünür.</li><li>Küçük boyutta fark kaybolur.</li></ul></div>
+  </div>
+
+  <h2>2 · ÜÇ SEVİYE YAN YANA (TEK KATEGORİ, HARCAMA)</h2>
+  <div class="alts" id="matrix"></div>
+
+  <h2>3 · KÜÇÜK BOYUT OKUNURLUĞU (L1)</h2>
+  <div class="scale" id="scales"></div>
+  <p class="note hide-embed">%100 = paylaşılan kartın telefonda tam ekran açılmış hâli (360 dp genişlik). %50 = paylaşım seçicisindeki önizleme (18 §2.8).
+  %25 = WhatsApp sohbet balonu. %25'te işaret de kelime de okunmaz; bu kabul edilir: o boyutta kartın işi unvanı ve markayı
+  taşımak (10 §4). Seviye bilgisinin küçük boyutta kaybolması gizlilik açısından da zararsız.</p>
+
+  <h2>4 · “PUAN” OKUMASI: RİSK VE DOĞRULAMA</h2>
+  <table>
+    <tr><th>Alternatif</th><th>Ne okunur</th><th>Puan riski</th><th>Uygulama</th><th>Küçük boyut</th></tr>
+    <tr><td><b>L1 Konum</b></td><td>Yelpazede yer</td><td>Düşük (birikim yok); orta = “ideal” riski</td><td>3 <code>View</code>, sabit 40×12</td><td>%50'de okunur</td></tr>
+    <tr><td>L2 Katman</td><td>Miktar yığını</td><td><b>Yüksek</b> (albüm = koleksiyon)</td><td>1-3 ofsetli <code>View</code></td><td>%50'de okunur</td></tr>
+    <tr><td>L3 Boy</td><td>Önem/büyüklük</td><td>Orta-yüksek</td><td>Disk boyu değişken, hiza telafisi</td><td>%50'de zayıf</td></tr>
+  </table>
+  <p class="note"><b>Doğrulama (K5, yapılmadı):</b> 5 kişiye aynı kartın L1 ve eski nokta sürümü gösterilir; soru: “Sağdaki işaret daha mı iyi?”
+  Kabul: L1'de “evet” ≤ 1/5 ve eskisinden az. İkinci soru: “Orta en iyisi mi?” ≤ 1/5. Geçmezse yedek: yalnız kelime (işaret kalkar).</p>
+</div>
+
+<script>
+  var TONE = { mov: '#BFE8D2', slp: '#D6CEFF', spn: '#FFD4B3', soc: '#FFCADB' };
+  var DATA = [
+    ['mov', 'HAREKET', 1, '🐢', 'durgun', 'Kanepe bu hafta seni pek bırakmadı.'],
+    ['slp', 'UYKU', 3, '😴', 'uzun', 'Yastığınla resmen kader birliği yaptınız.'],
+    ['spn', 'HARCAMA', 2, '💳', 'orta', 'Ne cimri ne çılgın, tam kararında harcadın.'],
+    ['soc', 'SOSYAL', 3, '🎉', 'kalabalık', 'Bu hafta etrafın seninle şenlendi.']
+  ];
+  function row(d, mode) {
+    var t = TONE[d[0]], l = d[2], dw = '', mark = '';
+    if (mode === 'size') {
+      var s = [30, 36, 42][l - 1], o = (44 - s) / 2;
+      dw = '<div class="dw"><span class="disc" style="left:' + o + 'px;top:' + o + 'px;width:' + s + 'px;height:' + s + 'px;background:' + t + '"><span class="emo" style="font-size:' + Math.round(s * .55) + 'px">' + d[3] + '</span></span></div>';
+    } else {
+      dw = '<div class="dw"><span class="disc" style="left:0;top:2px;width:40px;height:40px;background:' + t + '"><span class="emo" style="font-size:22px">' + d[3] + '</span></span>';
+      if (mode === 'stack') { for (var k = 1; k < l; k++) dw += '<span class="ly" style="left:' + (6 * k) + 'px;top:2px;width:40px;height:40px;z-index:' + (3 - k) + ';background:' + t + '"></span>'; }
+      dw += '</div>';
+      if (mode === 'pos') mark = '<span class="sp"></span><span class="pos" data-l="' + l + '" aria-hidden="true"><i></i><i></i><i></i><b></b></span>';
+    }
+    return '<div class="row" aria-label="' + d[1].charAt(0) + d[1].slice(1).toLocaleLowerCase('tr-TR') + ': ' + d[4] + '">' + dw + '<div class="txt"><div class="meta"><b>' + d[1] + '</b><i>' + d[4] + '</i>' + mark + '</div><p>' + d[5] + '</p></div></div>';
+  }
+  document.querySelectorAll('.album[data-mode]').forEach(function (a) {
+    a.innerHTML = DATA.map(function (d) { return row(d, a.getAttribute('data-mode')); }).join('');
+  });
+  var SP = [['spn', 'HARCAMA', 1, '🐷', 'az', 'Cüzdanın bu hafta minik bir tatil yaptı.'], ['spn', 'HARCAMA', 2, '💳', 'orta', 'Ne cimri ne çılgın, tam kararında harcadın.'], ['spn', 'HARCAMA', 3, '💸', 'çok', 'Cüzdanın bu hafta hiç soluklanmadı.']];
+  var mx = document.getElementById('matrix');
+  ['pos', 'stack', 'size'].forEach(function (m) {
+    var a = document.createElement('div'); a.className = 'album'; a.innerHTML = SP.map(function (d) { return row(d, m); }).join(''); mx.appendChild(a);
+  });
+  var sc = document.getElementById('scales');
+  [[1, '%100'], [0.75, '%75'], [0.5, '%50 (seçici önizlemesi)'], [0.25, '%25 (WhatsApp balonu)']].forEach(function (s) {
+    var w = document.createElement('div'); w.className = 'sc';
+    var box = document.createElement('div'); box.className = 'box';
+    box.style.width = Math.round(336 * s[0]) + 'px'; box.style.height = Math.round(268 * s[0]) + 'px';
+    var a = document.createElement('div'); a.className = 'album'; a.style.transform = 'scale(' + s[0] + ')';
+    a.innerHTML = DATA.map(function (d) { return row(d, 'pos'); }).join('');
+    box.appendChild(a); w.appendChild(box);
+    var c = document.createElement('span'); c.textContent = s[1]; w.appendChild(c); sc.appendChild(w);
+  });
+</script>
+</body>
+</html>

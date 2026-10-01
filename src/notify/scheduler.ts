@@ -18,12 +18,25 @@ import type { PlannedNotification } from '@/domain/notify-plan';
 
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
 
+/**
+ * İzin durumu + "sistem tekrar sorabilir mi". Android 13+'da `expo-notifications`
+ * henüz hiç sorulmamış izni de `status: 'denied'` + `canAskAgain: true` diye
+ * döndürür (`NotificationPermissionsModule.kt`: `areAllDenied`/`!areEnabled` ->
+ * DENIED, `UNDETERMINED`den önce), bu yüzden karar `status`e DEĞİL `granted`
+ * ve `canAskAgain`e göre verilir (QA BLG-01).
+ */
+export interface PermissionState {
+  status: PermissionStatus;
+  granted: boolean;
+  canAskAgain: boolean;
+}
+
 export const NOTIFICATION_CHANNEL_ID = 'hhk-reminders';
 
 /** Kullandığımız `expo-notifications` yüzeyinin dar, mock'lanabilir hali. */
 export interface ExpoNotificationsLike {
-  getPermissionsAsync(): Promise<{ status: string }>;
-  requestPermissionsAsync(): Promise<{ status: string }>;
+  getPermissionsAsync(): Promise<{ status: string; granted?: boolean; canAskAgain?: boolean }>;
+  requestPermissionsAsync(): Promise<{ status: string; granted?: boolean; canAskAgain?: boolean }>;
   scheduleNotificationAsync(request: {
     identifier?: string;
     content: { title: string; body: string; data?: Record<string, unknown> };
@@ -46,6 +59,8 @@ export interface PendingNotification {
 
 export interface NotificationScheduler {
   getPermission(): Promise<PermissionStatus>;
+  /** `status` + `granted` + `canAskAgain` (izin isteme kararı için). */
+  getPermissionState(): Promise<PermissionState>;
   /** Yalnızca kullanıcı akışından (onboarding / ayar anahtarı) çağrılır. */
   requestPermission(): Promise<PermissionStatus>;
   /** Android kanalı; iOS'ta no-op. İlk planlamadan ÖNCE çağrılmalı. */
@@ -59,6 +74,18 @@ function toPermissionStatus(status: string): PermissionStatus {
   if (status === 'granted') return 'granted';
   if (status === 'denied') return 'denied';
   return 'undetermined';
+}
+
+function toPermissionState(result: {
+  status: string;
+  granted?: boolean;
+  canAskAgain?: boolean;
+}): PermissionState {
+  const status = toPermissionStatus(result.status);
+  const granted = result.granted ?? status === 'granted';
+  // Alan yoksa (eski/sahte sürüm) ihtiyatlı ol: yalnızca `undetermined` sorulabilir sayılır.
+  const canAskAgain = granted ? false : (result.canAskAgain ?? status === 'undetermined');
+  return { status: granted ? 'granted' : status, granted, canAskAgain };
 }
 
 export function createScheduler(deps: {
@@ -81,9 +108,12 @@ export function createScheduler(deps: {
       const result = await notifications.getPermissionsAsync();
       return toPermissionStatus(result.status);
     },
+    async getPermissionState() {
+      return toPermissionState(await notifications.getPermissionsAsync());
+    },
     async requestPermission() {
       const result = await notifications.requestPermissionsAsync();
-      return toPermissionStatus(result.status);
+      return toPermissionState(result).status;
     },
     async ensureChannel() {
       if (platform !== 'android') {

@@ -3,13 +3,14 @@
  * Veri/router'a dokunmaz; `src/app/(main)/week.tsx` verileri çekip bu
  * bileşene saf props olarak geçirir.
  */
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import { LockedCardPlaceholder } from '@/components/locked-card-placeholder';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WeekDotsRow } from '@/components/week-dots-row';
 import { Spacing } from '@/constants/theme';
+import { useTopInset } from '@/hooks/use-top-inset';
 import type { WeekDot } from '@/lib/week-dots';
 
 export interface WeekStatusViewProps {
@@ -27,26 +28,34 @@ export function WeekStatusView({
   unlocked,
   onLockedPress,
 }: WeekStatusViewProps) {
+  const topInset = useTopInset();
+
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.heading}>
-        Bu hafta
-      </ThemedText>
+    <ThemedView style={[styles.flex, { paddingTop: topInset }]}>
+      {/* B10: büyük yazı tipinde / küçük ekranda içerik kesilmesin, kaydırılabilsin. */}
+      <ScrollView testID="week-scroll" contentContainerStyle={styles.container}>
+        <ThemedText type="title" style={styles.heading}>
+          Bu hafta
+        </ThemedText>
 
-      <WeekDotsRow dots={dots} />
+        <WeekDotsRow dots={dots} />
 
-      <ThemedText testID="week-status-headline" style={styles.headline}>
-        {headline}
-      </ThemedText>
+        <ThemedText testID="week-status-headline" style={styles.headline}>
+          {headline}
+        </ThemedText>
 
-      <LockedCardPlaceholder caption={caption} unlocked={unlocked} onPress={onLockedPress} />
+        <LockedCardPlaceholder caption={caption} unlocked={unlocked} onPress={onLockedPress} />
+      </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  flex: {
     flex: 1,
+  },
+  container: {
+    flexGrow: 1,
     padding: Spacing.four,
     gap: Spacing.four,
     alignItems: 'stretch',

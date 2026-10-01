@@ -12,7 +12,7 @@
  * olarak doğrular).
  */
 import { useRef } from 'react';
-import { Animated, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
@@ -25,12 +25,22 @@ export interface LockedCardPlaceholderProps {
   onPress: () => void;
 }
 
-/** ~200x356, gerçek kartla aynı 9:16 oranında, ~%55 ölçek (bkz. `kart-yerlesimi.md`). */
-const PLACEHOLDER_WIDTH = 200;
-const PLACEHOLDER_HEIGHT = 356;
+/**
+ * ~200x356, gerçek kartla aynı 9:16 oranında, ~%55 ölçek (bkz. `kart-yerlesimi.md`).
+ * Kısa ekranda / büyük yazıda ekran yüksekliğinin ~%40'ıyla sınırlanır (B10),
+ * oran korunur.
+ */
+const PLACEHOLDER_MAX_HEIGHT = 356;
+
+export function placeholderSize(windowHeight: number): { width: number; height: number } {
+  const height = Math.min(PLACEHOLDER_MAX_HEIGHT, Math.round(windowHeight * 0.4));
+  return { width: Math.round((height * 9) / 16), height };
+}
 
 export function LockedCardPlaceholder({ caption, unlocked, onPress }: LockedCardPlaceholderProps) {
   const shakeAnim = useRef(new Animated.Value(0)).current;
+  const { height: windowHeight } = useWindowDimensions();
+  const size = placeholderSize(windowHeight);
 
   function handlePress() {
     if (!unlocked) {
@@ -63,7 +73,7 @@ export function LockedCardPlaceholder({ caption, unlocked, onPress }: LockedCard
         accessibilityRole="button"
         accessibilityLabel={caption}
         onPress={handlePress}>
-        <Animated.View style={[styles.card, { transform: [{ translateX }] }]}>
+        <Animated.View style={[styles.card, size, { transform: [{ translateX }] }]}>
           {/* Unvan yerine gri blok */}
           <View style={styles.titleBlock} />
 
@@ -80,9 +90,14 @@ export function LockedCardPlaceholder({ caption, unlocked, onPress }: LockedCard
           {/* Özet yerine kısa gri pill */}
           <View style={styles.summaryPill} />
 
-          <View style={styles.lockOverlay}>
-            <ThemedText style={styles.lockIcon}>{'\u{1F512}'}</ThemedText>
+          {/* B6/YB-2: kilit akış içinde, özet pill'i ile damga arasında (kart-yerlesimi.md çizimi);
+              satır çubuklarıyla örtüşmez. */}
+          <View testID="locked-card-lock" style={styles.lockCircle} pointerEvents="none">
+            <ThemedText style={styles.lockIcon}>{'🔒'}</ThemedText>
           </View>
+
+          {/* Damga yerine kısa gri blok (gerçek kartla aynı dikey dağılım) */}
+          <View style={styles.stampBlock} />
         </Animated.View>
       </Pressable>
       <ThemedText type="small" style={styles.caption} testID="locked-card-caption">
@@ -100,12 +115,10 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   card: {
-    width: PLACEHOLDER_WIDTH,
-    height: PLACEHOLDER_HEIGHT,
     borderRadius: Spacing.two,
     backgroundColor: '#D1D1D6',
     padding: Spacing.three,
-    gap: Spacing.three,
+    justifyContent: 'space-between', // iskelet kartın tüm yüksekliğine dağılır
   },
   titleBlock: {
     alignSelf: 'center',
@@ -141,16 +154,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: SKELETON_COLOR,
   },
-  lockOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#00000033',
+  stampBlock: {
+    alignSelf: 'center',
+    width: '40%',
+    height: 10,
+    borderRadius: 4,
+    backgroundColor: SKELETON_COLOR,
+  },
+  lockCircle: {
+    alignSelf: 'center',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#FFFFFFCC',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Spacing.two,
   },
   lockIcon: {
     fontSize: 32,

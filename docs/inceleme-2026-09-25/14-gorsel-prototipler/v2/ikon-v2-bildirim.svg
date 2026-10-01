@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24">
+  <!-- Bildirim küçük ikonu (Android durum çubuğu): yalnız beyaz + saydamlık, 24 dp, içerik ~19 dp (2 dp pay).
+       Dışa aktarım: drawable-mdpi 24, hdpi 36, xhdpi 48, xxhdpi 72, xxxhdpi 96 px (ya da VectorDrawable). -->
+  <defs>
+    <mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+      <rect width="24" height="24" fill="#000"/>
+      <g transform="rotate(-6 12 12)">
+        <rect x="3" y="3" width="18" height="18" rx="5" fill="#FFF"/>
+        <path d="M434 340V668M434 548C434 480 474 456 512 456C552 456 590 480 590 548V668" transform="translate(12 12) scale(.0272) translate(-512 -504)"
+          fill="none" stroke="#000" stroke-width="76" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </mask>
+  </defs>
+  <rect width="24" height="24" fill="#FFFFFF" mask="url(#m)"/>
+</svg>

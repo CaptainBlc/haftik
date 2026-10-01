@@ -47,8 +47,8 @@ S7a. Tüm ölçüler mantıksal 360x640 birimde verilir; çıktı PNG'de **x3**
 | Ayraç boşluk | 140-164 (24px) | — | Unvan ile satırları görsel olarak ayrı gruplar halinde okutmak için. |
 | 4 kategori satırı | 164-452 (4x72px) | emoji 26px + metin 15px regular, satır yük. 20px, max 2 satır/hücre | Her satır: `[emoji][12px boşluk][metin]`, dikey ortalanmış; satır arası 1px, %12 opak ayraç çizgisi. 72px, 60 karakterlik bir metnin 2 satıra rahat sarılmasına yeter (bkz. aşağıdaki "60 karakter" notu). Sıra sabit: hareket→uyku→harcama→sosyal (spec `checkin` alan sırası ve `CATEGORIES` sabiti ile birebir), kullanıcı her kartta aynı sırayı öğrenir. |
 | Ayraç boşluk | 452-492 (40px) | — | Satır bloğunu özet bloğundan ayırmak; özet farklı bir görsel ağırlıkta (aşağıda). |
-| Özet | 492-540 (48px) | 16px italic, ortalı, max 2 satır, hafif dolgu (pill: köşe yarıçapı 12px, arka plan %8 opak vurgu tonu) | İtalik + hafif dolgu, özetin "yorum" olduğunu (tek tek satırlardan farklı bir sentez olduğunu) görsel olarak ayırır; kalın çizgi/çerçeve yerine yumuşak dolgu tercih edildi çünkü bu bir uyarı değil, hafif bir kapanış notu. |
-| Boşluk | 540-580 (40px) | — | Damga, satır/özet metinlerine "yapışık" görünmesin diye. |
+| Özet | 492-548 (56px; QA BLG-04: 48px 2 satırı kesiyordu, 8px sonraki boşluktan alındı) | 16px italic (satır yük. 20px, pill dikey dolgu 6px), ortalı, max 2 satır, hafif dolgu (pill: köşe yarıçapı 12px, arka plan %8 opak vurgu tonu) | İtalik + hafif dolgu, özetin "yorum" olduğunu (tek tek satırlardan farklı bir sentez olduğunu) görsel olarak ayırır; kalın çizgi/çerçeve yerine yumuşak dolgu tercih edildi çünkü bu bir uyarı değil, hafif bir kapanış notu. |
+| Boşluk | 548-580 (32px) | — | Damga, satır/özet metinlerine "yapışık" görünmesin diye. |
 | Damga | 580-620 (40px) | 11px, %65 opaklık | Görünür ama baskın değil — marka görünürlüğü ile içerik dikkatinin dengesi (asıl paylaşılan şey unvan+satırlar, damga onun yanında sessiz bir imza). |
 | Alt boşluk | 620-640 (20px) | — | Ekran/kırpma güvenlik payı. |
 

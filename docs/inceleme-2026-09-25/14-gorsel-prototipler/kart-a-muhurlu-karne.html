@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haftik · Kart A · Mühürlü karne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Inter:ital,opsz,wght@0,14..32,400..800;1,14..32,400..800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>if (location.search.indexOf('embed') > -1) document.documentElement.className += ' embed';</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #D8D1C4; font-family: Inter, system-ui, sans-serif; color: #1F1B16; padding: 40px; }
+  .page-head { max-width: 1180px; margin: 0 auto 32px; }
+  .page-head h1 { font: 700 22px/1.2 Inter, sans-serif; }
+  .page-head p { font: 400 14px/1.55 Inter, sans-serif; color: #4a4339; max-width: 780px; margin-top: 6px; }
+  .stage { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; align-items: flex-start; }
+  figure { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  figcaption { font: 600 12px/1.4 Inter, sans-serif; color: #3a342b; text-align: center; max-width: 360px; }
+  .emo { font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif; font-weight: 400; font-style: normal; line-height: 1; }
+  .notes { max-width: 1180px; margin: 40px auto 0; font: 400 13px/1.6 Inter, sans-serif; color: #3a342b; }
+  .notes h2 { font: 700 15px/1.3 Inter, sans-serif; margin: 18px 0 6px; }
+  .notes li { margin-left: 18px; }
+  .embed body { background: transparent; padding: 20px; }
+  .embed .page-head, .embed .notes, .embed .extra, .embed figcaption { display: none; }
+
+  /* ---------- KART A · token'lar ---------- */
+  .card-a {
+    --paper: #F5EEDF; --ink: #1F1B16; --inkSoft: #6A6155; --violet: #4B32C3;
+    --cell: #EBE0C9; --rule: rgba(31,27,22,.32);
+    position: relative; width: 360px; height: 640px; overflow: hidden; flex: none;
+    background:
+      radial-gradient(130% 90% at 50% 38%, rgba(255,255,255,.38) 0%, rgba(255,255,255,0) 55%),
+      radial-gradient(140% 100% at 50% 50%, rgba(0,0,0,0) 62%, rgba(150,110,50,.13) 100%),
+      var(--paper);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 30px 60px -24px rgba(40,28,10,.45); /* sunum gölgesi, PNG'ye girmez */
+  }
+  .card-a .grain {
+    position: absolute; inset: 0; opacity: .55; pointer-events: none; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32  0 0 0 0 .25  0 0 0 0 .16  0 0 0 .9 -.36'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+  }
+  .card-a .fibers {
+    position: absolute; inset: 0; opacity: .35; pointer-events: none; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.012 .16' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .36  0 0 0 0 .22  0 0 0 .5 -.2'/></filter><rect width='360' height='360' filter='url(%23f)'/></svg>");
+  }
+  .card-a .frame  { position: absolute; inset: 12px; border: 1.5px solid var(--ink); border-radius: 2px; }
+  .card-a .frame2 { position: absolute; inset: 16px; border: .75px solid rgba(31,27,22,.55); }
+  .card-a .orn { position: absolute; width: 9px; height: 9px; background: var(--paper); border: 1.5px solid var(--ink); transform: rotate(45deg); }
+  .card-a .orn.tl { top: 8px; left: 8px; } .card-a .orn.tr { top: 8px; right: 8px; }
+  .card-a .orn.bl { bottom: 8px; left: 8px; } .card-a .orn.br { bottom: 8px; right: 8px; }
+
+  .a-head { position: absolute; top: 34px; left: 0; right: 0; text-align: center; }
+  .a-kicker { display: flex; justify-content: center; align-items: center; gap: 10px;
+    font: 800 10px/1 Inter, sans-serif; letter-spacing: .3em; padding-left: .3em; }
+  .a-kicker i { display: block; width: 26px; height: 1px; background: var(--ink); }
+  .a-week { margin-top: 7px; font: italic 400 12.5px/1 Fraunces, serif; color: var(--inkSoft); }
+  .a-guil { display: block; margin: 10px auto 0; width: 232px; height: 12px; }
+
+  .a-titlewrap { position: absolute; top: 100px; left: 26px; right: 26px; text-align: center; }
+  .a-label { font: 700 9px/1 Inter, sans-serif; letter-spacing: .24em; padding-left: .24em; color: var(--violet); }
+  .a-title { margin-top: 10px; font-family: Fraunces, serif; font-weight: 800; font-size: 54px; line-height: .98;
+    letter-spacing: -.02em; color: var(--ink); }
+  .a-title em { font-style: italic; font-weight: 700; }
+  .a-title.long { font-size: 38px; line-height: 1.0; }
+  .a-rule { width: 44px; height: 5px; margin: 12px auto 0; border-top: 1.5px solid var(--violet); border-bottom: .75px solid var(--violet); }
+
+  .a-rows { position: absolute; top: 252px; left: 28px; right: 28px; list-style: none;
+    border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .a-rows li { height: 54px; display: flex; align-items: center; gap: 12px; }
+  .a-rows li + li { border-top: 1px dotted var(--rule); }
+  .a-cell { width: 38px; height: 38px; flex: none; border-radius: 50%; background: var(--cell);
+    box-shadow: inset 0 0 0 1px rgba(31,27,22,.18); display: grid; place-items: center; }
+  .a-cell .emo { font-size: 22px; }
+  .a-txt { flex: 1; min-width: 0; }
+  .a-meta { display: flex; align-items: baseline; gap: 6px; height: 12px; }
+  .a-meta b { font: 800 9px/1 Inter, sans-serif; letter-spacing: .16em; color: var(--inkSoft); }
+  .a-meta .lv { font: italic 600 12px/1 Fraunces, serif; color: var(--ink); }
+  .pips { margin-left: auto; display: flex; gap: 3px; align-self: center; }
+  .pips i { width: 6px; height: 6px; border-radius: 50%; border: 1.2px solid var(--ink); }
+  .pips.p1 i:nth-child(-n+1), .pips.p2 i:nth-child(-n+2), .pips.p3 i:nth-child(-n+3) { background: var(--ink); }
+  .a-txt p { margin-top: 4px; font: 400 13px/17px Inter, sans-serif; color: var(--ink);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .a-summary { position: absolute; top: 484px; left: 28px; right: 28px; }
+  .a-summary .a-label { padding-left: 0; }
+  .a-summary p { margin-top: 6px; font: italic 400 16px/20px Fraunces, serif; color: var(--ink);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .a-foot { position: absolute; left: 30px; bottom: 30px; }
+  .a-brand { font: 700 24px/1 Fraunces, serif; letter-spacing: -.01em; }
+  .a-brand i { font-style: normal; color: var(--violet); }
+  .a-link { margin-top: 5px; font: 500 10.5px/13.6px Inter, sans-serif; color: var(--inkSoft); }
+
+  .a-stamp { position: absolute; right: 22px; bottom: 16px; width: 80px; height: 80px;
+    transform: rotate(-14deg); mix-blend-mode: multiply; opacity: .92; }
+
+  /* gizli durum: düzeltme bandı */
+  .tapewrap { filter: drop-shadow(0 1px 1px rgba(60,40,10,.22)) drop-shadow(0 4px 6px rgba(60,40,10,.14)); }
+  .tape { height: 40px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 6px;
+    background: linear-gradient(180deg, #FFFEFA 0%, #F8F4EB 100%);
+    clip-path: polygon(1.6% 0, 98.4% 0, 100% 18%, 98.6% 36%, 100% 54%, 98.6% 72%, 100% 88%, 98.4% 100%, 1.6% 100%, 0 84%, 1.4% 66%, 0 48%, 1.4% 30%, 0 14%); }
+  .tape.t1 { width: 232px; transform: rotate(-1.4deg); }
+  .tape.t2 { width: 150px; margin-top: 10px; transform: rotate(.9deg); }
+  .tape span { font: 800 9px/1 Inter, sans-serif; letter-spacing: .22em; color: var(--violet); }
+  .tape svg { width: 9px; height: 10px; }
+  .tape.small { height: 18px; width: 176px; margin: 5px 0 0; transform: rotate(-.6deg); justify-content: flex-start; padding-left: 10px; }
+  .tape.small span { font-size: 8px; }
+  .a-cell.hid { background: transparent; box-shadow: none; border: 1.2px dashed rgba(31,27,22,.5); }
+  .a-cell.hid b { font: italic 600 19px/1 Fraunces, serif; color: var(--inkSoft); }
+
+  /* küçük önizleme testi */
+  .thumb { width: 90px; height: 160px; overflow: hidden; border-radius: 6px; }
+  .thumb > .card-a { transform: scale(.25); transform-origin: 0 0; box-shadow: none; }
+  .bubble { background: #D9FDD3; padding: 4px; border-radius: 10px; box-shadow: 0 1px 1px rgba(0,0,0,.15); }
+</style>
+</head>
+<body>
+
+<!-- Mühür çizimi tek yerde; kartlar <use> ile çağırır (RN'de tek bir PNG varlığı olur) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="a-ring" d="M16 60a44 44 0 1 1 88 0a44 44 0 1 1-88 0"/>
+    <filter id="a-rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="3" result="t"/>
+      <feColorMatrix in="t" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 2.0" result="m"/>
+      <feComposite in="SourceGraphic" in2="m" operator="in"/>
+    </filter>
+    <g id="a-seal" filter="url(#a-rough)">
+      <g fill="none" stroke="#4B32C3" stroke-linecap="round">
+        <circle cx="60" cy="60" r="56" stroke-width="3.2"/>
+        <circle cx="60" cy="60" r="31" stroke-width="1.6"/>
+        <path d="M50 48V72M70 48V72" stroke-width="5"/>
+        <path d="M50 58Q60 68 70 58" stroke-width="4"/>
+      </g>
+      <text fill="#4B32C3" font-family="Inter, sans-serif" font-weight="800" font-size="10.5" letter-spacing="2.6">
+        <textPath href="#a-ring" textLength="272" lengthAdjust="spacing">HAFTİK • HAFTA KARNESİ • MÜHÜRLÜ • </textPath>
+      </text>
+    </g>
+    <symbol id="a-guil-s" viewBox="0 0 232 12">
+      <g fill="none" stroke="#4B32C3" stroke-width=".7" opacity=".75">
+        <path d="M0 6Q4 1 8 6T16 6T24 6T32 6T40 6T48 6T56 6T64 6T72 6T80 6T88 6T96 6T104 6T112 6T120 6T128 6T136 6T144 6T152 6T160 6T168 6T176 6T184 6T192 6T200 6T208 6T216 6T224 6T232 6"/>
+        <path d="M0 6Q4 11 8 6T16 6T24 6T32 6T40 6T48 6T56 6T64 6T72 6T80 6T88 6T96 6T104 6T112 6T120 6T128 6T136 6T144 6T152 6T160 6T168 6T176 6T184 6T192 6T200 6T208 6T216 6T224 6T232 6"/>
+        <path d="M0 6H232" stroke-width=".4" opacity=".6"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="page-head">
+  <h1>Yön A · Mühürlü karne (krem kâğıt)</h1>
+  <p>Fikir: “Haftan, krem kâğıda basılmış, mor mühürlü bir karne.” Mürekkep siyahı + kâğıt kremi + tek vurgu mühür moru.
+  İmza: çift çizgili karne çerçevesi, guilloş şerit ve yuvarlak HAFTİK mührü. Gizli unvan “düzeltme bandı” ile kapatılır.
+  Tuval 360×640 mantıksal (PNG 1080×1920). Sunum gölgesi PNG’nin parçası değildir.</p>
+</header>
+
+<main class="stage">
+
+  <!-- ============ 1. NORMAL ============ -->
+  <figure>
+    <div class="card-a" id="a-normal">
+      <div class="fibers"></div><div class="grain"></div>
+      <div class="frame"></div><div class="frame2"></div>
+      <span class="orn tl"></span><span class="orn tr"></span><span class="orn bl"></span><span class="orn br"></span>
+
+      <header class="a-head">
+        <div class="a-kicker"><i></i>HAFTA KARNESİ<i></i></div>
+        <div class="a-week">Pazartesi — Pazar</div>
+        <svg class="a-guil"><use href="#a-guil-s"/></svg>
+      </header>
+
+      <div class="a-titlewrap">
+        <div class="a-label">BU HAFTANIN UNVANI</div>
+        <h2 class="a-title">Konforun <em>Kalesi</em></h2>
+        <div class="a-rule"></div>
+      </div>
+
+      <ul class="a-rows">
+        <li><span class="a-cell"><span class="emo">🐢</span></span>
+          <div class="a-txt"><div class="a-meta"><b>HAREKET</b><span class="lv">durgun</span><span class="pips p1"><i></i><i></i><i></i></span></div>
+          <p>Kanepe bu hafta seni pek bırakmadı.</p></div></li>
+        <li><span class="a-cell"><span class="emo">😴</span></span>
+          <div class="a-txt"><div class="a-meta"><b>UYKU</b><span class="lv">iyi</span><span class="pips p3"><i></i><i></i><i></i></span></div>
+          <p>Yastığınla resmen kader birliği yaptınız.</p></div></li>
+        <li><span class="a-cell"><span class="emo">💳</span></span>
+          <div class="a-txt"><div class="a-meta"><b>HARCAMA</b><span class="lv">orta</span><span class="pips p2"><i></i><i></i><i></i></span></div>
+          <p>Ne cimri ne çılgın, tam kararında harcadın.</p></div></li>
+        <li><span class="a-cell"><span class="emo">👥</span></span>
+          <div class="a-txt"><div class="a-meta"><b>SOSYAL</b><span class="lv">ölçülü</span><span class="pips p2"><i></i><i></i><i></i></span></div>
+          <p>Sosyallik dozun tam kıvamındaydı bu hafta.</p></div></li>
+      </ul>
+
+      <div class="a-summary">
+        <div class="a-label">GENEL GÖRÜŞ</div>
+        <p>Bu hafta terazi hem sağa hem sola salındı.</p>
+      </div>
+
+      <footer class="a-foot">
+        <div class="a-brand">Haftik<i>.</i></div>
+        <div class="a-link">Her pazar yeni bir karne<br>[mağaza bağlantısı]</div>
+      </footer>
+
+      <svg class="a-stamp" viewBox="0 0 120 120" aria-label="HAFTİK mührü"><use href="#a-seal"/></svg>
+    </div>
+    <figcaption>A1 · Normal: dev serif unvan (son kelime italik), karne tablosu, “genel görüş”, mor mühür.</figcaption>
+  </figure>
+
+  <!-- ============ 2. GİZLİ ============ -->
+  <figure>
+    <div class="card-a">
+      <div class="fibers"></div><div class="grain"></div>
+      <div class="frame"></div><div class="frame2"></div>
+      <span class="orn tl"></span><span class="orn tr"></span><span class="orn bl"></span><span class="orn br"></span>
+
+      <header class="a-head">
+        <div class="a-kicker"><i></i>HAFTA KARNESİ<i></i></div>
+        <div class="a-week">Pazartesi — Pazar</div>
+        <svg class="a-guil"><use href="#a-guil-s"/></svg>
+      </header>
+
+      <div class="a-titlewrap">
+        <div class="a-label">BU HAFTANIN UNVANI</div>
+        <div style="margin-top:18px">
+          <div class="tapewrap"><div class="tape t1">
+            <svg viewBox="0 0 9 10"><rect x=".5" y="4.2" width="8" height="5.3" rx="1" fill="#4B32C3"/><path d="M2.3 4.4V3a2.2 2.2 0 0 1 4.4 0v1.4" fill="none" stroke="#4B32C3" stroke-width="1.2"/></svg>
+            <span>GİZLİ</span></div></div>
+          <div class="tapewrap"><div class="tape t2"></div></div>
+        </div>
+        <div class="a-rule" style="margin-top:14px"></div>
+      </div>
+
+      <ul class="a-rows">
+        <li><span class="a-cell"><span class="emo">🐢</span></span>
+          <div class="a-txt"><div class="a-meta"><b>HAREKET</b><span class="lv">durgun</span><span class="pips p1"><i></i><i></i><i></i></span></div>
+          <p>Kanepe bu hafta seni pek bırakmadı.</p></div></li>
+        <li><span class="a-cell hid"><b>?</b></span>
+          <div class="a-txt"><div class="a-meta"><b>UYKU</b></div>
+          <div class="tapewrap"><div class="tape small"><span>GİZLİ</span></div></div></div></li>
+        <li><span class="a-cell hid"><b>?</b></span>
+          <div class="a-txt"><div class="a-meta"><b>HARCAMA</b></div>
+          <div class="tapewrap"><div class="tape small" style="transform:rotate(.7deg)"><span>GİZLİ</span></div></div></div></li>
+        <li><span class="a-cell"><span class="emo">👥</span></span>
+          <div class="a-txt"><div class="a-meta"><b>SOSYAL</b><span class="lv">ölçülü</span><span class="pips p2"><i></i><i></i><i></i></span></div>
+          <p>Sosyallik dozun tam kıvamındaydı bu hafta.</p></div></li>
+      </ul>
+
+      <div class="a-summary">
+        <div class="a-label">GENEL GÖRÜŞ</div>
+        <p>Bu hafta terazi hem sağa hem sola salındı.</p>
+      </div>
+
+      <footer class="a-foot">
+        <div class="a-brand">Haftik<i>.</i></div>
+        <div class="a-link">Her pazar yeni bir karne<br>[mağaza bağlantısı]</div>
+      </footer>
+
+      <svg class="a-stamp" viewBox="0 0 120 120"><use href="#a-seal"/></svg>
+    </div>
+    <figcaption>A2 · Varsayılan gizleme (uyku + harcama gizli → unvan da gizli): düzeltme bandı. Bant genişlikleri sabit, gerçek metnin uzunluğunu ele vermez.</figcaption>
+  </figure>
+
+  <!-- ============ 3. STRES: uzun unvan + uzun özet ============ -->
+  <figure class="extra">
+    <div class="card-a">
+      <div class="fibers"></div><div class="grain"></div>
+      <div class="frame"></div><div class="frame2"></div>
+      <span class="orn tl"></span><span class="orn tr"></span><span class="orn bl"></span><span class="orn br"></span>
+      <header class="a-head">
+        <div class="a-kicker"><i></i>HAFTA KARNESİ<i></i></div>
+        <div class="a-week">Pazartesi — Pazar</div>
+        <svg class="a-guil"><use href="#a-guil-s"/></svg>
+      </header>
+      <div class="a-titlewrap">
+        <div class="a-label">BU HAFTANIN UNVANI</div>
+        <h2 class="a-title long">Dinlenme Modu Sonuna Kadar <em>Açık</em></h2>
+      </div>
+      <ul class="a-rows">
+        <li><span class="a-cell"><span class="emo">🐢</span></span>
+          <div class="a-txt"><div class="a-meta"><b>HAREKET</b><span class="lv">durgun</span><span class="pips p1"><i></i><i></i><i></i></span></div>
+          <p>Adımların bu hafta grev ilan etti.</p></div></li>
+        <li><span class="a-cell"><span class="emo">😪</span></span>
+          <div class="a-txt"><div class="a-meta"><b>UYKU</b><span class="lv">kötü</span><span class="pips p1"><i></i><i></i><i></i></span></div>
+          <p>Gece yarıları senin mesai saatin gibiydi.</p></div></li>
+        <li><span class="a-cell"><span class="emo">🐷</span></span>
+          <div class="a-txt"><div class="a-meta"><b>HARCAMA</b><span class="lv">az</span><span class="pips p1"><i></i><i></i><i></i></span></div>
+          <p>Cüzdanın bu hafta minik bir tatil yaptı.</p></div></li>
+        <li><span class="a-cell"><span class="emo">👤</span></span>
+          <div class="a-txt"><div class="a-meta"><b>SOSYAL</b><span class="lv">yalnız</span><span class="pips p1"><i></i><i></i><i></i></span></div>
+          <p>Sosyal hayatın bu hafta sessiz moddaydı.</p></div></li>
+      </ul>
+      <div class="a-summary">
+        <div class="a-label">GENEL GÖRÜŞ</div>
+        <p>Genel gidişat aşağı yönlü, sakin bir dinlenme haftası.</p>
+      </div>
+      <footer class="a-foot">
+        <div class="a-brand">Haftik<i>.</i></div>
+        <div class="a-link">Her pazar yeni bir karne<br>[mağaza bağlantısı]</div>
+      </footer>
+      <svg class="a-stamp" viewBox="0 0 120 120"><use href="#a-seal"/></svg>
+    </div>
+    <figcaption>A3 · Stres testi: uzun unvan (31 harf) 38 px’e iner, 3 satır; en uzun özet 2 satır. Tümü “düşük” seviye: kart yine sıcak, yargısız.
+    Not: seviye kelimesi “kötü” (uyku) mevcut <code>CATEGORY_LEVEL_LABELS_TR</code>’den; kartta yargı gibi okunuyor, copywriter’a sorulmalı.</figcaption>
+  </figure>
+
+  <!-- ============ 4. Küçük önizleme ============ -->
+  <figure class="extra">
+    <div class="bubble"><div class="thumb" id="a-thumb"></div></div>
+    <figcaption>A4 · %25 ölçek (sohbet balonu önizlemesi): okunan yalnızca unvan, çerçeve ve mühür. Satırların okunmaması beklenen.</figcaption>
+  </figure>
+
+</main>
+
+<section class="notes">
+  <h2>Kontrast (WCAG 2.x, elle hesap, K1)</h2>
+  <ul>
+    <li>Mürekkep <code>#1F1B16</code> / kâğıt <code>#F5EEDF</code>: 14,8:1</li>
+    <li>İkincil <code>#6A6155</code> / kâğıt: 5,3:1 (köşe vinyetinin en koyu noktasında ≥4,6; o bölgede metin yok)</li>
+    <li>Mor <code>#4B32C3</code> / kâğıt: 7,1:1 · mor / bant <code>#FFFDF7</code>: 8,1:1</li>
+    <li>Seviye: kelime + nokta sayısı (şekil). Renk tek başına anlam taşımaz; tüm satırlar aynı renkte.</li>
+  </ul>
+</section>
+
+<script>
+  // %25 önizleme için normal kartın kopyası (yalnızca sunum)
+  (function () {
+    var src = document.getElementById('a-normal'), t = document.getElementById('a-thumb');
+    if (src && t) { var c = src.cloneNode(true); c.removeAttribute('id'); t.appendChild(c); }
+  })();
+</script>
+</body>
+</html>
