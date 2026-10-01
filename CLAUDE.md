@@ -203,19 +203,26 @@ Yalnızca **aktif ve araçla henüz yakalanmayan** tuzaklar; `(tarih, sınıf)` 
 ## Açık kararlar ve cihaz maddeleri
 
 **Uygulandı (tarihiyle, kod/test var):** Node ≥24 + ölü kod/web yığını temizliği, CI/
-dependabot/pre-commit, CLAUDE.md ayıklaması (hepsi 2026-10-01) · migration atomikliği T7 +
-ölçüm şeması `metric_counter` v3 (A10) + N-7 not (A9) + kök ErrorBoundary (Ç29) — hepsi
-2026-10-01, S14.
+dependabot/pre-commit, CLAUDE.md ayıklaması (hepsi 2026-10-01, S13) · migration atomikliği T7 +
+ölçüm şeması `metric_counter` v3 (A10) + N-7 not (A9) + kök ErrorBoundary (Ç29) (2026-10-01, S14)
+· Kritik-1 eşik kuralı B + monotonluk testi (A8) + Pazar'da çift bildirim düzeltmesi (A13)
+(2026-10-01, S15 T1 — ayrıntı `docs/kararlar/2026-09-30-taban-oncesi-kararlar.md` ve
+`2026-10-01-taban-oncesi-kararlar-b.md`). `now` zorunlu kılma (TB-10) bilerek ERTELENDİ (S15'te
+`open-card.ts`'e dokunulurken fırsat değerlendirildi ama kapsam dışı bırakıldı, kendi önceliği
+zaten düşüktü — bir sonraki `open-card.ts` dokunuşunda ele alınabilir).
 
 **Batuhan'ın onayladığı, henüz uygulanmamış kararlar** (Karar A 18/18 ve Karar B 14/14
-tamam — tam liste ve gerekçe `docs/kararlar/`): açık tema kilidi (A11) · Pazar'da çift
-bildirim düzeltmesi (A13) · seviye kelimeleri + içerik paketi (A14/A15) · Kritik-1 eşik
-kuralı B (A8) · `now` zorunlu kılma (TB-10, A8 ile birlikte S15'te) · bildirim kanalları
-sesli (A12) · INTERNET/izin temizliği + D2D kapatma (A16/A17) · R8 hem preview hem
-production'da (A18) · paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı)
-· seviye/font/ikon/haptik/K3-banner/Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23) ·
-6 kişilik P0 görsel test oturumu (B12, S19'dan önce) · Maestro kurulumu (B14, çekirdek
-kapısında).
+tamam — tam liste ve gerekçe `docs/kararlar/`): açık tema kilidi (A11) · seviye kelimeleri +
+içerik paketi (A14/A15) · bildirim kanalları sesli (A12) · INTERNET/izin temizliği + D2D
+kapatma (A16/A17) · R8 hem preview hem production'da (A18) · paylaşım unvanı +
+security-reviewer görüşü (B1, S21'in girdi kapısı) · seviye/font/ikon/haptik/K3-banner/
+Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23) · 6 kişilik P0 görsel test oturumu
+(B12, S19'dan önce) · Maestro kurulumu (B14, çekirdek kapısında).
+
+**S15'in geri kalanı (T1 bitti, T2/T3 ve diğerleri henüz yapılmadı):** T2 kaçırılan hafta
+yolu (`findOpenableWeeks` + Hafta banner'ı), T3 bildirim tıklaması yönlendirmesi (soğuk/sıcak
+açılış, sabit rota tablosu), iki bildirim kanalı tanımı (A12'nin kod karşılığı), teslim
+edilmiş bildirimleri kaldırma, V-03 geri tuşu düzeltmesi.
 
 **Hâlâ Batuhan'a kalan (henüz karar listesine girmedi):** N-9 uygulama kilidi/
 FLAG_SECURE (öneri: yalnız son uygulamalar önizlemesini gizle), K5 mağaza bağlantısının

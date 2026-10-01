@@ -76,6 +76,43 @@ export function dedupeByLocalDate(checkins: Checkin[]): Checkin[] {
 export const CARD_UNLOCK_HOUR = 20;
 
 /**
+ * **Kritik-1 düzeltmesi (öneri B, 2026-10-01 — bkz.
+ * `docs/kararlar/2026-10-01-cekirdekten-once-kararlar.md` A8 ve
+ * `docs/inceleme-2026-09-25/21-mimari-ve-efor.md` §2f).**
+ *
+ * Eski kural (`hasAnyPriorCard`, `data/card-repo.ts`) eşiği **kartın kendi
+ * varlığına** bağlıyordu: bir hafta kartı açılınca eşik 3'ten 4'e çıkıyor,
+ * o haftanın kendisi (yalnızca 3 dolu günü varsa) `unlocked: false`'a
+ * dönüyordu — "kart açmak geçmişe dönük kendi haftasını yeniden kilitliyor"
+ * sınıfından bir hata. Yeni kural: eşik yalnızca **check-in geçmişinden**
+ * türer — `weekStart`'tan KESİNLİKLE ÖNCEKİ herhangi bir haftada (haftanın
+ * kendisi sayılmaz) en az 3 dolu gün varsa, bu ve sonraki haftalarda eşik
+ * 4'tür; aksi halde (henüz hiç "nitelikli" bir hafta geçmemişse) 3'tür.
+ *
+ * Bu fonksiyon saftır ve `weekly_card` tablosunu hiç bilmez — kart açmak
+ * (ya da açmamak) hiçbir haftanın `unlocked` durumunu artık DEĞİŞTİREMEZ
+ * (monotonluk; bkz. `__tests__/domain/week.monotonic.test.ts`).
+ *
+ * @param checkins Herhangi bir sırada, herhangi bir haftaya ait check-in'ler
+ *   (yalnızca `weekStart`'tan önceki günler dikkate alınır, sonrakiler
+ *   yok sayılır — çağıran "tüm geçmiş" de geçse güvenlidir).
+ */
+export function hasQualifiedWeekBefore(checkins: Checkin[], weekStart: string): boolean {
+  const priorDays = dedupeByLocalDate(checkins).filter((c) => c.localDate < weekStart);
+  const filledByWeek = new Map<string, number>();
+  for (const day of priorDays) {
+    const ws = getWeekStart(parseLocalDate(day.localDate));
+    filledByWeek.set(ws, (filledByWeek.get(ws) ?? 0) + 1);
+  }
+  for (const count of filledByWeek.values()) {
+    if (count >= 3) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Belirli bir haftanın (parametre olarak verilen `weekStart`) durumunu
  * hesaplar. Yalnızca "içinde bulunulan hafta" için değil, geçmiş, henüz
  * açılmamış herhangi bir hafta için de çağrılabilir (spec S2 netleştirme
@@ -85,14 +122,19 @@ export const CARD_UNLOCK_HOUR = 20;
  * Saf fonksiyondur: gerçek `Date.now()`/sistem saatine dokunmaz, yalnızca
  * `now` parametresini kullanır; aynı girdiyle çağrıldığında her zaman
  * özdeş sonucu döner.
+ *
+ * @param hasQualifiedWeekBefore Yukarıdaki `hasQualifiedWeekBefore(...)`
+ *   fonksiyonunun sonucu — çağıran bunu önceden hesaplar (bu fonksiyon
+ *   kendisi check-in geçmişini taramaz, yalnızca `weekStart` haftasının
+ *   kendi günlerine bakar).
  */
 export function getWeekState(params: {
   weekStart: string;
   now: Date;
   checkins: Checkin[];
-  hasAnyPriorCard: boolean;
+  hasQualifiedWeekBefore: boolean;
 }): WeekState {
-  const { weekStart, now, checkins, hasAnyPriorCard } = params;
+  const { weekStart, now, checkins, hasQualifiedWeekBefore: qualifiedBefore } = params;
 
   // Bir sonraki Pazartesi (hariç üst sınır). YYYY-MM-DD sabit genişlikte
   // olduğundan lexicographic karşılaştırma kronolojik karşılaştırmayla
@@ -103,7 +145,7 @@ export function getWeekState(params: {
   );
   const filledDays = dedupeByLocalDate(weekCheckins).length;
 
-  const requiredDays = hasAnyPriorCard ? 4 : 3;
+  const requiredDays = qualifiedBefore ? 4 : 3;
   const thresholdMet = filledDays >= requiredDays;
 
   const cardUnlockMoment = addDays(parseLocalDate(weekStart), 6); // o haftanın Pazar'ı

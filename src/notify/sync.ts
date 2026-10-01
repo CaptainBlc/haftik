@@ -15,7 +15,8 @@ import type { NotificationScheduler, PermissionStatus } from './scheduler';
 export interface NotifyState {
   checkins: Checkin[];
   settings: { reminderEnabled: boolean; reminderTime: string; onboardingDone: boolean };
-  hasAnyPriorCard: boolean;
+  /** Kritik-1 düzeltmesi (A8) — bkz. `domain/week.ts` `hasQualifiedWeekBefore`. */
+  hasQualifiedWeekBefore: boolean;
 }
 
 export interface SyncDeps {
@@ -64,7 +65,7 @@ async function runSync(deps: SyncDeps): Promise<SyncResult> {
       now,
       checkins: state.checkins,
       settings: state.settings,
-      hasAnyPriorCard: state.hasAnyPriorCard,
+      hasQualifiedWeekBefore: state.hasQualifiedWeekBefore,
     });
     await deps.scheduler.replaceAll(plan);
     return { status: 'granted' };

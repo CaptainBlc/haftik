@@ -70,3 +70,23 @@ export async function getCheckins(fromDate: string, toDate: string): Promise<Che
   );
   return rows.map(rowToCheckin);
 }
+
+/**
+ * `localDate < beforeDate` olan tüm kayıtları döndürür (Kritik-1 düzeltmesi,
+ * `domain/week.ts` `hasQualifiedWeekBefore` için — bkz. `docs/kararlar/
+ * 2026-10-01-cekirdekten-once-kararlar.md` A8). Tarih sınırı yok; bir
+ * kullanıcının tüm geçmişi büyüse de (aylarca kullanım) satır sayısı küçük
+ * kalır (günde en fazla 1 satır), bu yüzden tek sorguda tüm geçmişi çekmek
+ * v1.5 ölçeğinde performans sorunu yaratmaz.
+ */
+export async function getCheckinsBefore(beforeDate: string): Promise<Checkin[]> {
+  const driver = getDriver();
+  const rows = driver.all<CheckinRow>(
+    `SELECT local_date, movement, sleep, spending, social
+     FROM checkin
+     WHERE local_date < ?
+     ORDER BY local_date ASC`,
+    [beforeDate]
+  );
+  return rows.map(rowToCheckin);
+}

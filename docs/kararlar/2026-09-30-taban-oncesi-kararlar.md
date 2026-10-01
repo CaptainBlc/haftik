@@ -24,6 +24,10 @@ Uygulanacağı dilim: **S16b**. Kaynak: 13-urun-vizyonu.md T6; 22-platform-v2.md
 Kartın planlandığı Pazar günü `daily` (günlük hatırlatma) bildirimi **üretilmez**, yalnızca `card-ready`
 planlanır. Spec S8 madde 5 bu şekilde güncellenir.
 Uygulanacağı dilim: **S15**. Kaynak: 20-donus-dongusu-v2.md Q5; 22-platform-v2.md §4.1; 04-kod-incelemesi.md #11.
+**Uygulandı: 2026-10-01 (S15).** `src/domain/notify-plan.ts` `planNotifications`: `state`/`sunday` döngüden
+önce hesaplanıyor, `cardWillFireThisSunday && date === sunday` ise o gün `daily` atlanıyor. Etkilenen testler
+güncellendi (`notify-plan.test.ts` C-08/C-12-13/C-19 — eskiden bu üç test tam da düzeltilen hatayı "doğru"
+diye doğruluyordu, şimdi düzeltilmiş davranışı doğruluyor). `npm run verify`: 73 suite / 873 test yeşil.
 
 ## A14 — Seviye kelimeleri
 - Uyku: kısa / orta / uzun

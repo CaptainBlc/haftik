@@ -27,8 +27,22 @@
  */
 import type { WeekState } from '@/domain/types';
 
-/** Nokta/kutu üstündeki bağımsız durum satırı. */
+/**
+ * Nokta/kutu üstündeki bağımsız durum satırı.
+ *
+ * **Kritik-1 güvenlik ağı (2026-10-01, `docs/inceleme-2026-09-25/
+ * 21-mimari-ve-efor.md` §2f):** `cardSeen` artık `thresholdMet`/`timeMet`
+ * kontrollerinden ÖNCE sorulur. Bir kart zaten kaydedilmişse (`saveCard`
+ * çağrıldıysa), bu o haftanın bir zamanlar `unlocked: true` olduğunun
+ * kanıtıdır — `WeekState` yeniden hesaplanırken (ör. ileride başka bir
+ * sapma) yanlışlıkla "daha fazla gün lazım" gibi yanıltıcı bir mesaj
+ * göstermemeli. Kart varlığı, yeniden hesaplanan eşikten her zaman daha
+ * güvenilir bir kanıttır.
+ */
 export function weekStatusHeadline(state: WeekState, cardSeen = false): string {
+  if (cardSeen) {
+    return 'Kartın açıldı.';
+  }
   if (!state.thresholdMet) {
     const remaining = state.requiredDays - state.filledDays;
     return `Kartın için ${remaining} gün daha lazım.`;
@@ -37,8 +51,7 @@ export function weekStatusHeadline(state: WeekState, cardSeen = false): string {
     // Zaman bilgisi kutu altındaki yazıda (`lockedBoxCaption`), burada tekrarlanmaz.
     return 'Kartın hazırlanıyor.';
   }
-  // Kart bu hafta zaten açılıp kaydedildiyse "hazır" demek yanıltıcı (QA YB-7).
-  return cardSeen ? 'Kartın açıldı.' : 'Kartın hazır!';
+  return 'Kartın hazır!';
 }
 
 /**
@@ -53,15 +66,17 @@ export function lockedBoxCaption(
   needsTodayCheckin = false,
   cardSeen = false
 ): string {
+  // Kritik-1 güvenlik ağı: bkz. weekStatusHeadline dosya başı notu — kart
+  // varlığı yeniden hesaplanan eşikten önce sorulur.
+  if (cardSeen) {
+    return 'Kartını tekrar görmek için dokun';
+  }
   if (!state.thresholdMet) {
     // Kalan gün sayısı başlıkta; kutu altı yalnızca zamanı söyler (B5).
     return state.timeMet ? 'Yeterli gün dolunca açılır' : "Pazar 20:00'de açılıyor";
   }
   if (!state.timeMet) {
     return "Pazar 20:00'de açılıyor";
-  }
-  if (cardSeen) {
-    return 'Kartını tekrar görmek için dokun';
   }
   if (needsTodayCheckin) {
     return 'Bugünü işaretlemeden kartın açılmaz';

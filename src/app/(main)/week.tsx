@@ -13,10 +13,16 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { LoadingView } from '@/components/loading-view';
 import { WeekStatusView } from '@/components/week-status-view';
-import { getCard, hasAnyPriorCard } from '@/data/card-repo';
-import { getCheckins } from '@/data/checkin-repo';
+import { getCard } from '@/data/card-repo';
+import { getCheckins, getCheckinsBefore } from '@/data/checkin-repo';
 import type { Checkin } from '@/domain/types';
-import { addLocalDays, getWeekStart, getWeekState, toLocalDateString } from '@/domain/week';
+import {
+  addLocalDays,
+  getWeekStart,
+  getWeekState,
+  hasQualifiedWeekBefore,
+  toLocalDateString,
+} from '@/domain/week';
 import { needsTodayCheckinBeforeCard } from '@/lib/card-flow';
 import { computeWeekDots } from '@/lib/week-dots';
 import { lockedBoxCaption, weekStatusHeadline } from '@/lib/week-status-copy';
@@ -40,24 +46,32 @@ export default function WeekScreen() {
   const [data, setData] = useState<{
     weekStart: string;
     checkins: Checkin[];
-    hasPrior: boolean;
+    qualifiedBefore: boolean;
     hasCard: boolean;
   } | null>(null);
 
   // BLG-02: sekme odağa her gelişinde yeniden yükle (Bugün'de kaydedilen
   // check-in'ler bayat kalmasın). Hafta değişince de (weekStart/weekEnd) yeniden kurulur.
+  // Kritik-1 düzeltmesi (A8): `hasAnyPriorCard()` yerine check-in geçmişi
+  // okunur (`getCheckinsBefore`), eşik artık kartların varlığına bağlı değil
+  // (bkz. `domain/week.ts` `hasQualifiedWeekBefore` dosya başı yorumu).
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
       Promise.all([
         getCheckins(weekStart, weekEnd),
-        hasAnyPriorCard(),
+        getCheckinsBefore(weekStart),
         getCard(weekStart),
-      ]).then(([c, prior, card]) => {
+      ]).then(([c, priorCheckins, card]) => {
         if (cancelled) {
           return;
         }
-        setData({ weekStart, checkins: c, hasPrior: prior, hasCard: card !== null });
+        setData({
+          weekStart,
+          checkins: c,
+          qualifiedBefore: hasQualifiedWeekBefore(priorCheckins, weekStart),
+          hasCard: card !== null,
+        });
       });
       return () => {
         cancelled = true;
@@ -70,7 +84,12 @@ export default function WeekScreen() {
   const unlockedNow =
     data !== null &&
     data.weekStart === weekStart &&
-    getWeekState({ weekStart, now, checkins: data.checkins, hasAnyPriorCard: data.hasPrior }).unlocked;
+    getWeekState({
+      weekStart,
+      now,
+      checkins: data.checkins,
+      hasQualifiedWeekBefore: data.qualifiedBefore,
+    }).unlocked;
   useEffect(() => {
     if (unlockedNow) {
       void trackEventOnce('card_unlocked', weekStart);
@@ -81,14 +100,23 @@ export default function WeekScreen() {
     return <LoadingView />;
   }
 
-  const { checkins, hasPrior, hasCard } = data;
-  const weekState = getWeekState({ weekStart, now, checkins, hasAnyPriorCard: hasPrior });
+  const { checkins, qualifiedBefore, hasCard } = data;
+  const weekState = getWeekState({
+    weekStart,
+    now,
+    checkins,
+    hasQualifiedWeekBefore: qualifiedBefore,
+  });
   const today = toLocalDateString(now);
   const dots = computeWeekDots(weekStart, checkins, today);
   const needsTodayCheckin = needsTodayCheckinBeforeCard({ weekStart, today, checkins });
 
   function handleLockedPress() {
-    if (!weekState.unlocked) {
+    // Kritik-1 güvenlik ağı: kart zaten varsa (ör. eski bir uygulama
+    // sürümünde farklı hesaplanmış olabilir) gezinme hiçbir zaman
+    // `weekState.unlocked`e bağlı kalmaz — kullanıcı kendi açılmış kartına
+    // asla erişemez duruma düşmemeli.
+    if (!weekState.unlocked && !hasCard) {
       // Kilitliyken dokunma: hiçbir şey açılmaz (spec/ekran-akisi.md);
       // görsel "shake" geri bildirimi `LockedCardPlaceholder` içinde.
       return;

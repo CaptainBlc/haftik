@@ -65,7 +65,14 @@ describe('bildirim entegrasyonu', () => {
     expect(fake.pending.has('daily-2026-09-23')).toBe(false);
   });
 
-  it('kart kaydı sonrası sync: eşik 3 -> 4, C kalkar (B-2)', async () => {
+  it('Kritik-1 düzeltmesi (A8): başka bir haftanın kartını kaydetmek bu haftanın eşiğini DEĞİŞTİRMEZ', async () => {
+    // Eski davranış (B-2, bu test eskiden tam tersini doğruluyordu): herhangi
+    // bir haftaya kart kaydetmek `hasAnyPriorCard()`'ı global olarak true
+    // yapıyordu, bu da İLGİSİZ haftaların eşiğini 3'ten 4'e çıkarıp
+    // card-ready bildirimini yanlışlıkla düşürüyordu. Yeni kural check-in
+    // GEÇMİŞİNE bakar (`hasQualifiedWeekBefore`), kart varlığına değil --
+    // bu testte check-in geçmişi değişmediği için card-2026-09-27 kalıcı
+    // olmalı (bkz. docs/kararlar/2026-10-01-cekirdekten-once-kararlar.md A8).
     await setOnboardingDone(true);
     for (const d of ['2026-09-21', '2026-09-22', '2026-09-23']) {
       await saveCheckin(day(d));
@@ -73,9 +80,9 @@ describe('bildirim entegrasyonu', () => {
     const { fake, o } = env();
     await syncNotificationsNow(o);
     expect(fake.pending.has('card-2026-09-27')).toBe(true);
-    await saveCard(CARD);
+    await saveCard(CARD); // farklı (önceki) haftanın kartı: weekStart 2026-09-14.
     await syncNotificationsNow(o);
-    expect(fake.pending.has('card-2026-09-27')).toBe(false);
+    expect(fake.pending.has('card-2026-09-27')).toBe(true);
   });
 
   it('ayar değişimi: kapat -> günlük yok; saat değişimi -> yeni saat', async () => {

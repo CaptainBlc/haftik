@@ -1,4 +1,4 @@
-import { getCard, saveCard, hasAnyPriorCard } from '@/data/card-repo';
+import { getCard, saveCard } from '@/data/card-repo';
 import { getDriver } from '@/data/db';
 import type { CardSnapshot } from '@/domain/types';
 import { setupTestDb } from '../helpers/setup-test-db';
@@ -107,12 +107,7 @@ describe('card-repo', () => {
     ).toThrow();
   });
 
-  it('hasAnyPriorCard bosken false doner', async () => {
-    expect(await hasAnyPriorCard()).toBe(false);
-  });
-
-  it('hasAnyPriorCard bir kart kaydedildikten sonra true doner', async () => {
-    await saveCard(makeCard());
-    expect(await hasAnyPriorCard()).toBe(true);
-  });
+  // (2026-10-01, Kritik-1/A8) hasAnyPriorCard ve testleri kaldırıldı: eşik
+  // artık check-in geçmişinden türüyor (domain/week.ts hasQualifiedWeekBefore),
+  // bu fonksiyon hiçbir akışta kullanılmıyordu.
 });

@@ -3,20 +3,20 @@
  * (açılış, check-in/kart kaydı, ayar değişimi, silme) yalnızca bu dosyadaki
  * fonksiyonları çağırır. Bildirim hatası asla akışı bozmaz.
  */
-import { hasAnyPriorCard } from '@/data/card-repo';
-import { getCheckins } from '@/data/checkin-repo';
+import { getCheckins, getCheckinsBefore } from '@/data/checkin-repo';
 import { getAllSettings } from '@/data/setting-repo';
-import { addLocalDays, getWeekStart } from '@/domain/week';
+import { addLocalDays, getWeekStart, hasQualifiedWeekBefore } from '@/domain/week';
 import { getNow } from '@/lib/now';
 import { getDefaultScheduler, type NotificationScheduler, type PermissionState, type PermissionStatus } from './scheduler';
 import { runExclusiveNotify, syncNotifications, type NotifyState, type SyncResult } from './sync';
 
 export async function readNotifyState(now: Date): Promise<NotifyState> {
   const weekStart = getWeekStart(now);
-  const [settings, checkins, prior] = await Promise.all([
+  const [settings, checkins, priorCheckins] = await Promise.all([
     getAllSettings(),
     getCheckins(weekStart, addLocalDays(weekStart, 6)),
-    hasAnyPriorCard(),
+    // Kritik-1 düzeltmesi (A8): bkz. domain/week.ts hasQualifiedWeekBefore.
+    getCheckinsBefore(weekStart),
   ]);
   return {
     checkins,
@@ -25,7 +25,7 @@ export async function readNotifyState(now: Date): Promise<NotifyState> {
       reminderTime: settings.reminderTime,
       onboardingDone: settings.onboardingDone,
     },
-    hasAnyPriorCard: prior,
+    hasQualifiedWeekBefore: hasQualifiedWeekBefore(priorCheckins, weekStart),
   };
 }
 

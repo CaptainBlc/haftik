@@ -31,7 +31,8 @@ export interface NotifyPlanInput {
   now: Date;
   checkins: Checkin[];
   settings: { reminderEnabled: boolean; reminderTime: string };
-  hasAnyPriorCard: boolean;
+  /** Kritik-1 düzeltmesi (A8) — bkz. `domain/week.ts` `hasQualifiedWeekBefore`. */
+  hasQualifiedWeekBefore: boolean;
 }
 
 export const DEFAULT_REMINDER_TIME = '21:00';
@@ -54,7 +55,7 @@ function localDateTime(localDate: string, hour: number, minute: number): Date {
 }
 
 export function planNotifications(input: NotifyPlanInput): PlannedNotification[] {
-  const { now, checkins, settings, hasAnyPriorCard } = input;
+  const { now, checkins, settings, hasQualifiedWeekBefore } = input;
   if (!(now instanceof Date) || Number.isNaN(now.getTime())) {
     return [];
   }
@@ -62,6 +63,15 @@ export function planNotifications(input: NotifyPlanInput): PlannedNotification[]
   const nowMs = now.getTime();
   const today = toLocalDateString(now);
   const planned: PlannedNotification[] = [];
+
+  const weekStart = getWeekStart(now);
+  const state = getWeekState({ weekStart, now, checkins, hasQualifiedWeekBefore });
+  const sunday = addLocalDays(weekStart, 6);
+  // A13 (Ç24, `docs/inceleme-2026-09-25/29-yol-haritasi.md`): kartın
+  // planlandığı Pazar'da ayrıca `daily` kurulmaz -- önceden ikisi de aynı
+  // akşam, farklı saatlerde (20:00/21:00) planlanıyor ve Doze/pil yönetimi
+  // yüzünden TERS SIRADA bile gelebiliyordu (04-kod-incelemesi.md #11).
+  const cardWillFireThisSunday = state.thresholdMet;
 
   if (settings.reminderEnabled) {
     const { hour, minute } = parseReminderTime(settings.reminderTime);
@@ -71,6 +81,9 @@ export function planNotifications(input: NotifyPlanInput): PlannedNotification[]
         continue;
       }
       const date = addLocalDays(today, i);
+      if (cardWillFireThisSunday && date === sunday) {
+        continue;
+      }
       const fireAt = localDateTime(date, hour, minute);
       if (fireAt.getTime() <= nowMs) {
         continue;
@@ -84,10 +97,7 @@ export function planNotifications(input: NotifyPlanInput): PlannedNotification[]
     }
   }
 
-  const weekStart = getWeekStart(now);
-  const state = getWeekState({ weekStart, now, checkins, hasAnyPriorCard });
   if (state.thresholdMet) {
-    const sunday = addLocalDays(weekStart, 6);
     const cardTime = parseReminderTime(CARD_READY_TIME);
     const fireAt = localDateTime(sunday, cardTime.hour, cardTime.minute);
     if (fireAt.getTime() > nowMs) {

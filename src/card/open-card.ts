@@ -27,16 +27,16 @@
  * doğruladığına GÜVENMEZ. Kayıtlı kart yoksa `getWeekState(...).unlocked`
  * (dolu gün eşiği + Pazar 20:00) burada da kontrol edilir; uygun değilse
  * `{ status: 'notReady' }` döner: `buildCard`/`saveCard` çağrılmaz (kart
- * eksik veriyle erken dondurulmaz, `hasAnyPriorCard` eşiği kaymaz) ve ekran
+ * eksik veriyle erken dondurulmaz) ve ekran
  * `card_opened` saymaz. Kayıtlı kartın yeniden açılışı bu kontrolden ÖNCE
  * döner, yani serbesttir. Sıra: kayıtlı kart -> uygunluk -> K3 (Pazar,
  * bugün boş). `buildCard` ise hâlâ eşiği kendisi doğrulamaz (saf domain).
  */
-import { getCard, hasAnyPriorCard, saveCard } from '@/data/card-repo';
-import { getCheckins } from '@/data/checkin-repo';
+import { getCard, saveCard } from '@/data/card-repo';
+import { getCheckins, getCheckinsBefore } from '@/data/checkin-repo';
 import { buildCard, type PrevCardVariants } from '@/domain/buildCard';
 import type { CardSnapshot } from '@/domain/types';
-import { addLocalDays, getWeekState } from '@/domain/week';
+import { addLocalDays, getWeekState, hasQualifiedWeekBefore } from '@/domain/week';
 import { needsTodayCheckinBeforeCard } from '@/lib/card-flow';
 import { isValidWeekStartParam } from '@/lib/week-param';
 
@@ -84,14 +84,18 @@ export async function openOrBuildCard(
   }
 
   const weekEnd = addLocalDays(weekStart, 6);
-  const weekCheckins = await getCheckins(weekStart, weekEnd);
+  const [weekCheckins, priorCheckins] = await Promise.all([
+    getCheckins(weekStart, weekEnd),
+    getCheckinsBefore(weekStart),
+  ]);
 
   const effectiveNow = now ?? new Date(`${today}T23:59:59`);
   const state = getWeekState({
     weekStart,
     now: effectiveNow,
     checkins: weekCheckins,
-    hasAnyPriorCard: await hasAnyPriorCard(),
+    // Kritik-1 düzeltmesi (A8): bkz. domain/week.ts hasQualifiedWeekBefore.
+    hasQualifiedWeekBefore: hasQualifiedWeekBefore(priorCheckins, weekStart),
   });
   if (!state.unlocked) {
     return { status: 'notReady' };

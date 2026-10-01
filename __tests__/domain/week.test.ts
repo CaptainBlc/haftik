@@ -60,7 +60,7 @@ describe('getWeekState — uygunluk sınırları', () => {
 
   it('normal haftada (ikinci+ kart) 3 dolu gün uygun değildir', () => {
     const checkins = ['2026-09-21', '2026-09-22', '2026-09-23'].map((d) => checkin(d));
-    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasAnyPriorCard: true });
+    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasQualifiedWeekBefore: true });
     expect(state.filledDays).toBe(3);
     expect(state.requiredDays).toBe(4);
     expect(state.thresholdMet).toBe(false);
@@ -69,42 +69,43 @@ describe('getWeekState — uygunluk sınırları', () => {
 
   it('normal haftada (ikinci+ kart) 4 dolu gün uygundur', () => {
     const checkins = ['2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24'].map((d) => checkin(d));
-    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasAnyPriorCard: true });
+    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasQualifiedWeekBefore: true });
     expect(state.filledDays).toBe(4);
     expect(state.requiredDays).toBe(4);
     expect(state.thresholdMet).toBe(true);
     expect(state.unlocked).toBe(true);
   });
 
-  it('ilk kartta (hasAnyPriorCard=false) 2 dolu gün uygun değildir', () => {
+  it('ilk nitelikli haftada (hasQualifiedWeekBefore=false) 2 dolu gün uygun değildir', () => {
     const checkins = ['2026-09-21', '2026-09-22'].map((d) => checkin(d));
-    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasAnyPriorCard: false });
+    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasQualifiedWeekBefore: false });
     expect(state.filledDays).toBe(2);
     expect(state.requiredDays).toBe(3);
     expect(state.thresholdMet).toBe(false);
     expect(state.unlocked).toBe(false);
   });
 
-  it('ilk kartta (hasAnyPriorCard=false) 3 dolu gün uygundur', () => {
+  it('ilk nitelikli haftada (hasQualifiedWeekBefore=false) 3 dolu gün uygundur', () => {
     const checkins = ['2026-09-21', '2026-09-22', '2026-09-23'].map((d) => checkin(d));
-    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasAnyPriorCard: false });
+    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasQualifiedWeekBefore: false });
     expect(state.filledDays).toBe(3);
     expect(state.requiredDays).toBe(3);
     expect(state.thresholdMet).toBe(true);
     expect(state.unlocked).toBe(true);
   });
 
-  it('ilk kart kullanıldıktan sonra sonraki haftada eşik 4\'e döner', () => {
+  it('bir önceki hafta nitelikliyse sonraki haftada eşik 4\'e döner', () => {
     const nextWeekStart = '2026-09-28';
     const nextAfterSundayCard = new Date('2026-10-04T20:00:00');
     const threeDays = ['2026-09-28', '2026-09-29', '2026-09-30'].map((d) => checkin(d));
-    // Artık bir önceki hafta için kart üretildi (hasAnyPriorCard=true) ->
+    // Kritik-1 düzeltmesi: artık "kart üretildi mi" değil, "önceki hafta
+    // 3+ dolu gün geçirdi mi" soruluyor (hasQualifiedWeekBefore=true) ->
     // aynı 3 gün bu kez eşiği karşılamaz.
     const state = getWeekState({
       weekStart: nextWeekStart,
       now: nextAfterSundayCard,
       checkins: threeDays,
-      hasAnyPriorCard: true,
+      hasQualifiedWeekBefore: true,
     });
     expect(state.requiredDays).toBe(4);
     expect(state.thresholdMet).toBe(false);
@@ -116,7 +117,7 @@ describe('getWeekState — uygunluk sınırları', () => {
       weekStart,
       now: new Date('2026-09-27T19:59:59'),
       checkins: fourDays,
-      hasAnyPriorCard: true,
+      hasQualifiedWeekBefore: true,
     });
     expect(state.thresholdMet).toBe(true);
     expect(state.timeMet).toBe(false);
@@ -129,7 +130,7 @@ describe('getWeekState — uygunluk sınırları', () => {
       weekStart,
       now: new Date('2026-09-27T20:00:00'),
       checkins: fourDays,
-      hasAnyPriorCard: true,
+      hasQualifiedWeekBefore: true,
     });
     expect(state.thresholdMet).toBe(true);
     expect(state.timeMet).toBe(true);
@@ -143,7 +144,7 @@ describe('getWeekState — uygunluk sınırları', () => {
       weekStart: '2026-01-05',
       now: monthsLater,
       checkins: fourDays,
-      hasAnyPriorCard: true,
+      hasQualifiedWeekBefore: true,
     });
     expect(state.thresholdMet).toBe(true);
     expect(state.timeMet).toBe(true);
@@ -152,7 +153,7 @@ describe('getWeekState — uygunluk sınırları', () => {
 
   it('aynı local_date\'e iki check-in filledDays\'i yalnızca 1 kez saydırır', () => {
     const checkins = [checkin('2026-09-21', 1), checkin('2026-09-21', 3), checkin('2026-09-22')];
-    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasAnyPriorCard: true });
+    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasQualifiedWeekBefore: true });
     expect(state.filledDays).toBe(2);
   });
 
@@ -163,7 +164,7 @@ describe('getWeekState — uygunluk sınırları', () => {
       checkin('2026-09-27'), // bu haftanın Pazar'ı (dahil)
       checkin('2026-09-28'), // sonraki hafta Pazartesi
     ];
-    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasAnyPriorCard: true });
+    const state = getWeekState({ weekStart, now: afterSundayCard, checkins, hasQualifiedWeekBefore: true });
     expect(state.filledDays).toBe(2);
   });
 });
@@ -174,7 +175,7 @@ describe('getWeekState — saf fonksiyon garantisi', () => {
       weekStart: '2026-09-21',
       now: new Date('2026-09-27T20:00:00'),
       checkins: ['2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24'].map((d) => checkin(d)),
-      hasAnyPriorCard: true,
+      hasQualifiedWeekBefore: true,
     };
     const first = getWeekState(params);
     const second = getWeekState(params);
@@ -189,7 +190,7 @@ describe('getWeekState — saf fonksiyon garantisi', () => {
       weekStart: '2026-09-21',
       now: new Date('2026-09-27T20:00:00'),
       checkins: [checkin('2026-09-21')],
-      hasAnyPriorCard: true,
+      hasQualifiedWeekBefore: true,
     });
 
     expect(dateNowSpy).not.toHaveBeenCalled();

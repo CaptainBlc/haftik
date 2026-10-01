@@ -31,6 +31,17 @@ eklenir. Uygulanacağı dilim: **S13b**, A2'den hemen sonra.
 **Çözüm B** onaylandı: eşik, kartın kendisinden değil check-in geçmişinden türer; kart açmak hiçbir haftayı
 yeniden kilitleyemez. Spec'teki "ilk kart" tanımı buna göre güncellenir. Monotonluk özellik testi eklenir.
 Uygulanacağı dilim: **S15** (T1).
+**Uygulandı: 2026-10-01 (S15, T1).** `src/domain/week.ts` — yeni saf fonksiyon `hasQualifiedWeekBefore`,
+`getWeekState`'in `hasAnyPriorCard` parametresi `hasQualifiedWeekBefore` oldu (dokümante edilmiş imza değişikliği).
+`src/data/checkin-repo.ts` — yeni `getCheckinsBefore`. Üç çağıran güncellendi: `week.tsx` (+ `handleLockedPress`'e
+`hasCard` güvenlik ağı), `open-card.ts`, `notify/wiring.ts` (+ `notify/sync.ts`, `domain/notify-plan.ts`).
+`src/lib/week-status-copy.ts`: `cardSeen` artık `thresholdMet`/`timeMet`'ten ÖNCE kontrol ediliyor (ikinci
+güvenlik ağı). `card-repo.ts`'teki artık ölü `hasAnyPriorCard()` kaldırıldı. Monotonluk özellik testi:
+`__tests__/domain/week.monotonic.test.ts` (yeni dosya; dondurulmuş `week.test.ts`'e dokunulmadı, yalnızca
+içindeki `hasAnyPriorCard:` anahtarları mekanik olarak `hasQualifiedWeekBefore:` ismine yeniden adlandırıldı —
+A8'in açıkça onaylanan, dokümante edilmiş sonucu). Ayrıca etkilenen test dosyaları: `notify-plan.test.ts`,
+`sync.test.ts`, `week-route.test.tsx` (mock güncellemesi), `card-repo.test.ts` (ölü kod testleri silindi),
+`wiring.test.ts` (B-2 testi artık DÜZELTİLMİŞ davranışı doğruluyor). `npm run verify`: 73 suite / 873 test yeşil.
 
 ## A9 — Eski placeholder sütunu (N-7)
 Kalır, dokunulmaz. Şemaya "bu sıra numarası yakıldı, tekrar kullanılmasın" notu düşülür.

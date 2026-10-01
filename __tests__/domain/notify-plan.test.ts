@@ -31,7 +31,10 @@ function plan(
     now,
     checkins: opts.checkins ?? [],
     settings: { reminderEnabled: opts.enabled ?? true, reminderTime: opts.time ?? '21:00' },
-    hasAnyPriorCard: opts.prior ?? true,
+    // Kritik-1 düzeltmesi (A8): eski `hasAnyPriorCard` parametre adı
+    // `hasQualifiedWeekBefore` oldu (bkz. domain/week.ts); bu testteki
+    // `opts.prior` anlamı/senaryoları değişmedi, yalnızca anahtar adı.
+    hasQualifiedWeekBefore: opts.prior ?? true,
   });
 }
 
@@ -154,7 +157,7 @@ describe('Pazar 20:00 kart hazır ve eşik', () => {
         const has = cards(plan(wed, { checkins, prior })).length === 1;
         expect(has).toBe(n >= (prior ? 4 : 3));
         expect(has).toBe(
-          getWeekState({ weekStart: '2026-09-21', now: wed, checkins, hasAnyPriorCard: prior })
+          getWeekState({ weekStart: '2026-09-21', now: wed, checkins, hasQualifiedWeekBefore: prior })
             .thresholdMet
         );
       }
@@ -172,13 +175,17 @@ describe('Pazar 20:00 kart hazır ve eşik', () => {
     expect(cards(plan(at('2026-09-27T19:59:59'), { checkins: filled(4) }))).toHaveLength(1);
   });
 
-  it('C-08: Pazar 10:00 -> C 20:00 + D Paz 21:00 ikisi de, D Pzt..Cmt, hafta 09-21', () => {
+  it('C-08 (A13 ile güncellendi, 2026-10-01): Pazar 10:00 -> yalnız C 20:00, aynı gün D YOK, D Pzt..Cmt hafta 09-28', () => {
+    // Eski davranış (artık yanlış kabul edildi): kartın planlandığı Pazar'da
+    // hem card-ready (20:00) hem daily (21:00) planlanıyordu — aynı akşam,
+    // Doze/pil yönetimi yüzünden ters sırada bile gelebiliyordu
+    // (04-kod-incelemesi.md #11, Ç24). A13 kararı: o gün daily YOK.
     const p = plan(at('2026-09-27T10:00:00'), { checkins: filled(4) });
     expect(cards(p)).toHaveLength(1);
     expect(cards(p)[0].weekStart).toBe('2026-09-21');
     const ids = daily(p).map((n) => n.id);
     expect(ids).toEqual([
-      'daily-2026-09-27',
+      // 'daily-2026-09-27' artık YOK (A13): o gün yalnız card-ready var.
       'daily-2026-09-28',
       'daily-2026-09-29',
       'daily-2026-09-30',
@@ -186,8 +193,6 @@ describe('Pazar 20:00 kart hazır ve eşik', () => {
       'daily-2026-10-02',
       'daily-2026-10-03',
     ]);
-    const order = p.map((n) => n.id);
-    expect(order.indexOf('card-2026-09-27')).toBeLessThan(order.indexOf('daily-2026-09-27'));
   });
 
   it('C-10: Pazar 20:00:00 ve 20:30 -> C yok', () => {
@@ -203,14 +208,17 @@ describe('Pazar 20:00 kart hazır ve eşik', () => {
     expect(daily(after).some((n) => n.id === 'daily-2026-09-27')).toBe(false);
   });
 
-  it('C-12/C-13: Pazar D 19:00 ve 20:00 ile C birlikte, farklı id', () => {
+  it('C-12/C-13 (A13 ile güncellendi, 2026-10-01): kartın planlandığı Pazar\'da daily hiç yok, hatırlatma saati ne olursa olsun', () => {
+    // Eski davranış: aynı gün hem card hem daily planlanıyor, hatta saatleri
+    // çakışabiliyordu (ör. ikisi de 20:00). Ç24/A13: o gün daily hiç kurulmaz,
+    // bu yüzden artık bir "çakışma" senaryosu YOK -- bunu ispatlıyoruz.
     const now = at('2026-09-27T15:00:00');
     const p19 = plan(now, { checkins: filled(4), time: '19:00' });
-    expect(p19.some((n) => n.id === 'daily-2026-09-27')).toBe(true);
+    expect(p19.some((n) => n.id === 'daily-2026-09-27')).toBe(false);
     expect(cards(p19)).toHaveLength(1);
     const p20 = plan(now, { checkins: filled(4), time: '20:00' });
-    const sameTime = p20.filter((n) => n.fireAt.getTime() === at('2026-09-27T20:00:00').getTime());
-    expect(sameTime.map((n) => n.id).sort()).toEqual(['card-2026-09-27', 'daily-2026-09-27']);
+    expect(p20.some((n) => n.id === 'daily-2026-09-27')).toBe(false);
+    expect(cards(p20)).toHaveLength(1);
   });
 
   it.each(['20:01', '19:59', '20:30', '22:00'])('C-14: C saati hatırlatma (%s) saatinden bağımsız', (time) => {
@@ -246,11 +254,11 @@ describe('Pazar 20:00 kart hazır ve eşik', () => {
     const checkins = ['2026-12-28', '2026-12-29', '2026-12-30'].map(ci);
     const p = plan(now, { checkins, prior: false });
     expect(cards(p)[0].id).toBe('card-2027-01-03');
+    // A13 (2026-10-01): kartın planlandığı 'daily-2027-01-03' artık listede yok.
     expect(daily(p).map((n) => n.id)).toEqual([
       'daily-2026-12-31',
       'daily-2027-01-01',
       'daily-2027-01-02',
-      'daily-2027-01-03',
       'daily-2027-01-04',
       'daily-2027-01-05',
       'daily-2027-01-06',

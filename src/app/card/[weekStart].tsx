@@ -59,7 +59,12 @@ export default function CardScreen() {
       setResult({ forWeekStart: weekStart, value });
       if (value.status === 'ready') {
         void trackEvent('card_opened', weekStart); // S9: en iyi çaba
-        // Kart dondurma `hasAnyPriorCard`'ı (eşik 3 -> 4) değiştirir (S8, QA B-2).
+        // (2026-10-01 güncellendi) Kart artık eşiği (hasQualifiedWeekBefore,
+        // bkz. Kritik-1/A8) DEĞİŞTİRMEZ -- check-in geçmişine bakar, kart
+        // varlığına değil. Yine de yeniden planlanır: kullanıcı kartı
+        // Doze/pil gecikmesi yüzünden bildirim gelmeden önce manuel açtıysa,
+        // artık gereksiz kalan "kart hazır" bildirimi kuyruktan düşsün diye
+        // (replaceAll idempotent, `planNotifications` geçmiş fireAt'leri zaten elemez).
         void syncNotificationsNow();
       }
     });

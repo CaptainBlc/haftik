@@ -15,7 +15,7 @@ function state(over: Partial<NotifyState> = {}): NotifyState {
   return {
     checkins: [],
     settings: { reminderEnabled: true, reminderTime: '21:00', onboardingDone: true },
-    hasAnyPriorCard: true,
+    hasQualifiedWeekBefore: true,
     ...over,
   };
 }
@@ -153,11 +153,11 @@ describe('syncNotifications', () => {
   it('kart kaydı sonrası (hasAnyPriorCard değişimi) C kalkar (H-01/B-2)', async () => {
     const { fake, scheduler } = setup();
     const three = ['2026-09-21', '2026-09-22', '2026-09-23'].map(ci);
-    let s = state({ checkins: three, hasAnyPriorCard: false });
+    let s = state({ checkins: three, hasQualifiedWeekBefore: false });
     const deps = { scheduler, now: () => NOW, readState: async () => s };
     await syncNotifications(deps);
     expect(fake.pending.has('card-2026-09-27')).toBe(true);
-    s = state({ checkins: three, hasAnyPriorCard: true });
+    s = state({ checkins: three, hasQualifiedWeekBefore: true });
     await syncNotifications(deps);
     expect(fake.pending.has('card-2026-09-27')).toBe(false);
   });

@@ -26,9 +26,13 @@ jest.mock('expo-router', () => ({
 const mockGetCheckins = jest.fn();
 jest.mock('@/data/checkin-repo', () => ({
   getCheckins: (...a: unknown[]) => mockGetCheckins(...a),
+  // Kritik-1 düzeltmesi (A8): week.tsx artık hasAnyPriorCard() yerine
+  // check-in geçmişini okuyor (getCheckinsBefore) ve hasQualifiedWeekBefore
+  // ile hesaplıyor. Boş dizi = eski `hasAnyPriorCard: false` ile aynı senaryo
+  // (eşik 3 kalır) — bu testin beklentileri bu yüzden değişmedi.
+  getCheckinsBefore: jest.fn(async () => []),
 }));
 jest.mock('@/data/card-repo', () => ({
-  hasAnyPriorCard: jest.fn(async () => false),
   getCard: jest.fn(async () => null),
 }));
 jest.mock('@/metrics/track', () => ({ trackEventOnce: jest.fn(async () => undefined) }));

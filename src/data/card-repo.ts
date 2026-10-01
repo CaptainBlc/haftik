@@ -127,13 +127,7 @@ export async function saveCard(c: CardSnapshot): Promise<void> {
   );
 }
 
-/**
- * `weekly_card` tablosu bos mu (`domain/week.ts`'in `hasAnyPriorCard`
- * girdisini beslemek icin, spec S2 netlestirme #4 / #6: domain SQLite'a
- * dokunmaz, bu bilgiyi disaridan alir).
- */
-export async function hasAnyPriorCard(): Promise<boolean> {
-  const driver = getDriver();
-  const row = driver.get('SELECT 1 FROM weekly_card LIMIT 1');
-  return row !== undefined;
-}
+// (2026-10-01, Kritik-1 düzeltmesi/A8) `hasAnyPriorCard` buradan kaldırıldı:
+// eşik artık kartların varlığına değil check-in geçmişine bakıyor
+// (`domain/week.ts` `hasQualifiedWeekBefore`), bu fonksiyon hiçbir yerden
+// çağrılmıyordu. Geçmiş: `docs/kararlar/2026-10-01-cekirdekten-once-kararlar.md` A8.
