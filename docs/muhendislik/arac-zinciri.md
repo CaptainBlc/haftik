@@ -1,0 +1,100 @@
+# Araç zinciri — Node, Expo, lint, test altyapısı
+
+> `CLAUDE.md`'deki "Konuya göre oku" tablosundan gelindi: Node/Expo sürümü, lint/test kurulumu veya derleme
+> ortamıyla ilgili bir şeye dokunuyorsan burayı oku. Kayıtlar `docs/inceleme-2026-09-25/08-muhendislik-tutarlilik.md`
+> §1.4'ün taşıma kararına göre buraya alındı (metin korunur, yalnızca gruplanır).
+
+## Node ve Expo sürümü
+
+- (2026-09-22, MOB/S1) `npx create-expo-app` güncel kararlı SDK'sı **Expo SDK 57** (react-native 0.86.3,
+  react 19.2.3). Varsayılan şablon web desteğiyle geliyordu (`react-native-web`, `react-dom`, `global.css`);
+  bu paketler **2026-10-01'de kaldırıldı** (bkz. aşağıdaki "Web yığını" notu) — bu paragraf artık yalnızca
+  tarihsel bağlam.
+- (2026-09-22, MOB/S1) `expo-env.d.ts` yalnızca `expo start` ilk çalıştığında otomatik oluşur; cihaz/emülatör
+  olmadan hiç `expo start` çalıştırılmadıysa elle oluşturulması gerekir (`.gitignore`'da zaten hariç).
+- (2026-10-01, A5 kararı) Node **>=24.19.0** sabitlendi (`.nvmrc`, `package.json engines`). Daha önce repo
+  testleri `node:sqlite`'ın Node 22.5+'ta geldiği gerekçesiyle ">= 22.13" yazıyordu; gerçek geliştirme makinesi
+  hep Node 24 kullandığı için sabit alt sınır 24'e çekildi — `.nvmrc` kaynak alınır, iki yerde ayrı yazılmaz.
+- (2026-09-22, MOB/S1 → 2026-10-01 güncellendi) `@types/jest` ve `react-test-renderer`, `jest-expo`/SDK 57 ve
+  react'in tam sürümüyle (`19.2.3`) birebir eşleşecek şekilde **tam sürüm** (caret'siz) sabitlenir — varsayılan
+  `npm install` en son `@types/jest@30`'u çekip `expo-doctor` uyarısı verir, farklı bir react-test-renderer
+  minor/patch'i `ERESOLVE` peer uyuşmazlığı verir. `jest-expo` ve `@expo-google-fonts/inter` de aynı gerekçeyle
+  tam sürüm (A5 kararıyla genişletildi).
+- Expo paketlerinin SDK yama sürümüne uyup uymadığı `npx expo-doctor` ile kontrol edilir (beklenen: 21/21
+  yeşil). Sapma olursa `npx expo install --fix` ile düzeltilir, elle tek tek sürüm yazılmaz (2026-10-01'de
+  6 paket bu şekilde yama sürümüne çekildi, bkz. commit "S13: hijyen başlangıcı").
+
+## eslint-config-expo tuzakları
+
+- (2026-09-22, MOB/S1) `react-hooks/set-state-in-effect` kuralı, `src/hooks/use-color-scheme.web.ts`'teki
+  (yalnızca web hedefi için) kasıtlı hidrasyon deseninde hata veriyordu — bu dosya **2026-10-01'de web yığınıyla
+  birlikte kaldırıldı**, bu madde artık geçersiz.
+- (2026-09-23, MOB/S6) Aynı kural, bir `useEffect` içinde async çağrıdan önce doğrudan `setState(false/null)`
+  gibi bir "sıfırlama" çağrısını yasaklıyor. **Çözüm (disable değil, daha temiz):** ayrı bir boolean/`null`
+  state yerine "hangi anahtar için veri yüklendi" bilgisini tutan bir state kullanılır (`loadedFor`), "yüklenmedi"
+  durumu bu anahtarın güncel anahtarla eşleşmemesinden **türetilir** (bkz. `src/app/(main)/today.tsx`, `week.tsx`).
+- (2026-09-23, MOB/S6) `react-hooks/refs`: `useRef(new Animated.Value(0)).current` ile render sırasında
+  `.interpolate()` çağırmak "ref render sırasında okunuyor" diye yanlış pozitif verir (`Animated.Value` bir
+  React ref değil, mutable bir animasyon nesnesi) — `src/components/locked-card-placeholder.tsx`'te satır içi
+  `eslint-disable-next-line react-hooks/refs` + gerekçe yorumuyla geçildi. Kabul edilmiş kalıcı istisna.
+- (2026-09-23, MOB/S6) React Compiler lint kuralları (`app.json` `experiments.reactCompiler: true`), RN
+  `Animated` ve hidrasyon desenlerinde yanlış pozitif verebilir; önce kodla çöz (türetilmiş durum), disable son çare.
+
+## Jest kurulumu
+
+- (2026-09-23, MOB/S5) Jest'in varsayılan `testMatch`'i `__tests__/` altındaki **her** `.ts` dosyasını (yalnızca
+  `*.test.ts` değil) bir suite sanır; paylaşılan test yardımcıları yanlışlıkla suite sayılmasın diye
+  `package.json`'daki `jest.testPathIgnorePatterns`'a `<rootDir>/__tests__/helpers/` eklendi (`/node_modules/`
+  varsayılanı da elle korunarak — bu alanı özelleştirmek Jest'in varsayılanının tamamının yerini alır).
+- (2026-09-23, MOB/S6, **2026-10-01'de geçersiz**) `src/constants/theme.ts`'in web hedefi için `@/global.css`
+  import etmesi Jest'i kırıyordu, `jest.moduleNameMapper`'a CSS mock eklenmişti. Web yığını kaldırıldığında
+  (`react-dom`, `react-native-web`) bu import da kalktı; `css-mock.js` ve `moduleNameMapper` girdisi artık ölü
+  kod — bir sonraki dokunulduğunda silinebilir, test kırmıyor diye bırakıldı.
+- (2026-09-23, test) `react-test-renderer` ağacı `unmount()` edilmeden bırakılırsa ve bileşen
+  `useNativeDriver: true` ile bir `Animated` zamanlayıcısı başlatmışsa, Jest süreci test dosyası bittikten
+  **sonra** çöker (`ReferenceError: Jest environment has been torn down` → `TypeError:
+  getNativeTagFromPublicInstance is not a function`). Testler "geçti" raporlanır ama tüm `npm test` süreci
+  başarısız çıkış koduyla biter. **Çözüm:** `Animated` tetikleyen bir bileşeni render eden her testte
+  `afterEach`te `act(() => tree.unmount())` ile temizle (bkz. `__tests__/card/CardRevealView.test.tsx`).
+- (2026-09-23, test) `react-test-renderer`'ın `TestInstance`'ında (`findByProps(...)`'in döndürdüğü) `.toJSON()`
+  **yok** (yalnızca kök `renderer.toJSON()`'da var). Bir alt ağacın render edilmiş metnini almak için
+  `instance.props.children` ya da `instance.findAllByType(Text).map(n => n.props.children)` kullanılır
+  (bkz. `__tests__/card/CardView.test.tsx` `textsIn` yardımcı fonksiyonu).
+
+## Bağımlılık politikası
+
+- Yeni paket = "ağa veri gönderiyor mu" kontrolü + bu dosyaya bir not eklenir. Expo paketleri `npx expo install`
+  ile eklenir (SDK'yla uyumlu sürüm otomatik seçilir).
+- Kalıcı yasaklar: `expo-updates`, analitik/çökme SDK'ları, push token API'leri (mekanik: `no-push.test.ts`,
+  `src/` içinde `getExpoPushTokenAsync` vb. adları tarar).
+- Font gibi büyük varlık paketlerinde alt yol importu kullanılır (`@expo-google-fonts/inter/400Regular`) —
+  kök `index.js` tüm ağırlıkları (~6MB) `require` eder, subpath yalnızca ihtiyaç duyulanı bundle'a katar.
+- (2026-09-23, OPS/S10) `npm audit --omit=dev`: 15 moderate, 0 high/critical. `decode-uri-component@0.2.2`
+  (`expo-router` → `query-string@7`) üretim paketinde; etkisi kötü niyetli `haftik://` bağlantısıyla kendine
+  DoS (veri sızıntısı yok). `npm audit fix --force` **yapma** (Expo paketlerini düşürür); Expo/expo-router
+  yaması bekle ya da `overrides` dene + test et.
+
+## Web yığını kaldırıldı (2026-10-01)
+
+`react-dom`, `react-native-web`, `app.json`'daki `web` bloğu, `web` npm script'i ve `use-color-scheme.web.ts`
+dosyası silindi — ürün yalnızca Android/iOS (spec'te web hiç yoktu, şablonun varsayılanıydı). Bir web hedefi
+geri istenirse bu bir kapsam genişletmesidir, ayrı `intent.md` ister.
+
+## ASCII yol problemi (2026-10-01'de kalıcı çözüldü)
+
+**[ESKİ 2026-10-01: artık geçersiz, bkz. `tuzak-arsivi.md`]** Repo artık kalıcı olarak `C:\dev\haftik`'te
+yaşıyor; Türkçe karakterli eski konum (`...\Desktop\Geliştirme için\...`) ve ASCII kopya/robocopy senkron
+deseni tarihe kalktı. Yeni bir Windows makinesinde kurulum yaparken proje klasörünün yolu **baştan** ASCII ve
+boşluksuz seçilmeli (bu dersin kendisi kalıcı, derleme pratiği değil).
+
+## CI ve pre-commit
+
+- `.github/workflows/ci.yml`: Node sürümü `.nvmrc`'den okunur, `permissions: contents: read` en dar kapsamda,
+  adımlar typecheck → lint → test → `expo-doctor`.
+- `.github/dependabot.yml`: Expo'ya kilitli paketler (`expo-*`, `react-native-*`, `react`, `@expo/*` vb.) tek
+  bir `expo-sdk` grubunda PR açar (tek tek PR yanlış kombinasyonla `expo-doctor`'ı kırabilir); doğru yükseltme
+  yolu her zaman `npx expo install --fix`. `jest-expo`/`react-test-renderer` otomatik güncellemeden hariç
+  (yukarıdaki pinleme gerekçesiyle aynı).
+- `.githooks/pre-commit` (A3 kararı): `npm run verify` (typecheck+lint+test) çalıştırır, ölçülen süre ~8,5
+  saniye (10 sn sınırının altında). Kurulumu `package.json`'daki `"prepare": "git config core.hooksPath
+  .githooks"` script'i `npm install` sırasında otomatik yapar.
