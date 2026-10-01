@@ -1,0 +1,14 @@
+#!/bin/sh
+# Hizli pre-commit kontrolu: typecheck + lint + test (bkz.
+# docs/kararlar/2026-10-01-taban-oncesi-kararlar-b.md A3). ~3-4 saniye surer
+# (olculdu); 10 saniyeyi asarsa kaldirilmasi karari verildi - oyle bir durumda
+# bu dosyayi ve package.json'daki "prepare" script'ini kaldirmak yeterli.
+#
+# Kurulum otomatik: `npm install` sirasinda "prepare" script'i
+# `git config core.hooksPath .githooks` calistirir, elle bir sey yapmana
+# gerek yok.
+
+set -e
+
+echo "pre-commit: typecheck + lint + test calisiyor..."
+npm run verify

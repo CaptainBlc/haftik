@@ -1,10 +1,10 @@
 name: CI
 
-# Amac: her push/PR'da tip kontrolu + lint + test calistir. Ucretsiz GitHub Actions
-# dakikalari yeterli olacak sekilde tek job, tek Node surumu, cache acik.
-# Script adlari (typecheck/lint/test) package.json'da standart isimlerle
-# beklenir; henuz tanimli degilse ilgili adim basarisiz olur (bu beklenen bir
-# durumdur, S1 tamamlanana kadar).
+# Amac: her push/PR'da tip kontrolu + lint + test + expo-doctor calistir. Ucretsiz
+# GitHub Actions dakikalari yeterli olacak sekilde tek job, tek Node surumu, cache
+# acik. Node surumu .nvmrc'den okunur (bkz. docs/kararlar/2026-10-01-taban-oncesi-
+# kararlar-b.md A2) - iki yerde ayri ayri yazmaktan kacinilir.
+# permissions en dar kapsamda tutulur (varsayilan GITHUB_TOKEN genis yetkiyle gelir).
 
 on:
   push:
@@ -12,9 +12,12 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   test:
-    name: Typecheck, lint, test
+    name: Typecheck, lint, test, doctor
     runs-on: ubuntu-latest
     steps:
       - name: Kodu al
@@ -23,7 +26,7 @@ jobs:
       - name: Node kur
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Bagimliliklari kur
@@ -37,3 +40,6 @@ jobs:
 
       - name: Testler (Jest)
         run: npm test -- --ci
+
+      - name: Expo saglik kontrolu (expo-doctor)
+        run: npx expo-doctor

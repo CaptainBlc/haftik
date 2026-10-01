@@ -1,11 +1,35 @@
 version: 2
 updates:
   # npm bagimliliklari (Expo/React Native paketleri dahil) - haftalik kontrol.
+  # Expo SDK'ya kilitli paketler (expo-*, react, react-native, react-native-*)
+  # tek tek PR acmaz: hepsi "expo-sdk" grubunda birlesir, cunku bunlarin surumu
+  # birbirine bagli ve dogru yukseltme yolu `npx expo install --fix` (bkz.
+  # docs/kararlar/2026-10-01-taban-oncesi-kararlar.md A5). Tek tek PR, yanlis
+  # kombinasyonlarla "expo-doctor" kirmizisina yol acar.
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    groups:
+      expo-sdk:
+        patterns:
+          - "expo"
+          - "expo-*"
+          - "@expo/*"
+          - "@expo-google-fonts/*"
+          - "react"
+          - "react-dom"
+          - "react-native"
+          - "react-native-*"
+          - "@types/react"
+          - "@types/react-dom"
+    ignore:
+      # jest-expo / react-test-renderer SDK surumune ve react'in tam surumune
+      # kilitli (bkz. CLAUDE.md MOB/S1 notu) - otomatik yukseltme peer uyumsuzlugu
+      # (ERESOLVE) verebilir, elle (expo install --fix ile birlikte) yapilir.
+      - dependency-name: "jest-expo"
+      - dependency-name: "react-test-renderer"
 
   # CI workflow dosyalarinin kendisi de (actions/checkout, actions/setup-node vb.)
   # guncel tutulur; ayri bir servis degil, ayni ucretsiz Dependabot ozelligi.

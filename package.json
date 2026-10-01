@@ -46,7 +46,8 @@
     "lint": "expo lint",
     "test": "cross-env TZ=Europe/Istanbul jest",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run typecheck && npm run lint && npm test"
+    "verify": "npm run typecheck && npm run lint && npm test",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "private": true,
   "jest": {
