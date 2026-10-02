@@ -80,6 +80,51 @@
 dosyası silindi — ürün yalnızca Android/iOS (spec'te web hiç yoktu, şablonun varsayılanıydı). Bir web hedefi
 geri istenirse bu bir kapsam genişletmesidir, ayrı `intent.md` ister.
 
+## Release derlemesi ve R8 (S18, 2026-10-02)
+
+**Yerel release APK (EAS kotası harcamaz, ~2 dk):** `npx expo prebuild --platform android --no-install` (android/
+klasörünü sıfırdan üretir, gitignore'da; `react-native.config.js` ve config plugin'leri burada işler), sonra
+`android/` içinde `ANDROID_HOME="C:\Users\Pc\AppData\Local\Android\Sdk" ./gradlew assembleRelease
+-PreactNativeArchitectures=x86_64`. Çıktı: `android/app/build/outputs/apk/release/app-release.apk` ve
+`.../mapping/release/mapping.txt`. İzin kontrolü: `node scripts/check-apk-permissions.js <apk> <aapt2>`
+(aapt2 `Sdk\build-tools\36.0.0\`). **mapping.txt her derlemeyle saklanmalı** (R8 yığın izlerini karartır);
+şimdilik repo dışında `C:\dev\haftik-artifacts\s18\` (56 MB, commit'lenmez). EAS tarafı: `eas.json`
+`buildArtifactPaths` alan adı/davranışı DOĞRULANMADI, doğrulanmadan eklenmedi (22 §2.2).
+
+**Yapılandırma:** R8 ve kaynak küçültme `app.json` `expo-build-properties` ile (`android.enable
+MinifyInReleaseBuilds`/`enableShrinkResourcesInReleaseBuilds`) — prebuild'de `gradle.properties`e yazılır,
+preview ve production aynı yapılandırmayı kullanır. Ek keep kuralı GEREKMEDİ (22 §2.1 öngörüsü doğrulandı).
+
+**react-native-reanimated:** uygulamada kullanılmıyor ama `react-native-drawer-layout`ın (expo-router
+bağımlılığı) zorunlu peer'i olduğu için `package.json`dan çıkarsak da npm kurar ve RN autolinking native kodunu
+derler (1,5 MB .so). Gerçek çıkarma: `react-native.config.js` `dependencies['react-native-reanimated'].platforms
+= {android: null, ios: null}` (`libreanimated.so` APK'dan düştü). `react-native-worklets` `expo-modules-core`
+bağımlılığı olarak KALIR. Geri alma: `react-native.config.js`i sil. Koruma: `__tests__/infra/release-config.test.ts`.
+
+**Boyut (x86_64 release):** R8'siz+reanimated'lı 44,48 MB -> R8+shrink+reanimated yok **31,98 MB**.
+
+**K4-rel sonuçları** (release APK, emülatör `haftik_pixel`, Android 15 google_apis x86_64, rootlu; `adb` ile):
+
+| Akış (22 §2.2 / 26) | Sonuç |
+|---|---|
+| R-1 soğuk açılış, onboarding, izin diyaloğu (izin ver) | geçti; kanallar `daily`/`card-ready` cihazda |
+| R-2 check-in kaydet | geçti (alarmlar 14 -> 12) |
+| R-3 bildirim planı | geçti: `dumpsys alarm` kayıtları var, `InvalidClassException` yok |
+| R-4/R-21 `adb reboot`, uygulamayı AÇMADAN | alarmlar geri kuruldu (14) |
+| R-5/R-22 güncelleme: R8'siz -> R8'li ve R8'li -> R8'li (`adb install -r`, açmadan) | alarmlar korundu (14), `InvalidClass` yok |
+| R-6 Pazar akışı: Hafta -> K3 ara ekran -> Kaydet -> kart reveal -> Paylaş -> önizleme -> sistem seçici -> iptal | geçti; cache'te PNG kalmadı (view-shot + FileProvider + R8) |
+| R-7 deneme raporu seçicisi; "Tüm verilerimi sil" | geçti: onboarding'e dönüş, alarmlar 0, DB'de silinen veri yok (VACUUM) |
+| R-8/R-24 tüm tur boyunca `FATAL`/`ClassNotFound`/`NoSuchMethod`/`InvalidClass`/`CodedException`/`SecurityException`/`EACCES` | 0 satır |
+
+**Test hilesi (K4, kodsuz):** release'te dev menüsü yok; uygun hafta için DB'ye `adb root` + `adb pull` ile
+`node:sqlite` üzerinden check-in eklenip geri itildi (`chown`/`restorecon`), emülatör saati `adb shell date
+MMDDhhmmYYYY.ss` ile (`settings put global auto_time 0`) Pazar 20:05'e alındı; sonra `auto_time 1` geri açılır.
+
+**Yapılmadı (S18 kapsamında kalan):** R-23 (API 24-30 exact alarm yolu, ayrı AVD), R-25 (kanal kapatma), R-26
+(yeni C yönü çıktıları — henüz yok), R-27'nin D2D test modu, Doze/standby turu (22 §4.5), başarılı paylaşım hedefi
+(emülatörde WhatsApp yok, 04 #4 K5), `shrinkResources` sonrası bildirim simgesi (henüz yok), AAB (`production`
+profili `app-bundle`; yerel yalnız APK derlendi).
+
 ## ASCII yol problemi (2026-10-01'de kalıcı çözüldü)
 
 **[ESKİ 2026-10-01: artık geçersiz, bkz. `tuzak-arsivi.md`]** Repo artık kalıcı olarak `C:\dev\haftik`'te

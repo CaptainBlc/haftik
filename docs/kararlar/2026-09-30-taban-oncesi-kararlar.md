@@ -57,6 +57,12 @@ R8/shrink hem `preview` hem `production` profilinde denenir (`expo-build-propert
 R8'siz çıkar, ama 0.2.0'dan önce mutlaka çözülür (22-platform-v2.md'deki serileştirme tuzağına dikkat). Material
 Symbols fontunun kaldırılması isteğe bağlı, ayrı bir adım.
 Uygulanacağı dilim: **S18**. Kaynak: 21-mimari-ve-efor.md S-7; 26-yayin-plani-v2.md S6; 28-muhendislik-standartlari-v2.md S-9.
+**Uygulandı: 2026-10-02 (S18), R8 İLK DENEMEDE ÇALIŞTI.** `app.json` `expo-build-properties`
+(`enableMinifyInReleaseBuilds` + `enableShrinkResourcesInReleaseBuilds`), `react-native-reanimated`
+package.json'dan çıkarıldı + `react-native.config.js` ile native derlemeden dışlandı. Ek keep kuralı gerekmedi.
+Release x86_64 APK **44,48 -> 31,98 MB** (hedef <= 40). Ayrıntı ve K4 sonuç tablosu:
+`docs/muhendislik/arac-zinciri.md` "Release derlemesi ve R8 (S18)". Material Symbols ve `react-native-worklets`
+kaldırılmadı (isteğe bağlı, ayrı adım; worklets `expo-modules-core` bağımlılığı).
 
 ---
 

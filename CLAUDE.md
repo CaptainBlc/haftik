@@ -232,12 +232,18 @@ Release APK izinleri altın listeyle birebir (INTERNET release'ten kalktı, debu
 doğrulandı. Ayrıntı: `docs/muhendislik/bildirim-ve-izin.md`. **Kalan (cihaz):** D2D test modu (`bmgr`),
 OEM aktarım (K5), 0.1.0'da PCAPdroid. Yerel release derlemesi: `android/` içinde `ANDROID_HOME=
 C:\Users\Pc\AppData\Local\Android\Sdk ./gradlew assembleRelease -PreactNativeArchitectures=x86_64` (~2 dk).
-`npm run verify`: 78 suite / 940 test yeşil.
+· **S18 Boyut/R8** (2026-10-02): R8 + kaynak küçültme `expo-build-properties` ile açık (ilk denemede çalıştı, ek
+keep kuralı gerekmedi), `react-native-reanimated` package.json'dan çıkarıldı VE `react-native.config.js` ile native
+derlemeden dışlandı (npm peer'i zaten kuruyordu). Release x86_64 APK 44,48 -> **31,98 MB**; izinler hâlâ altın liste.
+K4-rel (R-1..R-8, R-21/22, R-24): açılış, check-in, bildirim planı, reboot ve güncelleme (R8'siz->R8'li dahil)
+sonrası alarmlar korundu, Pazar kart akışı + paylaşım seçicisi + rapor + silme çalıştı, hata satırı 0. Ayrıntı ve
+yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `docs/muhendislik/arac-zinciri.md`.
+`mapping.txt` her release'te saklanmalı (`C:\dev\haftik-artifacts\`, repo dışı); EAS `buildArtifactPaths` doğrulanmadı.
+`npm run verify`: 79 suite / 944 test yeşil.
 
 **Batuhan'ın onayladığı, henüz uygulanmamış kararlar** (Karar A 18/18 ve Karar B 14/14
 tamam — tam liste ve gerekçe `docs/kararlar/`): seviye kelimeleri +
 içerik paketi (A14/A15) · Ayarlar'daki ayrı "Kart hazır" anahtarı (A12'nin UI tarafı, S23) ·
-R8 hem preview hem production'da (A18) ·
 paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı) ·
 seviye/font/ikon/haptik/K3-banner/Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23) · 6 kişilik
 P0 görsel test oturumu (B12, S19'dan önce) · Maestro kurulumu (B14, çekirdek kapısında).
