@@ -225,11 +225,19 @@ tarihsiz `Haftik-kart.png`, `finally`de silmeyi bırakıp yaşa göre süpürme 
 sürüm satırı (26 R-1), rapor v2 (27 §4.1), K4 (koyu moddayken 3 ekran, 6 Önemli bulgu yeniden ölçüm).
 **Batuhan onayı bekleyen yeni metinler** (copywriter): "Silinemedi/Veriler silinemedi...", "Kaydedilemedi/
 Bugünün kaydı yapılamadı...", "Yüklenemedi." + "Tekrar dene".
+· **S17 Platform yapılandırması** (2026-10-02): `plugins/` altında 3 config plugin (`permission-policy`
+tek kaynak + `with-permission-policy` + `with-data-extraction-rules`), `scripts/check-apk-permissions.js`.
+Release APK izinleri altın listeyle birebir (INTERNET release'ten kalktı, debug/Metro'da duruyor), süreçte
+`inet` gid'i yok (mekanik kanıt; kontrol APK'da var), `dataExtractionRules` APK'da, A12 kanalları cihazda
+doğrulandı. Ayrıntı: `docs/muhendislik/bildirim-ve-izin.md`. **Kalan (cihaz):** D2D test modu (`bmgr`),
+OEM aktarım (K5), 0.1.0'da PCAPdroid. Yerel release derlemesi: `android/` içinde `ANDROID_HOME=
+C:\Users\Pc\AppData\Local\Android\Sdk ./gradlew assembleRelease -PreactNativeArchitectures=x86_64` (~2 dk).
+`npm run verify`: 78 suite / 940 test yeşil.
 
 **Batuhan'ın onayladığı, henüz uygulanmamış kararlar** (Karar A 18/18 ve Karar B 14/14
 tamam — tam liste ve gerekçe `docs/kararlar/`): seviye kelimeleri +
 içerik paketi (A14/A15) · Ayarlar'daki ayrı "Kart hazır" anahtarı (A12'nin UI tarafı, S23) ·
-INTERNET/izin temizliği + D2D kapatma (A16/A17) · R8 hem preview hem production'da (A18) ·
+R8 hem preview hem production'da (A18) ·
 paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı) ·
 seviye/font/ikon/haptik/K3-banner/Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23) · 6 kişilik
 P0 görsel test oturumu (B12, S19'dan önce) · Maestro kurulumu (B14, çekirdek kapısında).

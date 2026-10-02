@@ -36,11 +36,36 @@ config plugin ile kaldırılır (debug/Metro etkilenmez), rozet/c2dm/referrer/`A
 `aapt2 dump permissions` çıktısından "altın izin listesi" üretilip elle sayım yerine mekanik karşılaştırma
 yapılır. Ayrıntı ve gerekçe: `docs/kararlar/2026-10-01-taban-oncesi-kararlar-b.md` A16.
 
+**Uygulandı (2026-10-02, S17), kod tarafı:** üç dosya `plugins/` altında, `app.json` `plugins` listesinde.
+- `plugins/permission-policy.js`: izin politikasının TEK kaynağı (`ALWAYS_BLOCKED_PERMISSIONS` = depolama +
+  `SYSTEM_ALERT_WINDOW` + `ACCESS_NETWORK_STATE` + c2dm + referrer + 16 rozet izni; `RELEASE_ONLY_REMOVED_PERMISSIONS`
+  = `INTERNET`; `GOLDEN_RELEASE_PERMISSIONS` = yalnız `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `VIBRATE`,
+  `WAKE_LOCK`, `<applicationId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`). İzin adları release merge raporundan
+  (`manifest-merger-release-report.txt`) alındı, elle yazılmadı.
+- `plugins/with-permission-policy.js`: `blockedPermissions`i birleştirir (app.json'daki mevcutlar korunur) ve
+  `android/app/src/release/AndroidManifest.xml` içine `INTERNET` için `tools:node="remove"` yazar. Sonuç: debug/
+  Metro etkilenmez, EAS/yerel/profil fark etmeksizin her release mekanik olarak ağ iznisiz (22 §1.3 seçenek C).
+- `plugins/with-data-extraction-rules.js`: A17, bkz. aşağıda.
+- `scripts/check-apk-permissions.js`: `node scripts/check-apk-permissions.js <apk> <aapt2>` release APK'nın
+  `aapt2 dump permissions` çıktısını altın listeyle karşılaştırır (çıkış kodu 0/1); izin elle sayılmaz. Testler:
+  `__tests__/plugins/permission-policy.test.ts` (politika verisi + XML sözleşmesi + altın liste karşılaştırması).
+- `WAKE_LOCK` bilerek KALDI (22 §1.6): kaldırma ikinci adım, yalnız Doze/teslim testinden sonra.
+- `expo prebuild` çıktısı elle doğrulandı: release overlay'de `INTERNET` remove, ana manifestte 22 engelli izin
+  `tools:node="remove"`, `<application android:dataExtractionRules="@xml/data_extraction_rules">`.
+  Not: prebuild `android/` klasörünü sıfırdan üretir (gitignore'da); yerel release derlemesi için
+  `ANDROID_HOME` verilmeli (`C:\Users\Pc\AppData\Local\Android\Sdk`).
+
 ## Cihazdan cihaza aktarım (A17 kararı)
 
 `allowBackup:false` yalnızca **bulut** yedeğini kapatır. Android'in cihazdan cihaza aktarımı (kablolu/kablosuz,
 D2D) bu veriyi gerçekte taşıyabilir — onboarding ve site metnindeki "telefon değişirse veri taşınmaz" sözü bu
 yüzden kanıtsızdı. Karar: `dataExtractionRules` ile D2D de gerçekten kapatılacak (0.2.0'dan önce, S17).
+
+**Uygulandı (2026-10-02, S17):** `plugins/with-data-extraction-rules.js` `res/xml/data_extraction_rules.xml`
+yazar (hem `<cloud-backup>` hem `<device-transfer>` altında `root`, `file`, `database`, `sharedpref`, `external`
+ve `device_*` alanları `exclude`, hiç `include` yok) ve manifestte `android:dataExtractionRules` ayarlar. Kaynak
+manifestten başvurulduğu için `shrinkResources` atmaz. **Cihaz kanıtı kalan:** `aapt2 dump xmltree` ile
+manifestte görünmesi (release APK) + GMS'li imajda D2D test modu (`bmgr`, 22 §1.5) + OEM aktarım araçları (K5).
 
 ## Exact alarm ve gecikme
 

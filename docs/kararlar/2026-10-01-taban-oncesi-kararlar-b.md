@@ -80,12 +80,26 @@ ayrı "Kart hazır" anahtarı hâlâ S23'e kalıyor (bu turda yalnızca kanal ta
    `ACCESS_NETWORK_STATE`. `WAKE_LOCK` ilk build'de kalır (ikisi de rapor aynı sonuca varıyor).
 4. `aapt2 dump permissions` çıktısından "altın izin listesi" dosyası üretilir, gelecekte elle sayılmaz.
 Uygulanacağı dilim: **S17** (yeni dilim).
+**Uygulandı: 2026-10-02 (S17).** `plugins/permission-policy.js` (tek kaynak, altın liste dahil),
+`plugins/with-permission-policy.js` (22 izin `blockedPermissions`, `INTERNET` yalnız release overlay'den
+kaldırılır), `scripts/check-apk-permissions.js`. **K4-rel kanıtı (yerel release APK, x86_64):**
+`aapt2 dump permissions` = yalnız VIBRATE, RECEIVE_BOOT_COMPLETED, POST_NOTIFICATIONS, WAKE_LOCK,
+`<appId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (script `OK`, çıkış 0). Mekanik "ağ yok" kanıtı: emülatörde
+çalışan sürecin `Groups` satırında `inet` gid'i (3003) YOK (yeni APK: 9997 20210 50210), kontrol olarak eski
+INTERNET'li release APK'da VAR (3003 9997 20211 50211). Release APK emülatörde açılıyor, onboarding + izin
+diyaloğu çalışıyor, logcat'te `FATAL`/`SecurityException` yok. **Atlanan adım:** Ç6'nın (1) "kaldırmadan ÖNCE
+referans ağ ölçümü" (pcap) yapılmadı; kaldırma zaten `inet` gid ile mekanik kanıtlandığı için ikincil kanıt
+olarak kaldı (22 §1.4). Kalan: 0.1.0 ile gerçek cihazda PCAPdroid (K5); R-01..R-27 tam matris S18'de.
 
 ## A17 — Cihazdan cihaza aktarım
 **Gerçekten kapatılacak**: `dataExtractionRules` eklentisi ile Android D2D aktarımı (bulut yedeği zaten
 `allowBackup:false` ile kapalıydı, ama cihazdan cihaza — kablolu/kablosuz — açık kalmıştı). Onboarding ve
 site metnindeki "telefon değişirse veri taşınmaz" sözü artık doğru olacak. 0.2.0'dan önce, geri dönüşü zor
 bir yapılandırma kararı. Uygulanacağı dilim: **S17**.
+**Uygulandı: 2026-10-02 (S17).** `plugins/with-data-extraction-rules.js`. K4-rel: release APK manifestinde
+`android:dataExtractionRules=@xml/data_extraction_rules` (aapt2 xmltree) ve kaynak pakette (`aapt2 dump
+resources`). **Kalan:** GMS'li imajda D2D test modu (`bmgr`, 22 §1.5) ve OEM aktarım araçları (K5) henüz
+denenmedi — onboarding/site metnindeki "telefon değişirse veri taşınmaz" sözü bu doğrulamadan sonra tam kanıtlı sayılır.
 
 ---
 
