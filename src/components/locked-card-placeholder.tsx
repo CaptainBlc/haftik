@@ -11,8 +11,15 @@
  * bu dosyanın kaynağında `content/tr` veya `CardView` geçmediğini statik
  * olarak doğrular).
  */
-import { useRef } from 'react';
-import { Animated, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import {
+  AccessibilityInfo,
+  Animated,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
@@ -42,8 +49,23 @@ export function LockedCardPlaceholder({ caption, unlocked, onPress }: LockedCard
   const { height: windowHeight } = useWindowDimensions();
   const size = placeholderSize(windowHeight);
 
+  // A11Y-04: "animasyonları kaldır" tercihi ref'te tutulur (state değil: render
+  // tetiklemesi gerekmez, dokunmada okunur); mount'ta okunur, değişince güncellenir.
+  const reduceMotionRef = useRef(false);
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then((enabled) => {
+        reduceMotionRef.current = enabled;
+      })
+      .catch(() => undefined);
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', (enabled) => {
+      reduceMotionRef.current = enabled;
+    });
+    return () => subscription.remove();
+  }, []);
+
   function handlePress() {
-    if (!unlocked) {
+    if (!unlocked && !reduceMotionRef.current) {
       shakeAnim.setValue(0);
       Animated.sequence([
         Animated.timing(shakeAnim, { toValue: 1, duration: 40, useNativeDriver: true }),

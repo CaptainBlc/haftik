@@ -59,6 +59,20 @@ export async function deleteAllData(
     throw error;
   }
 
+  // S16b (24 F3 / 21 P-5): `DELETE` sayfaları sıfırlamaz, silinen satırlar
+  // serbest sayfalarda/WAL'da kalabilir. `VACUUM` dosyayı yeniden yazar,
+  // `wal_checkpoint(TRUNCATE)` WAL'ı boşaltır. Mantıksal silme zaten
+  // tamamlandığı için ikisi de EN İYİ ÇABA (hata akışı bozmaz, iki deyim
+  // birbirinden bağımsız denenir). `PRAGMA secure_delete=ON` bağlantı
+  // açılırken ayrıca kurulur (`db.ts` `createExpoSqliteDriver`).
+  for (const statement of ['VACUUM;', 'PRAGMA wal_checkpoint(TRUNCATE);']) {
+    try {
+      driver.exec(statement);
+    } catch {
+      // bilerek yutuldu
+    }
+  }
+
   // N-1: kalan geçici deneme raporu dosyası (en iyi çaba).
   await deleteReportFile();
   // S10 I-1: kalan geçici kart PNG'leri (en iyi çaba).

@@ -215,9 +215,19 @@ render-sırasında ref yazımı): `docs/muhendislik/bildirim-ve-izin.md`. Kararl
 (A8, A12). `now` zorunlu kılma (TB-10) S14/S15 T1/S15 T3 boyunca üç kez bilerek ERTELENDİ (hiçbiri
 gerektirmedi; sıradaki `open-card.ts` dokunuşunda ele alınabilir). K4 (sıcak/soğuk açılış emülatör
 kanıtı) bu ortamda YOK. `npm run verify`: 77 suite / 924 test yeşil, 3 atlandı.
+· **S16b KISMEN** (2026-10-02): T6 açık tema kilidi (A11, `app.json` `userInterfaceStyle: light`);
+güvenli silme (silme sonrası `VACUUM` + `wal_checkpoint(TRUNCATE)`, açılışta `PRAGMA secure_delete=ON`);
+silme hatasında "Silinemedi" uyarısı, Bugün kayıt hatasında "Kaydedilemedi" uyarısı, Hafta/Bugün/Kart
+ekranlarında okuma hatası için `LoadErrorView` ("Yüklenemedi" + Tekrar dene); A11Y-01..06 + 15
+(önizleme Geri üst inset + 48 dp, gizle/göster 48 dp, satır sarma, anahtar etiketi, silme kontrastı
+`#B3142B`, reduce-motion, gizlilik Alert "Tamam"). **S16b KALAN:** paylaşım dosyası (`cache/haftik-share/`,
+tarihsiz `Haftik-kart.png`, `finally`de silmeyi bırakıp yaşa göre süpürme — 04 #4, K5 doğrulaması şart),
+sürüm satırı (26 R-1), rapor v2 (27 §4.1), K4 (koyu moddayken 3 ekran, 6 Önemli bulgu yeniden ölçüm).
+**Batuhan onayı bekleyen yeni metinler** (copywriter): "Silinemedi/Veriler silinemedi...", "Kaydedilemedi/
+Bugünün kaydı yapılamadı...", "Yüklenemedi." + "Tekrar dene".
 
 **Batuhan'ın onayladığı, henüz uygulanmamış kararlar** (Karar A 18/18 ve Karar B 14/14
-tamam — tam liste ve gerekçe `docs/kararlar/`): açık tema kilidi (A11) · seviye kelimeleri +
+tamam — tam liste ve gerekçe `docs/kararlar/`): seviye kelimeleri +
 içerik paketi (A14/A15) · Ayarlar'daki ayrı "Kart hazır" anahtarı (A12'nin UI tarafı, S23) ·
 INTERNET/izin temizliği + D2D kapatma (A16/A17) · R8 hem preview hem production'da (A18) ·
 paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı) ·

@@ -11,6 +11,7 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { LoadErrorView } from '@/components/load-error-view';
 import { LoadingView } from '@/components/loading-view';
 import { WeekStatusView } from '@/components/week-status-view';
 import { getCard, getCardWeekStarts } from '@/data/card-repo';
@@ -51,6 +52,9 @@ export default function WeekScreen() {
     hasCard: boolean;
     missedWeek: string | null;
   } | null>(null);
+  // S16b (04 #7): okuma hatasında sonsuz yükleme yerine hata ekranı + yeniden deneme.
+  const [attempt, setAttempt] = useState(0);
+  const [failedAttempt, setFailedAttempt] = useState<number | null>(null);
 
   // BLG-02: sekme odağa her gelişinde yeniden yükle (Bugün'de kaydedilen
   // check-in'ler bayat kalmasın). Hafta değişince de (weekStart/weekEnd) yeniden kurulur.
@@ -84,6 +88,10 @@ export default function WeekScreen() {
           hasCard: card !== null,
           missedWeek: openable.length > 0 ? openable[openable.length - 1] : null,
         });
+      }).catch(() => {
+        if (!cancelled) {
+          setFailedAttempt(attempt);
+        }
       });
       return () => {
         cancelled = true;
@@ -95,7 +103,7 @@ export default function WeekScreen() {
       // sonsuz render döngüsüne yol açar — gerçek `useNow()` kimliği yalnızca
       // gerçek "an"larda değiştirdiğinden üründe sorun yaşanmaz.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [weekStart, weekEnd])
+    }, [weekStart, weekEnd, attempt])
   );
 
   // S9: kart bu hafta ilk kez açılabilir görüldüğünde bir kez say (hafta başına tek kayıt, DB'de dedupe).
@@ -116,6 +124,9 @@ export default function WeekScreen() {
   }, [unlockedNow, weekStart]);
 
   if (!data || data.weekStart !== weekStart) {
+    if (failedAttempt === attempt) {
+      return <LoadErrorView onRetry={() => setAttempt((a) => a + 1)} />;
+    }
     return <LoadingView />;
   }
 

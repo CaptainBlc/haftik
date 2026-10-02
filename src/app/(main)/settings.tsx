@@ -94,7 +94,14 @@ export default function SettingsScreen() {
           // Sıra: iptal önce (en iyi çaba), tablo silme sonra (bkz.
           // `delete-all.ts`). Silme sonrası `onboardingDone=false` olduğundan
           // tetiklenen sync no-op'tur, bildirim yeniden kurulmaz (S8).
-          await runDeleteExclusive(() => deleteAllData(() => cancelAllNotifications()));
+          try {
+            await runDeleteExclusive(() => deleteAllData(() => cancelAllNotifications()));
+          } catch {
+            // S16b (04 #7): gizlilik vaadinin BAŞARISIZ yolu sessiz kalmamalı;
+            // yönlendirme yapılmaz, kullanıcı tekrar deneyebilir.
+            Alert.alert('Silinemedi', 'Veriler silinemedi. Lütfen tekrar dene.');
+            return;
+          }
           // BLG-05: silinen veriyle ana ekranlarda kalınmaz; onboarding kapısı
           // ('/' -> useOnboardingGate) yeniden okur ve onboarding tekrar çalışır.
           router.replace('/');
@@ -109,7 +116,10 @@ export default function SettingsScreen() {
   }
 
   function handlePrivacyPress() {
-    Alert.alert('Gizlilik politikası', 'Gizlilik politikası yayına yakın eklenecek.');
+    // A11Y-15: varsayılan "OK" yerine Türkçe "Tamam"; Geri tuşu uyarıyı kapatabilsin.
+    Alert.alert('Gizlilik politikası', 'Gizlilik politikası yayına yakın eklenecek.', [{ text: 'Tamam' }], {
+      cancelable: true,
+    });
   }
 
   return (

@@ -12,8 +12,10 @@
  */
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
+import { Alert } from 'react-native';
 
 import { CheckinForm } from '@/components/checkin-form';
+import { LoadErrorView } from '@/components/load-error-view';
 import { LoadingView } from '@/components/loading-view';
 import { getCheckins, saveCheckin } from '@/data/checkin-repo';
 import type { Category, CategoryValue } from '@/domain/types';
@@ -59,21 +61,30 @@ export default function TodayScreen() {
    */
   const [loadedFor, setLoadedFor] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  // S16b (04 #7): okuma hatasında sonsuz yükleme yerine hata ekranı + yeniden deneme.
+  const [attempt, setAttempt] = useState(0);
+  const [failedAttempt, setFailedAttempt] = useState<number | null>(null);
   const loaded = loadedFor === selectedDate;
 
   useEffect(() => {
     let cancelled = false;
-    getCheckins(selectedDate, selectedDate).then((rows) => {
-      if (cancelled) {
-        return;
-      }
-      setSelection(checkinToSelection(rows[0] ?? null));
-      setLoadedFor(selectedDate);
-    });
+    getCheckins(selectedDate, selectedDate)
+      .then((rows) => {
+        if (cancelled) {
+          return;
+        }
+        setSelection(checkinToSelection(rows[0] ?? null));
+        setLoadedFor(selectedDate);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setFailedAttempt(attempt);
+        }
+      });
     return () => {
       cancelled = true;
     };
-  }, [selectedDate]);
+  }, [selectedDate, attempt]);
 
   function handleSelect(category: Category, value: CategoryValue) {
     setSelection((prev) => ({ ...prev, [category]: value }));
@@ -94,12 +105,18 @@ export default function TodayScreen() {
       if (isValidWeekStartParam(returnToCardWeekStart, today)) {
         router.replace({ pathname: '/card/[weekStart]', params: { weekStart: returnToCardWeekStart } });
       }
+    } catch {
+      // S16b (04 #7): kayıt hatası sessiz kalmasın; seçim ekranda korunur, tekrar denenebilir.
+      Alert.alert('Kaydedilemedi', 'Bugünün kaydı yapılamadı. Lütfen tekrar dene.');
     } finally {
       setSaving(false);
     }
   }
 
   if (!loaded) {
+    if (failedAttempt === attempt) {
+      return <LoadErrorView onRetry={() => setAttempt((a) => a + 1)} />;
+    }
     return <LoadingView />;
   }
 

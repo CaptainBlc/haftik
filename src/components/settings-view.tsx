@@ -77,6 +77,9 @@ export function SettingsView({
           <ThemedText>Günlük hatırlatma</ThemedText>
           <Switch
             testID="reminder-enabled-switch"
+            // A11Y-03: ekran okuyucu etiketi + 48dp'ye tamamlanan dokunma alanı.
+            accessibilityLabel="Günlük hatırlatma"
+            hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
             value={effectiveEnabled}
             onValueChange={onToggleReminder}
           />
@@ -246,6 +249,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteLabel: {
-    color: '#D7263D',
+    // A11Y-05: #D7263D açık zeminde 4.03:1 idi; #B3142B 5.46:1 (WCAG 1.4.3).
+    // Uygulama açık temaya kilitli (A11), tek renk yeterli.
+    color: '#B3142B',
   },
 });

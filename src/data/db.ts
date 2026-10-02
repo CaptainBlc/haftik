@@ -71,6 +71,13 @@ export function createExpoSqliteDriver(name: string): SqlDriver {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { openDatabaseSync } = require('expo-sqlite') as typeof import('expo-sqlite');
   const db = openDatabaseSync(name);
+  // S16b (24 N-1 / 21 P-5): silinen sayfalar sıfırlansın. En iyi çaba; bu
+  // pragma kurulamazsa uygulama yine çalışır (silmede ayrıca VACUUM var).
+  try {
+    db.execSync('PRAGMA secure_delete = ON');
+  } catch {
+    // bilerek yutuldu
+  }
 
   return {
     exec(sql) {

@@ -187,3 +187,20 @@ describe('T2: kaçırılan hafta banner\'ı', () => {
     });
   });
 });
+
+describe('S16b (04 #7): okuma hatası', () => {
+  it('veri okunamazsa sonsuz yükleme yerine hata ekranı çıkar, "Tekrar dene" yeniden yükler', async () => {
+    mockGetCheckins.mockRejectedValueOnce(new Error('bozuk veri'));
+    await act(async () => {
+      tree = create(<WeekScreen />);
+    });
+    const retry = tree!.root.findByProps({ testID: 'load-error-retry' });
+    expect(tree!.root.findAllByProps({ testID: 'week-status-headline' })).toHaveLength(0);
+
+    mockGetCheckins.mockResolvedValue([day('2026-09-21')]);
+    await act(async () => {
+      retry.props.onPress();
+    });
+    expect(headline()).toBe('Kartın için 2 gün daha lazım.');
+  });
+});

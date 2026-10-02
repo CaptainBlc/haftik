@@ -19,6 +19,9 @@ v1.1'de yalnızca açık tema (`app.json` → `userInterfaceStyle: "light"`). To
 kalır** (17-gorsel-sistem-v2.md'nin koyu tema çalışması atılmaz, yalnızca v1.1'de devreye alınmaz) — v1.2+'ta
 ayrı, S boyutunda bir işle açılabilir.
 Uygulanacağı dilim: **S16b**. Kaynak: 13-urun-vizyonu.md T6; 22-platform-v2.md S8.
+**Uygulandı: 2026-10-02 (S16b).** `app.json` `userInterfaceStyle: "light"` (`expo-system-ui` zaten kurulu).
+Koyu moddaki cihazda 3 ekranın emülatörde yeniden gözlemi (K4) ve Android 16 "genişletilmiş koyu tema"
+etkileşimi (22 §5.2) hâlâ açık.
 
 ## A13 — Pazar'da çift bildirim
 Kartın planlandığı Pazar günü `daily` (günlük hatırlatma) bildirimi **üretilmez**, yalnızca `card-ready`

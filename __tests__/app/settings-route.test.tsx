@@ -184,6 +184,23 @@ describe('Ayarlar rotası: silme sonrası (BLG-05)', () => {
     expect(mockReplace).toHaveBeenCalledWith('/');
   });
 
+  it('S16b (04 #7): silme HATA verirse sessiz kalmaz: uyarı gösterilir, onboarding\'e yönlendirilmez', async () => {
+    mockGetPermState.mockResolvedValue(GRANTED);
+    await render();
+    mockDeleteAllData.mockRejectedValueOnce(new Error('disk'));
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    await act(async () => {
+      tree!.root.findByProps({ testID: 'delete-all-button' }).props.onPress();
+    });
+    const buttons = alert.mock.calls[0][2] as { text: string; onPress?: () => Promise<void> }[];
+    await act(async () => {
+      await buttons.find((b) => b.text === 'Sil')!.onPress!();
+    });
+    expect(mockReplace).not.toHaveBeenCalled();
+    expect(alert).toHaveBeenCalledTimes(2);
+    expect(alert.mock.calls[1][0]).toBe('Silinemedi');
+  });
+
   it('Vazgeç: silme ve yönlendirme yok', async () => {
     mockGetPermState.mockResolvedValue(GRANTED);
     await render();

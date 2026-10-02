@@ -32,7 +32,14 @@
  * çağıran ekran (`src/app/card/[weekStart].tsx`) `onShare` ile oraya geçer.
  */
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  Animated,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ViewShotRef } from 'react-native-view-shot';
 
@@ -71,16 +78,12 @@ export function CardRevealView({
   onRevealComplete,
   onShare,
 }: CardRevealViewProps) {
-  // `react-hooks/refs` (React Compiler'a hazırlık kuralı) burada `Animated.Value`
-  // örneklerini gerçek bir React ref sanıp "render sırasında ref okunuyor"
-  // diye işaretliyor — aynı bilinen yanlış pozitif `locked-card-placeholder.tsx`te
-  // de var (bkz. o dosyadaki not + CLAUDE.md "Bilinen tuzaklar" MOB/S6):
-  // `Animated.Value`/`Animated.CompositeAnimation` standart RN `Animated`
-  // API'sinin mutable nesneleridir, `useRef` yalnızca referanslarını
-  // render'lar arası sabit tutmak için kullanılır; render sırasında OKUNMAZ,
-  // yalnızca interpolasyon zinciri (`.interpolate(...)`) kurulur. Bu dosyada
-  // (aynı desenin çok sayıda tekrarı nedeniyle) dosya geneli için kapatıldı.
-  /* eslint-disable react-hooks/refs */
+  // `Animated.Value`/`CompositeAnimation` standart RN `Animated` API'sinin
+  // mutable nesneleridir; `useRef` yalnızca referanslarını sabit tutar.
+  // (Eskiden burada `react-hooks/refs` yanlış pozitifi için dosya geneli
+  // disable vardı; A11Y-04 değişikliğinden sonra kural bu bileşende hata
+  // vermiyor ve disable "kullanılmayan direktif" uyarısı verdiği için
+  // kaldırıldı. Yanlış pozitif geri gelirse bkz. CLAUDE.md MOB/S6.)
   const blurFade = useRef(new Animated.Value(0)).current;
   const contentProgress = useRef(new Animated.Value(0)).current;
   const animationRef = useRef<Animated.CompositeAnimation | null>(null);
@@ -111,7 +114,18 @@ export function CardRevealView({
         onRevealComplete?.();
       }
     });
+    // A11Y-04 (WCAG 2.3.3): sistem "animasyonları kaldır" tercihi açıksa
+    // reveal atlanır (kart doğrudan nihai hâliyle gösterilir).
+    let unmounted = false;
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then((reduce) => {
+        if (reduce && !unmounted) {
+          handleSkip();
+        }
+      })
+      .catch(() => undefined);
     return () => {
+      unmounted = true;
       sequence.stop();
     };
     // Yalnızca mount'ta bir kez başlatılır; `blurFade`/`contentProgress`

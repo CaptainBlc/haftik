@@ -51,6 +51,7 @@ import { Spacing } from '@/constants/theme';
 import { CATEGORIES } from '@/domain/types';
 import type { Category, CardSnapshot } from '@/domain/types';
 import { useTheme } from '@/hooks/use-theme';
+import { useTopInset } from '@/hooks/use-top-inset';
 import { trackShareInitiated } from '@/metrics/track';
 
 /** K5 yer tutucusunu içeren kısa paylaşım metni (görev talimatı madde 5). */
@@ -65,6 +66,7 @@ export interface CardPreviewViewProps {
 
 export function CardPreviewView({ snapshot, onBack, onShared }: CardPreviewViewProps) {
   const theme = useTheme();
+  const topInset = useTopInset();
   const [hidden, setHidden] = useState<Set<Category>>(defaultHiddenCategories);
   const [sharing, setSharing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,8 +97,13 @@ export function CardPreviewView({ snapshot, onBack, onShared }: CardPreviewViewP
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <Pressable testID="card-preview-back" accessibilityRole="button" onPress={onBack}>
+    // A11Y-01: üst güvenli alan (durum çubuğu) altından başlar, Geri ölü bölgeye düşmez.
+    <ThemedView style={[styles.container, { paddingTop: Spacing.four + topInset }]}>
+      <Pressable
+        testID="card-preview-back"
+        accessibilityRole="button"
+        onPress={onBack}
+        style={styles.backButton}>
         <ThemedText themeColor="textSecondary">{'< Geri'}</ThemedText>
       </Pressable>
 
@@ -117,8 +124,8 @@ export function CardPreviewView({ snapshot, onBack, onShared }: CardPreviewViewP
             <View key={category} testID={`card-preview-row-${category}`} style={styles.row}>
               <ThemedText style={styles.rowEmoji}>{emoji}</ThemedText>
               <ThemedText
+                // A11Y-06: yazı 2.0'da paylaşılacak metin kesilmesin (numberOfLines yok, sarar).
                 style={[styles.rowText, isHidden && { color: theme.textSecondary }]}
-                numberOfLines={2}
                 accessibilityLabel={`${CATEGORY_LABELS_TR[category]}: ${line.text}`}>
                 {line.text}
               </ThemedText>
@@ -131,7 +138,8 @@ export function CardPreviewView({ snapshot, onBack, onShared }: CardPreviewViewP
                     : `${CATEGORY_LABELS_TR[category]} satırını gizle`
                 }
                 onPress={() => handleToggle(category)}
-                hitSlop={Spacing.two}>
+                hitSlop={Spacing.two}
+                style={styles.toggleButton}>
                 <ThemedText style={styles.eyeIcon}>{isHidden ? '🙈' : '👁'}</ThemedText>
               </Pressable>
             </View>
@@ -195,6 +203,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
+    minHeight: 48, // A11Y-02
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    minHeight: 48, // A11Y-01
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.two,
+  },
+  toggleButton: {
+    minWidth: 48, // A11Y-02: Material/WCAG 2.5.8 dokunma hedefi
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rowEmoji: {
     fontSize: 22,

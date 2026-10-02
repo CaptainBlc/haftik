@@ -20,6 +20,7 @@ import { CardRevealView } from '@/card/CardRevealView';
 import { useCardFonts } from '@/card/fonts';
 import { openOrBuildCard, type OpenCardResult } from '@/card/open-card';
 import { CardPreviewView } from '@/components/card-preview-view';
+import { LoadErrorView } from '@/components/load-error-view';
 import { LoadingView } from '@/components/loading-view';
 import { SundayCheckinRequiredView } from '@/components/sunday-checkin-required-view';
 import { toLocalDateString } from '@/domain/week';
@@ -32,7 +33,10 @@ export default function CardScreen() {
   const { weekStart } = useLocalSearchParams<{ weekStart: string }>();
   const router = useRouter();
   const now = useNow();
-  const [fontsLoaded] = useCardFonts();
+  const [fontsLoaded, fontError] = useCardFonts();
+  // S16b (04 #7): açma hatasında sonsuz yükleme yerine hata ekranı + yeniden deneme.
+  const [attempt, setAttempt] = useState(0);
+  const [failedAttempt, setFailedAttempt] = useState<number | null>(null);
 
   /**
    * `weekStart`e göre son yüklenen sonuç (bir çift `null` state yerine) —
@@ -70,6 +74,10 @@ export default function CardScreen() {
         // teslim edilmiş olsa bile gölgede kalmasın.
         void dismissCardNotification(weekStart);
       }
+    }).catch(() => {
+      if (!cancelled) {
+        setFailedAttempt(attempt);
+      }
     });
     return () => {
       cancelled = true;
@@ -79,7 +87,7 @@ export default function CardScreen() {
     // build/getCard tetiklenmesin — yalnızca `weekStart` değişince yeniden
     // değerlendirilir.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [weekStart]);
+  }, [weekStart, attempt]);
 
   if (!validWeekStart) {
     // Dış kaynaklı (deep link) geçersiz/ileri tarihli parametre: kart yazılmaz.
@@ -87,6 +95,9 @@ export default function CardScreen() {
   }
 
   if (!weekStart || !fontsLoaded || !result || result.forWeekStart !== weekStart) {
+    if (fontError || failedAttempt === attempt) {
+      return <LoadErrorView onRetry={() => setAttempt((a) => a + 1)} />;
+    }
     return <LoadingView />;
   }
 
