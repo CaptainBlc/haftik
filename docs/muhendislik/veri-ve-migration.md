@@ -142,3 +142,14 @@ ofseti kullan.
 - **Silme:** `deleteAllData` artık `VACUUM` + `wal_checkpoint(TRUNCATE)` çalıştırır, bağlantı açılırken
   `PRAGMA secure_delete=ON`; paylaşım dizini komple silinir. Cihazda doğrulandı: silme sonrası DB dosyasında
   silinen veri yok.
+
+## Mimari: bilinçli sapmalar listesi (CLAUDE.md'den taşındı, 2026-10-02)
+
+Hepsi belgelidir; ayrıntı `plan.md` "Uygulama notu" ve ilgili konu dosyasında:
+- `buildCard` 5. isteğe bağlı parametre `prevVariants` (S3; S7a'da wiring tamamlandı).
+- `weekly_card`: `title_based_on_categories` + `summary_id` sütunları (S5, round-trip için).
+- `captureCardPng(ref)` imzası (view-shot yalnızca render edilmiş View yakalar) — `kart-render.md`.
+- Unvan ayrı gizlenmez; dayandığı kategori gizliyse `???` olur (S7b; S21'de paylaşım unvanıyla genişleyecek).
+- Tabs (NativeTabs değil); emoji sekme ikonları (S6).
+- Kart açılışında K3 akışı: `open-card` → `needsTodayCheckin` → `today?returnToCardWeekStart`.
+- Ölçüm olaylarının anları ve D7 tanımı: `plan.md` S9; rapor v2 şeması ve sapmaları yukarıda.

@@ -69,8 +69,8 @@ export function formatReportText(report: ReportV2): string {
     '',
     `Build: ${report.build} (${report.ch}), rapor no: ${report.seq}`,
     `Kurulumdan bu yana gün: ${report.day ?? 'bilinmiyor'}`,
-    `İlk 3 günde check-in (1 var, 0 yok, - gelmedi): ${report.d.d1d3 ?? 'bilinmiyor'}`,
-    `7. günde check-in: ${D7_TEXT[report.d.d7]}`,
+    `İlk 3 günde işaretleme (1 var, 0 yok, - gelmedi): ${report.d.d1d3 ?? 'bilinmiyor'}`,
+    `7. günde işaretleme: ${D7_TEXT[report.d.d7]}`,
     `Bildirim izni: ${PERM_TEXT[report.perm]}`,
     `Kart: ${report.cards.frozen} açıldı, ${report.cards.eligibleWeeks} hafta uygun` +
       (report.d.firstCardDay === null ? ' (kart henüz açılmadı)' : `, ilk kart ${report.d.firstCardDay}. günde`),

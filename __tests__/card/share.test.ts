@@ -35,10 +35,10 @@ afterEach(() => {
 describe('shareCard', () => {
   it('paylaşım kullanılabiliyorsa shareAsync\'i PNG mime type ve mesajla (dialogTitle) çağırır', async () => {
     const { Sharing } = mocks();
-    await shareCard('file:///fake/card.png', 'Haftalık karnem hazır!');
+    await shareCard('file:///fake/card.png', 'Haftalık kartım hazır!');
     expect(Sharing.shareAsync).toHaveBeenCalledWith(
       'file:///fake/card.png',
-      expect.objectContaining({ mimeType: 'image/png', dialogTitle: 'Haftalık karnem hazır!' })
+      expect.objectContaining({ mimeType: 'image/png', dialogTitle: 'Haftalık kartım hazır!' })
     );
   });
 

@@ -32,31 +32,31 @@ harcama, sosyallik" diye anılır. **Uyarı:** bu, mağaza metnini temizler ama 
 | Alan | Sınır | Metin | Sayı |
 |---|---|---|---|
 | Uygulama adı | 30 | `Haftik: Haftalık Emoji Kartı` | 28 |
-| Kısa açıklama | 80 | `Günde 8 sn emoji işaretle, Pazar 20:00'de paylaşılabilir haftalık kartını aç.` | 77 |
-| Güncelleme notu (ilk sürüm) | 500 | `İlk sürüm: günlük emoji check-in, Pazar 20:00'de açılan haftalık kart, paylaşmadan önce satır gizleme ve isteğe bağlı günlük hatırlatma.` | 136 |
+| Kısa açıklama | 80 | `Günde birkaç saniye emoji işaretle, Pazar 20:00'de haftalık kartını aç.` | 71 |
+| Güncelleme notu (ilk sürüm) | 500 | `İlk sürüm: günlük emoji işaretleme, Pazar 20:00'de açılan haftalık kart, paylaşmadan önce satır gizleme ve isteğe bağlı günlük hatırlatma.` | 138 |
 | Tam açıklama | 4000 | aşağıda | ≈1.450 (yaklaşık; komutla doğrula) |
 
 **Tam açıklama (Play; ilk 2 satır kanca):**
 
 ```
-Günde 8 saniye, haftada bir kart.
+Günde birkaç saniye, haftada bir kart.
 Dört emoji seç; Pazar akşamı Haftik haftana bir unvan ve dört esprili cümle yazsın.
 
 NASIL ÇALIŞIR
 1. Her gün dört küçük soruya emojiyle cevap ver: tempon, dinlenmen, harcaman, sosyalliğin. Tek ekran, tek Kaydet.
 2. Haftada en az 4 gün işaretlersen (ilk kartta 3 gün yeter) Pazar 20:00'de kartın açılır.
 3. Kart 9:16 bir görsel: bir unvan, dört esprili satır ve geçen haftayla küçük bir kıyas.
-4. İstersen paylaş. Paylaşmadan önce her satırı tek dokunuşla gizleyebilirsin; gizlediğin satır kartta "???" olur. İki satır varsayılan olarak gizli başlar.
+4. İstersen paylaş. Paylaşmadan önce her satırı tek dokunuşla gizleyebilirsin; gizlediğin satır (ve bazen unvan) kartta "???" olur. İki satır varsayılan olarak gizli başlar.
 
 VERİN TELEFONUNDA KALIR
-Hesap yok, kayıt yok, reklam yok. Verilerin yalnızca bu telefonda tutulur; telefon değiştirirsen taşınmaz.
+Hesap yok, üyelik yok, reklam yok. Verilerin yalnızca bu telefonda tutulur; telefon değiştirirsen taşınmaz.
 Ayarlardan tek dokunuşla tüm verilerini silebilirsin. Bildirimlerde cevapların değil, yalnızca sabit bir hatırlatma metni görünür.
 
 TAVSİYE YOK, YARGI YOK
 Haftik eğlence amaçlı, kısa bir haftalık özet sunar. Tavsiye vermez, yargılamaz, tıbbi bir değerlendirme yapmaz.
 
 KISACA
-• Günlük emoji check-in (yaklaşık 8 saniye)
+• Günlük emoji işaretleme (birkaç saniye)
 • Pazar 20:00'de açılan haftalık kart
 • Satır satır gizle/göster, paylaşmadan önce önizleme
 • İsteğe bağlı günlük hatırlatma (varsayılan 21:00, ayarlanabilir)
@@ -78,18 +78,18 @@ Notlar:
 
 | Alan | Sınır | Metin | Sayı |
 |---|---|---|---|
-| Ad | 30 | `Haftik: Emoji Check-in` | 22 |
+| Ad | 30 | `Haftik: Haftalık Emoji Kartı` | 28 |
 | Alt başlık | 30 | `Pazar akşamı haftalık kartın` | 28 |
-| Tanıtım metni (Promotional Text) | 170 | `Günde 8 saniye emoji işaretle, her Pazar 20:00'de haftana ait esprili bir kart aç ve istersen paylaş. Hesap yok, veri telefonunda.` | 130 |
-| Anahtar kelimeler | 100 | `hafta,özet,unvan,esprili,paylaş,sosyal,günlük,eğlence,hatırlatıcı,rutin,ritüel,karne,emojiler,mizah` | 99 |
+| Tanıtım metni (Promotional Text) | 170 | `Günde birkaç saniye emoji işaretle, her Pazar 20:00'de haftana ait esprili bir kart aç ve istersen paylaş. Hesap yok, veri telefonunda.` | 135 |
+| Anahtar kelimeler | 100 | `hafta,özet,unvan,esprili,paylaş,sosyal,günlük,eğlence,hatırlatıcı,rutin,ritüel,kart,emojiler,mizah` | 98 |
 | Açıklama | 4000 | Play tam açıklaması, **birebir aynı** (metinde platform adı yok) | ≈1.450 |
 | Destek URL'si | zorunlu | `[destek URL'si]` (iletişim: `[iletişim e-postası]`) | — |
 | Pazarlama URL'si | isteğe bağlı | `[pazarlama URL'si]` | — |
 | Gizlilik politikası URL'si | zorunlu | `[gizlilik politikası URL'si]` | — |
 
 Anahtar kelime notları: virgülden sonra boşluk yok (Apple boşluk karakterini de sayar); ürün adı "Haftik" tekrarlanmadı; ad ve alt
-başlıktaki sözcükler (emoji, check-in, pazar, akşamı, haftalık, kartın) tekrar edilmedi; marka adı, "uyku/sağlık/takip" yok. Play'in
-4000 sınırı Apple ile aynı; Apple açıklamasında sürüm notu ayrıca girilir (aynı 136 karakterlik metin kullanılabilir).
+başlıktaki sözcükler (emoji, haftalık, kartı) tekrar edilmedi; marka adı, "uyku/sağlık/takip" yok. Play'in
+4000 sınırı Apple ile aynı; Apple açıklamasında sürüm notu ayrıca girilir (aynı 138 karakterlik metin kullanılabilir).
 
 ## 2. Kategori, derecelendirme, hedef kitle
 
@@ -179,7 +179,7 @@ App Store ekran görüntüsü yalnızca S11 (Apple üyeliği + iPhone/simülatö
 | # | Ekran (kaynak) | Overlay cümlesi (kısa, iddiasız) | Demo veri / senaryo |
 |---|---|---|---|
 | 1 | **Kart** (`CardView`, paylaşılan hâl: uyku+harcama `???`) | "Pazar akşamı haftan tek kartta." | Pazar 20:00 sonrası; 5-6 dolu gün; hareket+sosyal yüksek; kart açılmış, damga görünür |
-| 2 | **Bugün** check-in (Ekran 2) | "Günde 8 saniye. Dört emoji, bir Kaydet." | Bugünün tarihi; dört emoji seçili, Kaydet aktif. **Etiketlerde "Uyku" yazar** (uygulama içi metin, bkz. bölüm 5 uyarısı) |
+| 2 | **Bugün** check-in (Ekran 2) | "Günde birkaç saniye. Dört emoji, bir Kaydet." | Bugünün tarihi; dört emoji seçili, Kaydet aktif. **Etiketlerde "Uyku" yazar** (uygulama içi metin, bkz. bölüm 5 uyarısı) |
 | 3 | **Hafta durumu + kilitli kart** (Ekran 3) | "Pazar 20:00'de kartın açılır." | Çarşamba/Perşembe simülasyonu; 3 dolu nokta; "Kartın için 1 gün daha lazım" |
 | 4 | **Paylaşım önizlemesi** (Ekran 5) | "Paylaşmadan önce karar sen ver." | İki satır `???`, iki satır açık; göz ikonları görünür |
 | 5 | **Onboarding gizlilik** (1b) veya Ayarlar "Tüm verilerimi sil" | "Veri yalnızca bu telefonda kalır." | Temiz ekran; ifade S10 doğrulamalarından (G-01/G-02) sonra mağazaya girer |
@@ -211,7 +211,7 @@ Alt metin (erişilebilirlik) örneği kare 1: "Haftik haftalık kartı: bir unva
 - **Play mağaza ikonu:** 512x512, 32-bit PNG, ≤1024 KB; köşe yuvarlama/gölge **ekleme** (Play uygular), sıralama/ücret/kategori rozeti yok.
   **iOS ikonu:** 1024x1024, alfa yok, köşe yuvarlama yok (S11).
 - Emoji-tarzı ama telifsiz: elle çizim vektör (Figma/Inkscape), Apple emojisi kullanma; açık lisanslı kaynak kullanılırsa lisans doğrulanır.
-- Uygulama adı ile uyum: ikon "Haftik" harf işareti veya kart silueti; "Karne", marka adı, başka uygulamaya benzeyen form yok.
+- Uygulama adı ile uyum: ikon "Haftik" harf işareti veya kart silueti; eski çalışma adı, marka adı, başka uygulamaya benzeyen form yok.
 
 ## 4. Launch / dağıtım planı (kapalı deneme, Android)
 
@@ -265,14 +265,14 @@ Paylaşılan iç cümle: "Bu haftanın unvanı: [unvan]."
 
 **1. Davet (G-3..G0)**
 ```
-Selam! Küçük bir uygulama yaptım, adı Haftik. Günde 8 saniye emoji işaretliyorsun, Pazar 20:00'de haftana bir unvan ve esprili
+Selam! Küçük bir uygulama yaptım, adı Haftik. Günde birkaç saniye emoji işaretliyorsun, Pazar 20:00'de haftana bir unvan ve esprili
 cümleler çıkıyor. 2 haftalık denemeye 20-30 kişi arıyorum, sen de olur musun? Hesap yok, veri sadece telefonunda kalıyor.
 Olursa Play Store'da kullandığın Gmail adresini yaz, test bağlantısını göndereyim (adresi sadece davet için kullanırım, sonra silerim).
 ```
 **2. Kurulum (G1)**
 ```
 Test bağlantısı: [mağaza bağlantısı]. Açıp "test kullanıcısı ol"a dokun, kur. İlk açılışta bildirim iznini ver (akşam 21:00 hatırlatma
-gelir, ayarlardan kapatabilirsin). Bugünü işaretle, 8 saniye sürer.
+gelir, ayarlardan kapatabilirsin). Bugünü işaretle, birkaç saniye sürer.
 ```
 **3. Hatırlatma (G4, yalnızca işaretlemeyenlere)**
 ```

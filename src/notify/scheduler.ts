@@ -13,7 +13,7 @@
  */
 import { Platform } from 'react-native';
 
-import { NOTIFICATION_TEXTS, type NotificationKind } from '@/domain/content/notification-texts';
+import { getNotificationText, type NotificationKind } from '@/domain/content/notification-texts';
 import type { PlannedNotification } from '@/domain/notify-plan';
 
 export type PermissionStatus = 'granted' | 'denied' | 'undetermined';
@@ -187,7 +187,7 @@ export function createScheduler(deps: {
         let scheduled = 0;
         let failed = 0;
         for (const item of plan) {
-          const text = NOTIFICATION_TEXTS[item.kind];
+          const text = getNotificationText(item.kind, item.fireAt);
           try {
             await notifications.scheduleNotificationAsync({
               identifier: item.id,

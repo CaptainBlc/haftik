@@ -3,9 +3,12 @@
 > Genel (projeden bağımsız) çalışma kuralları için: `~/.claude/CLAUDE.md`
 > Kaynak belgeler: `intent/2026-09-20-haftalik-hayat-karti.md`, `spec.md`, `plan.md`,
 > tek yol haritası `docs/inceleme-2026-09-25/29-yol-haritasi.md`, kararlar `docs/kararlar/`.
-> Bu dosya 2026-10-01'de ayıklandı (750 → ~230 satır); hiçbir kayıt silinmedi, konu
-> dosyalarına (`docs/muhendislik/`) veya arşive (`docs/muhendislik/tuzak-arsivi.md`)
-> taşındı. Taşıma kararı: `docs/inceleme-2026-09-25/28-muhendislik-standartlari-v2.md` §3.
+> **Açık işler (canlı liste): `docs/acik-isler.md`. Dilim günlüğü: `docs/muhendislik/
+> uygulama-gunlugu.md`.** Bu dosya iki kez ayıklandı (2026-10-01: 750 → 249; 2026-10-02:
+> 290 → ~200); hiçbir kayıt silinmedi, ayrıntı `docs/muhendislik/`, geçersizleşenler
+> `tuzak-arsivi.md`'de. Kural: **CLAUDE.md yalnızca aktif kuralı taşır; "ne zaman ne
+> yapıldı" günlüğe, "ne açık" `acik-isler.md`'ye gider.** (Karar: `28-muhendislik-
+> standartlari-v2.md` §3.)
 
 ## Ürün özeti
 
@@ -18,22 +21,21 @@ yalnızca cihazda. Yığın: Expo (React Native) + TypeScript + expo-sqlite.
 - Uygulama adı: **Haftik** (`src/config/constants.ts` `APP_DISPLAY_NAME`, kart damgası
   bundan türer). Paket: `com.batuhan.haftik` (Android+iOS, tek yönlü kapı —
   Play/App Store'a ilk yüklemeden sonra değiştirilemez).
-- iOS **koşullu değil artık**: Apple Developer Program hesabı Batuhan tarafından
-  açılıyor, iOS Android ile paralel ilerliyor (`docs/kararlar/2026-10-01-kapsam-ios-
-  dagitim.md`).
+- iOS Android ile paralel ilerliyor (`docs/kararlar/2026-10-01-kapsam-ios-dagitim.md`).
 
 ## Commands
 
 - Kurulum: `npm ci` (lockfile'a sadık; `npm install` yalnızca bağımlılık değiştirirken)
 - Çalıştır: `npx expo start` (Android: `npm run android`, iOS: `npm run ios`)
 - Doğrulama (tek komut): `npm run verify` (typecheck + lint + test; pre-commit hook da
-  bunu çalıştırır, ~8,5 sn)
-- Test: `npm test` (TZ `cross-env` ile Europe/Istanbul sabit; `jest.setup.ts` ikinci
-  güvence)
-- Lint / tip: `npm run lint`, `npm run typecheck`
-- Sağlık: `npx expo-doctor` (beklenen: 21/21 yeşil; sapma varsa `npx expo install --fix`)
-- Build: `eas build -p android --profile preview` (APK) / `--profile production` (AAB) /
-  `-p ios` (TestFlight). Hesap/kimlik bilgisi yalnızca Batuhan.
+  bunu çalıştırır). Ayrı: `npm test` (TZ `cross-env` ile Europe/Istanbul sabit),
+  `npm run lint`, `npm run typecheck`, `npx expo-doctor` (sapma: `npx expo install --fix`).
+- Build (bulut): `eas build -p android --profile preview` (APK) / `--profile production`
+  (AAB) / `-p ios` (TestFlight). Hesap/kimlik bilgisi yalnızca Batuhan.
+- Build (yerel release APK, ~2 dk, EAS kotası harcamaz): `npx expo prebuild --platform
+  android --no-install`, sonra `android/` içinde `ANDROID_HOME=… ./gradlew assembleRelease
+  -PreactNativeArchitectures=x86_64`; izin kontrolü `node scripts/check-apk-permissions.js
+  <apk> <aapt2>`. Ayrıntı ve tuzaklar: `docs/muhendislik/arac-zinciri.md`.
 - Üretim paketi kontrolü: `npx expo export --platform android` sonra çıktıda
   `dev-time-menu` ve `currentWeekSunday2000` için grep: 0 eşleşme beklenir.
 
@@ -42,225 +44,124 @@ yalnızca cihazda. Yığın: Expo (React Native) + TypeScript + expo-sqlite.
 > Her kural mümkünse onu uygulayan araçla birlikte yazılır. "(mekanik: X)" yoksa kural
 > henüz insan hafızasına bağlıdır.
 
-### Dil ve adlandırma
-- Tanımlayıcılar İngilizce; yorum, UI metni ve belge Türkçe (UTF-8).
-- Dosya adı kebab-case. Tarihsel istisnalar (yeniden adlandırılmaz): `src/card/CardView.tsx`,
-  `src/card/CardRevealView.tsx`, `src/domain/buildCard.ts`.
-- Import: dizinler arası `@/…`; aynı dizin içi `./…`.
-- Hook, sarmaladığı modülün yanında yaşar (`useNow` → `lib/now`, `useOnboardingGate` →
-  `lib/onboarding-gate`). `src/hooks/` yalnızca tema ve ekran geometrisi içindir.
-- Kullanıcıya dönük her yüzeyde "Kart" (bkz. Ürün özeti); yeni metin/dosya "karne"
-  kullanmamalı (mekanik: R-12, `npm run verify` kapsamında — henüz eklenmedi, S16a işi).
+**Dil ve adlandırma:** tanımlayıcılar İngilizce; yorum, UI metni ve belge Türkçe (UTF-8).
+Dosya adı kebab-case (tarihsel istisnalar: `src/card/CardView.tsx`, `CardRevealView.tsx`,
+`src/domain/buildCard.ts`). Dizinler arası `@/…`, aynı dizin `./…`. Hook sarmaladığı modülün
+yanında yaşar (`useNow` → `lib/now`, `useNotificationRouting` → `notify/notification-routing`);
+`src/hooks/` yalnızca tema ve ekran geometrisi. Kullanıcıya dönük her yüzeyde "Kart", yeni
+metin/dosya "karne" kullanmaz (mekanik: R-12 — henüz eklenmedi, S16a işi).
 
-### Katmanlar ve bağımlılık yönü
-- `src/domain`: saf TS. Yalnızca domain içinden import eder; react, react-native,
-  expo-*, `node:*` yok. Saat her zaman `now: Date` parametresiyle gelir.
-- `src/data`: yalnızca SQL (`SqlDriver`) + domain tipleri. UI, dosya sistemi ve bildirim
-  bilmez (tek istisna, borç: `data/delete-all.ts`).
-- `src/card`, `src/notify`, `src/metrics`: özellik modülleri; data + domain + lib kullanır.
-- `src/components`: sunumdur; `src/data`'yı doğrudan import etmez (veri prop ile gelir).
-- `src/app`: rota ve orkestrasyon.
-- `src/dev`: yalnızca `src/app/_layout.tsx`'ten `if (__DEV__) require(...)` ile yüklenir;
-  statik import yasak.
-- `node:*` modülleri `src/` altında yasak (ayrıntı: `docs/muhendislik/veri-ve-migration.md`).
+**Katmanlar** (yön: app → components/özellik modülleri → lib → data → domain):
+- `src/domain`: saf TS; react/expo/`node:*` yok; saat `now: Date` parametresiyle gelir.
+- `src/data`: yalnızca SQL (`SqlDriver`) + domain tipleri (tek istisna, borç: `delete-all.ts`
+  dosya süpürmesini çağırır). `node:*` `src/` altında yasak (`veri-ve-migration.md`).
+- `src/card`, `src/notify`, `src/metrics`: özellik modülleri. `src/components`: sunum, `data`'yı
+  import etmez. `src/app`: rota ve orkestrasyon. `src/dev`: yalnızca `_layout.tsx`'ten
+  `if (__DEV__) require(...)`; statik import yasak.
+- `expo-notifications` yalnızca `notify/scheduler.ts`'te (tembel `require`); domain/data import
+  edemez (mekanik: `__tests__/notify/no-push.test.ts`).
 
-### Zaman ve tarih
-- UI "şimdi"yi yalnızca `useNow()` (render) veya `getNow()` (olay/işleyici) ile alır;
-  `new Date()`/`Date.now()` yalnızca `lib/now.ts` ve `data/*-repo.ts` damgalarında.
-- Gün kimliği yerel `YYYY-MM-DD`: yalnızca `domain/week.ts`. `toISOString().slice(0,10)`
-  yasak.
-- Eşikler ve ortalamalar tam kesirle yazılır (`5/3`, `7/3`), literal ondalıkla değil;
-  delta karşılaştırması `EPSILON = 1e-9` ile (`domain/delta.ts`).
-- Uygunluk kuralının tek kaynağı `domain/week.ts` `getWeekState` (3/4 gün + Pazar 20:00).
+**Zaman ve tarih:** UI "şimdi"yi yalnızca `useNow()` (render) / `getNow()` (olay) ile alır;
+`new Date()`/`Date.now()` yalnızca `lib/now.ts` ve `data/*-repo.ts` damgalarında. Gün kimliği
+yerel `YYYY-MM-DD`, yalnızca `domain/week.ts` (`toISOString().slice(0,10)` yasak). Eşikler tam
+kesirle (`5/3`, `7/3`), delta `EPSILON = 1e-9`. Uygunluğun tek kaynağı `getWeekState` (3/4 gün +
+Pazar 20:00); eşik check-in geçmişinden türer, kartın varlığından DEĞİL (monotonluk, S15).
 
-### Veri
-- Repo fonksiyonları async imzalıdır, sürücü senkrondur.
-- Yazma: checkin/setting upsert (`ON CONFLICT`); `weekly_card` dondurulur, tekrar yazma
-  no-op.
-- Şema değişikliği yalnızca yeni numaralı migration ile (ayrıntı: `docs/muhendislik/
-  veri-ve-migration.md`).
+**Veri:** repo fonksiyonları async, sürücü senkron. checkin/setting upsert (`ON CONFLICT`);
+`weekly_card` dondurulur, tekrar yazma no-op. Şema değişikliği yalnızca yeni numaralı
+migration ile; yeni kalıcı tablo `delete-all.ts` listesine de girer (mekanik:
+`delete-all.schema-contract.test.ts`). Ayrıntı: `veri-ve-migration.md`.
 
-### Hata ve yan etki
-- Birincil veri yazımı (check-in, kart) hata fırlatır; UI gösterir.
-- Yan etkiler (bildirim planı, ölçüm, geçici dosya temizliği) en iyi çaba: hata yutulur,
-  akış bozulmaz. Log en fazla sabit metinli `console.warn`; veri/hata nesnesi loglanmaz.
-- Çift dokunuş koruması senkron olmalı (`useRef` bayrağı).
+**Hata ve yan etki:** birincil yazım (check-in, kart) hata fırlatır, UI Alert gösterir; ekran
+verisi okuma hatası `LoadErrorView` + "Tekrar dene" (sonsuz yükleme yok). Yan etkiler (bildirim
+planı, ölçüm, dosya temizliği) en iyi çaba: hata yutulur. Log en fazla sabit metinli
+`console.warn`, veri/hata nesnesi loglanmaz. Çift dokunuş koruması senkron (`useRef` bayrağı).
 
-### Dış girdi (deep link, bildirim verisi, paylaşım dönüşü)
-- Her rota parametresi kullanılmadan önce `lib/week-param.ts` ile doğrulanır.
-- Güven sınırındaki fonksiyon çağıranın kontrol ettiğine güvenmez.
-- `(main)` altındaki her ekran onboarding kapısının arkasındadır (`lib/onboarding-gate`).
+**Dış girdi:** her rota parametresi `lib/week-param.ts` ile doğrulanır; bildirim `data` yükü de
+dış girdidir (yalnızca `resolveNotificationRoute` yorumlar); güven sınırındaki fonksiyon
+çağıranın kontrolüne güvenmez; `(main)` altındaki her ekran onboarding kapısının arkasındadır.
 
-### Silme ve temizlik
-- Ayrıntı: `docs/muhendislik/veri-ve-migration.md` "Silme ve temizlik".
+**Silme ve temizlik:** paylaşım dosyaları yalnızca `cache/haftik-share/` altında, kimliksiz sabit
+adla; paylaşım sonrası SİLİNMEZ, yaşa göre süpürülür (`src/card/share-dir.ts`). Ayrıntı:
+`veri-ve-migration.md`, `kart-render.md`.
 
-### UI düzeni
-- Yeni ekran üst dolguyu `useTopInset()` (`src/hooks/use-top-inset.ts`) ile alır; kart
-  ekranı `SafeAreaView` kullanır.
-- Hedef 411x914dp'de tek ekrana sığma (mekanik: `checkin-single-screen-fit.test.tsx`).
-- Kart ölçü bütçesi: `docs/muhendislik/kart-render.md`.
-- Renk sabitleri `constants/theme.ts`'te (istisna: kart paleti, dev menüsü).
+**UI düzeni:** yeni ekran üst dolguyu `useTopInset()` ile alır (kart ekranı `SafeAreaView`);
+411x914dp'de tek ekrana sığma (mekanik: `checkin-single-screen-fit.test.tsx`); dokunma hedefi
+>= 48 dp; animasyon "animasyonları kaldır" ayarına uyar. Renkler `constants/theme.ts`'te
+(istisna: kart paleti, dev menüsü); uygulama açık temaya kilitli (A11). Kart ölçü bütçesi:
+`kart-render.md`.
 
-### Test
-- Yerleşim: `__tests__/<src-dizini>/<modül>[.<senaryo>].test.ts(x)`.
-- Veri katmanı gerçek SQLite ile test edilir (`setupTestDb`). Platform modülleri
-  paylaşılan sahtelerle (`__tests__/helpers/fake-*.ts`) taklit edilir.
-- Ortam yüzünden koşamayan test `it.skip` ile görünür atlanır, `// SKIP:` gerekçesiyle.
+**Test:** `__tests__/<src-dizini>/<modül>[.<senaryo>].test.ts(x)`. Veri katmanı gerçek SQLite ile
+(`setupTestDb`), platform modülleri paylaşılan sahtelerle (`__tests__/helpers/fake-*.ts`).
+Koşamayan test `it.skip` + `// SKIP:` gerekçesiyle. Onaylı davranış değişikliği eski bir testi
+kırarsa o test yeniden yazılır, gerekçe yorumda (sessiz gevşetme yok).
 
-### Bağımlılık ve eslint-disable
-- Ayrıntı: `docs/muhendislik/arac-zinciri.md`.
-- Her `eslint-disable` tek satırlıktır (`-next-line`) ve `-- gerekçe` taşır.
+**Bağımlılık ve lint:** yeni bağımlılıkta "ağa veri gönderiyor mu" kontrolü yapılır ve belgeye
+yazılır (`arac-zinciri.md`). Her `eslint-disable` tek satırlık (`-next-line`) ve gerekçeli.
+Config plugin'leri `plugins/` altında; izin politikasının tek kaynağı
+`plugins/permission-policy.js` (mekanik: `__tests__/plugins/`).
 
-### Kanıt raporlama
-- Her "çalışıyor" iddiası K seviyesiyle yazılır (`~/.claude/team/ortak-standartlar.md`
-  §2). K4/K5 kanıt belgesi başlığında commit SHA'sı yazar.
+**Kanıt raporlama:** her "çalışıyor" iddiası K seviyesiyle yazılır (`~/.claude/team/
+ortak-standartlar.md` §2); K4/K5 kanıt belgesi başlığında commit SHA'sı yazar.
 
 ## Mimari
 
-Tek mobil uygulama; sunucu/hesap/ağ yok (spec "Mimari genel bakış").
+Tek mobil uygulama; sunucu/hesap/ağ yok (spec "Mimari genel bakış"). Bilinçli sapmalar listesi:
+`veri-ve-migration.md` "Mimari: bilinçli sapmalar".
 
 ```
 src/app/            expo-router rotaları: index (kapı), onboarding/*, (main)/{today,week,settings}, card/[weekStart]
-src/domain/         saf TS: week, score, delta, titles, copy, buildCard, notify-plan, metrics-calc, content/*
+src/domain/         saf TS: week, score, delta, titles, copy, buildCard, notify-plan, metrics-calc, report-v2, content/*
 src/data/           SQLite: db (SqlDriver), migrations, *-repo, init, delete-all
-src/card/           kart özelliği: CardView/CardRevealView (UI), open-card (akış), capture/share/temp-cleanup (OS)
-src/notify/         scheduler (expo-notifications adaptörü), sync (kuyruk), wiring (repo + scheduler bağlama)
-src/metrics/        olay kancaları, deneme raporu, rapor dosyası
-src/lib/            saf görünüm yardımcıları + now (zaman kaynağı) + onboarding-gate
-src/components/     sunum bileşenleri
-src/dev/            yalnızca __DEV__ zaman simülasyonu
+src/card/           kart: CardView/CardRevealView (UI), open-card (akış), capture/share/share-dir/temp-cleanup (OS)
+src/notify/         scheduler (expo-notifications adaptörü), sync (kuyruk), wiring, notification-routing
+src/metrics/        olay kancaları, deneme raporu (v2 + önizleme), rapor dosyası
+src/lib/            saf görünüm yardımcıları + now + onboarding-gate + build-info
+src/components/     sunum bileşenleri;  src/dev/ yalnızca __DEV__ zaman simülasyonu
 src/config, src/constants   ad/URL yer tutucuları; tema, emoji ve etiketler
+plugins/ + scripts/ config plugin'leri ve APK izin kontrolü; app.json + app.config.js (commit
+gömme) + react-native.config.js (reanimated native dışlama) + eas.json
 ```
-
-Bilinçli sapmalar (ayrıntı `plan.md` "Uygulama notu" ve ilgili `docs/muhendislik/*`
-dosyası; hepsi belgelidir):
-- `buildCard` 5. isteğe bağlı parametre `prevVariants` (S3; S7a'da wiring tamamlandı).
-- `weekly_card`: `title_based_on_categories` + `summary_id` sütunları (S5, round-trip
-  için) — `docs/muhendislik/veri-ve-migration.md`.
-- `captureCardPng(ref)` imzası (view-shot yalnızca render edilmiş View yakalar) —
-  `docs/muhendislik/kart-render.md`.
-- Unvan ayrı gizlenmez; dayandığı kategori gizliyse `???` olur (S7b; S21'de paylaşım
-  unvanıyla genişleyecek) — `docs/muhendislik/kart-render.md`.
-- Tabs (NativeTabs değil); emoji sekme ikonları (S6).
-- Kart açılışında K3 akışı: `open-card` → `needsTodayCheckin` → `today?returnToCardWeekStart`.
-- Ölçüm olaylarının anları ve D7 tanımı: `plan.md` S9; şema genişletmesi
-  `docs/muhendislik/veri-ve-migration.md`.
 
 ## Konuya göre oku
 
 | Dokunduğun şey | Oku |
 |---|---|
-| Node/Expo sürümü, lint/test kurulumu, CI, pre-commit, bağımlılık | `docs/muhendislik/arac-zinciri.md` |
-| Bildirim, izin (Android 13+, D2D, INTERNET), Doze/exact alarm | `docs/muhendislik/bildirim-ve-izin.md` |
-| Kart bileşenleri, view-shot, font, PNG, C yönü render sözleşmesi | `docs/muhendislik/kart-render.md` |
-| Şema/migration, `node:sqlite`, silme akışı, ölçüm tabloları | `docs/muhendislik/veri-ve-migration.md` |
-| "Neden böyle yaptık" (artık geçersiz/tek seferlik kararlar) | `docs/muhendislik/tuzak-arsivi.md` |
-| Genel yol haritası, hangi dilimde ne var | `docs/inceleme-2026-09-25/29-yol-haritasi.md` |
-| Batuhan'ın onayladığı kararların kaydı | `docs/kararlar/` |
+| Node/Expo sürümü, lint/test kurulumu, CI, bağımlılık, release/R8 derlemesi, emülatör/adb | `docs/muhendislik/arac-zinciri.md` |
+| Bildirim, izin (Android 13+, D2D, INTERNET), Doze, kanal, tıklama yönlendirmesi, izin plugin'i | `docs/muhendislik/bildirim-ve-izin.md` |
+| Kart bileşenleri, view-shot, font, PNG, paylaşım dosyası, C yönü render sözleşmesi | `docs/muhendislik/kart-render.md` |
+| Şema/migration, `node:sqlite`, silme, ölçüm tabloları, deneme raporu v2, sürüm satırı | `docs/muhendislik/veri-ve-migration.md` |
+| Ne açık, ne bekliyor, hangi cihaz kanıtı eksik | `docs/acik-isler.md` |
+| Hangi dilimde ne yapıldı, K kanıtları (günlük) | `docs/muhendislik/uygulama-gunlugu.md` |
+| "Neden böyle yaptık" (artık geçersiz kararlar) | `docs/muhendislik/tuzak-arsivi.md` |
+| Yol haritası; onaylı kararlar | `docs/inceleme-2026-09-25/29-yol-haritasi.md`; `docs/kararlar/` |
 
 ## Bilinen tuzaklar
 
-Yalnızca **aktif ve araçla henüz yakalanmayan** tuzaklar; `(tarih, sınıf)` etiketiyle,
-≤4 satır. Ayrıntı için yukarıdaki tablodan ilgili konu dosyasına bakın.
+Yalnızca **aktif ve araçla henüz yakalanmayan** tuzaklar; tek satır `(tarih, sınıf) kural →
+ayrıntı`. Geçersizleşenler `tuzak-arsivi.md`'ye taşınır.
 
-- (2026-09-24, S1-mock) Android 13+ hiç sorulmamış bildirim izni `denied+canAskAgain:true`
-  döner, `undetermined` dönmez (sınıf 1'in referans örneği). → `bildirim-ve-izin.md`.
-- (2026-09-23, S1-mock) `expo-file-system` SDK 57: eski fonksiyonlar yalnızca
-  `/legacy`'de; yeni `File`/`Directory` API'siyle karıştırma.
-- (2026-09-23, S1-mock) `expo-sharing` `dialogTitle` hedef uygulamaya mesaj olarak
-  **taşınmaz** (iOS'ta hiç kullanılmaz).
-- (2026-09-23, S2-zaman) Jest'te çalışma zamanında `process.env.TZ` değiştirmek
-  etkisizdir; TZ yalnızca süreç başlarken (`cross-env`) belirlenir.
-- (2026-09-23, S2-zaman) Android 12+ exact alarm izni yok: hatırlatma birkaç dakika
-  gecikebilir (emülatörde ~82 sn). → `bildirim-ve-izin.md`.
-- (2026-09-24, S2-zaman) Uygulama açıkken gün/hafta/Pazar 20:00 dönümü: `useNow`
-  zamanlayıcı + `AppState`; yeni ekran "şimdi"yi kendisi hesaplamaz.
-- (2026-09-24, S3-düzen) Android edge-to-edge: durum çubuğu altındaki dokunuşlar
-  sisteme gider → `useTopInset`.
-- (2026-09-24, S3-düzen) `numberOfLines` kapsayıcıyı büyütmez; sabit piksel bölümlere
-  2. satır sığmaz. → `kart-render.md`.
-- (2026-09-24, S3-düzen) Genişliğe bağlı `aspectRatio` yükseklik bütçesini patlatır
-  (411x914 kuralı).
-- (2026-09-23, S4-dış girdi) `haftik://` şeması dışarıdan tetiklenebilir; `card/` rotası
-  `(main)` kapısının dışındadır.
-- (2026-09-23, S5-temizlik) view-shot PNG'si iOS'ta `NSTemporaryDirectory` altına
-  yazar; süpürme yalnızca Android'de (iOS yola girdi, bu artık aktif açık uç).
-- (2026-09-23, S6-eşzamanlı) `trackEventOnce` atomik değildir (kabul edilmiş); bildirim
-  senkronu ve silme tek kuyrukta.
-- (2026-09-22, S7-araç) Varsayılan `@types/jest`/`react-test-renderer` sürümleri SDK ile
-  uyuşmaz; tam sürüm tutulur (artık `package.json`'da, bkz. `arac-zinciri.md`).
-- (2026-09-23, S7-araç) Jest varsayılan `testMatch`'i `__tests__` altındaki her `.ts`
-  dosyasını suite sayar → `helpers/` hariç.
-- (2026-09-23, test) `react-test-renderer`: `Animated` başlatan ağaç unmount
-  edilmezse Jest süreci teardown sonrası çöker. → `arac-zinciri.md`.
-- (2026-09-23, test) `TestInstance`'ta `.toJSON()` yok; alt ağaç metni için
-  `findAllByType(Text)`.
-- (2026-09-23, araç) `site/` içine `.ts`/`.js` koyma: tsconfig `**/*.ts` include'u onu
-  da derler.
-- (2026-09-22, araç) React Compiler lint kuralları (refs, set-state-in-effect) RN
-  `Animated` desenlerinde yanlış pozitif verir; önce kodla çöz, disable son çare.
-
-## Açık kararlar ve cihaz maddeleri
-
-**Uygulandı (tarihiyle, kod/test var):** Node ≥24 + ölü kod/web yığını temizliği, CI/
-dependabot/pre-commit, CLAUDE.md ayıklaması (hepsi 2026-10-01, S13) · migration atomikliği T7 +
-ölçüm şeması `metric_counter` v3 (A10) + N-7 not (A9) + kök ErrorBoundary (Ç29) (2026-10-01, S14)
-· **S15 Yollar ve bildirim TAMAMLANDI** (2026-10-01): T1 Kritik-1 eşik kuralı B + monotonluk testi
-(A8) + Pazar'da çift bildirim düzeltmesi (A13); T2 kaçırılan hafta yolu (`findOpenableWeeks` + Hafta
-banner'ı); T3 bildirim tıklaması yönlendirmesi (sabit rota tablosu, soğuk/sıcak açılış); A12 iki
-bildirim kanalı tanımı (sesli, DEFAULT önem); V-03 izin diyaloğu geri tuşu düzeltmesi; 22 §4.4
-teslim edilmiş bildirimleri kaldırma. Ayrıntı ve iki React hooks lint tuzağı (sonsuz render,
-render-sırasında ref yazımı): `docs/muhendislik/bildirim-ve-izin.md`. Kararlar:
-`docs/kararlar/2026-09-30-taban-oncesi-kararlar.md` (A13) ve `2026-10-01-taban-oncesi-kararlar-b.md`
-(A8, A12). `now` zorunlu kılma (TB-10) S14/S15 T1/S15 T3 boyunca üç kez bilerek ERTELENDİ (hiçbiri
-gerektirmedi; sıradaki `open-card.ts` dokunuşunda ele alınabilir). K4 (sıcak/soğuk açılış emülatör
-kanıtı) bu ortamda YOK. `npm run verify`: 77 suite / 924 test yeşil, 3 atlandı.
-· **S16b TAMAMLANDI** (2026-10-02): T6 açık tema kilidi (A11); güvenli silme (VACUUM +
-wal_checkpoint, secure_delete); silme/kayıt/yükleme hatası geri bildirimi (Silinemedi,
-Kaydedilemedi, LoadErrorView); A11Y-01..06 + 15; paylaşım dosyası adanmış haftik-share/ dizininde
-sabit tarihsiz Haftik-kart.png, paylaşım sonrası SİLİNMEZ (04 #4), yaşa göre süpürme + silmede dizin
-komple; sürüm satırı (Ayarlar, build/kanal/commit/şema); rapor v2 + tam metin önizleme (Modal) +
-seq. Ayrıntı: docs/muhendislik/{kart-render,veri-ve-migration}.md. K4-rel (R8li release, emülatör):
-sürüm satırı, rapor önizleme/paylaşım seçici, kart PNG 1080x1920 (metadata yok), saat atlamasıyla
-yaşa göre süpürme, silmede dizin gitti. KALAN: K5 başarılı paylaşım hedefi (WhatsApp), koyu moddaki
-cihazda 3 ekran (K4), 6 Önemli A11Y bulgusunun yeniden ölçümü, rapor v2 eksik alanlar (S19+
-olayları) ve v2 birleştirme betiği. Batuhan onayı bekleyen yeni metinler (copywriter): Silinemedi /
-Kaydedilemedi / Yüklenemedi + Tekrar dene, rapor önizleme girişi.
-· **S17 Platform yapılandırması** (2026-10-02): `plugins/` altında 3 config plugin (`permission-policy`
-tek kaynak + `with-permission-policy` + `with-data-extraction-rules`), `scripts/check-apk-permissions.js`.
-Release APK izinleri altın listeyle birebir (INTERNET release'ten kalktı, debug/Metro'da duruyor), süreçte
-`inet` gid'i yok (mekanik kanıt; kontrol APK'da var), `dataExtractionRules` APK'da, A12 kanalları cihazda
-doğrulandı. Ayrıntı: `docs/muhendislik/bildirim-ve-izin.md`. **Kalan (cihaz):** D2D test modu (`bmgr`),
-OEM aktarım (K5), 0.1.0'da PCAPdroid. Yerel release derlemesi: `android/` içinde `ANDROID_HOME=
-C:\Users\Pc\AppData\Local\Android\Sdk ./gradlew assembleRelease -PreactNativeArchitectures=x86_64` (~2 dk).
-· **S18 Boyut/R8** (2026-10-02): R8 + kaynak küçültme `expo-build-properties` ile açık (ilk denemede çalıştı, ek
-keep kuralı gerekmedi), `react-native-reanimated` package.json'dan çıkarıldı VE `react-native.config.js` ile native
-derlemeden dışlandı (npm peer'i zaten kuruyordu). Release x86_64 APK 44,48 -> **31,98 MB**; izinler hâlâ altın liste.
-K4-rel (R-1..R-8, R-21/22, R-24): açılış, check-in, bildirim planı, reboot ve güncelleme (R8'siz->R8'li dahil)
-sonrası alarmlar korundu, Pazar kart akışı + paylaşım seçicisi + rapor + silme çalıştı, hata satırı 0. Ayrıntı ve
-yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `docs/muhendislik/arac-zinciri.md`.
-`mapping.txt` her release'te saklanmalı (`C:\dev\haftik-artifacts\`, repo dışı); EAS `buildArtifactPaths` doğrulanmadı.
-`npm run verify`: 79 suite / 944 test yeşil.
-
-**Batuhan'ın onayladığı, henüz uygulanmamış kararlar** (Karar A 18/18 ve Karar B 14/14
-tamam — tam liste ve gerekçe `docs/kararlar/`): seviye kelimeleri +
-içerik paketi (A14/A15) · Ayarlar'daki ayrı "Kart hazır" anahtarı (A12'nin UI tarafı, S23) ·
-paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı) ·
-seviye/font/ikon/haptik/K3-banner/Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23) · 6 kişilik
-P0 görsel test oturumu (B12, S19'dan önce) · Maestro kurulumu (B14, çekirdek kapısında).
-
-**Hâlâ Batuhan'a kalan (henüz karar listesine girmedi):** N-9 uygulama kilidi/
-FLAG_SECURE (öneri: yalnız son uygulamalar önizlemesini gizle), K5 mağaza bağlantısının
-paylaşım hedefine gerçekten taşındığı (cihaz kanıtı), K10 KVKK/hukuki görüş, politika
-URL'si ve yayın yeri, Play hesabı (13 Kasım 2023 öncesi var mı), Apple Developer hesabı,
-Karar C (denemeden önce, 10 madde) ve D (ikinci yapı, 10 madde).
-
-**Cihaz/release kanıtı bekleyen (K4/K5):** release merged manifest + ağ gözlemi
-(`docs/kararlar/` A16 ile başladı, PCAPdroid ölçümü kaldı), iOS iCloud yedek hariç
-tutma + temp PNG süpürme, TZ/DST testleri (şu an `it.skip`), Pazar bildirimi gerçek
-teslim gecikmesi, T3 bildirim tıklaması yönlendirmesi sıcak VE soğuk açılışta (`am force-stop`
-sonra bildirime dokunma; 09 #1/#2/#5 — kod/K2 testiyle doğrulandı, cihaz kanıtı kalmadı). Takip:
-`docs/manual-checklist.md`, `docs/inceleme-2026-09-25/29-yol-haritasi.md` §6 (blokaj haritası).
+- (2026-09-24, mock) Android 13+ hiç sorulmamış bildirim izni `denied+canAskAgain:true` döner;
+  izin diyaloğu geri tuşuyla kapatılırsa `canAskAgain` yanlışlıkla `false` olur. → `bildirim-ve-izin.md`
+- (2026-09-23, mock) `expo-file-system` SDK 57: eski fonksiyonlar yalnızca `/legacy`'de; yeni
+  `File`/`Directory` API'siyle karıştırma. `expo-sharing` `dialogTitle` hedefe mesaj olarak taşınmaz.
+- (2026-09-23, zaman) Jest'te çalışma zamanında `process.env.TZ` değiştirmek etkisiz (yalnızca
+  `cross-env`). Android 12+ exact alarm izni yok: hatırlatma gecikebilir (~82 sn). → `bildirim-ve-izin.md`
+- (2026-09-24, zaman) Gün/hafta/Pazar 20:00 dönümü: `useNow` zamanlayıcı + `AppState`; ekran "şimdi"yi
+  kendisi hesaplamaz. `useFocusEffect`/`useCallback` bağımlılığına `Date` koyma (sonsuz render).
+- (2026-09-24, düzen) Edge-to-edge: durum çubuğu altı sisteme gider → `useTopInset`. `numberOfLines`
+  kapsayıcıyı büyütmez; genişliğe bağlı `aspectRatio` yükseklik bütçesini patlatır. → `kart-render.md`
+- (2026-09-23, dış girdi) `haftik://` şeması dışarıdan tetiklenebilir; `card/` rotası `(main)` kapısının
+  dışındadır. `trackEventOnce` atomik değil (kabul edilmiş); bildirim senkronu ve silme tek kuyrukta.
+- (2026-09-23, test) `Animated` başlatan ağaç unmount edilmezse Jest teardown sonrası çöker; `TestInstance`'ta
+  `.toJSON()` yok; `findAllByProps` bir `Pressable`'ın 3 katmanını eşleştirir (tekil `findByProps`).
+  Jest `testMatch` `__tests__`'daki her `.ts`yi suite sayar → `helpers/` hariç. → `arac-zinciri.md`
+- (2026-09-22, araç) React Compiler lint kuralları (refs, set-state-in-effect) `Animated` desenlerinde yanlış
+  pozitif verir; önce kodla çöz. Ref'e render SIRASINDA yazmak da yasak. `site/` içine `.ts`/`.js` koyma.
+- (2026-10-02, araç) Emülatörü `android/` içinden başlatma (dizini kilitler, `prebuild` `EBUSY`); git-bash+adb
+  yol dönüşümü (`MSYS_NO_PATHCONV=1`, `C:/…`) ve `node -e`'de backtick; `run-as` release'te yok. → `arac-zinciri.md`
+- (2026-10-02, araç) `react-native-reanimated`ı `package.json`dan çıkarmak native derlemeyi kaldırmaz
+  (expo-router peer'i) → `react-native.config.js`. `android/` her prebuild'de sıfırlanır, elle değiştirilmez.
 
 ## Doğrulama ("done" ne demek)
 
@@ -272,19 +173,18 @@ Bir görev bitmiş sayılmadan önce:
 4. Kart/bildirim işleri için `plan.md` "Kanıt" bölümündeki ilgili madde karşılanmalı.
 
 **Test başarısız olursa testi değil kodu düzelt.** Test dosyalarını düzeltme görevi
-sırasında değiştirmek yasaktır.
+sırasında değiştirmek yasaktır (onaylı bir davranış değişikliğinin doğrudan sonucu olan,
+yorumla işaretlenmiş güncellemeler hariç).
 
 ## Değişmez kurallar
 
 - **Commit'i Batuhan atar.** Claude dosyayı yazar; Batuhan okur, düzeltir, commit'ler.
-- Sır içeren dosyalar (`.env` vb.) commit edilmez — global hook mekanik olarak engeller.
-- Yıkıcı git komutları öncesinde açık onay alınır — global hook mekanik olarak engeller.
+- Sır içeren dosyalar (`.env` vb.) commit edilmez; yıkıcı git komutları öncesinde açık onay
+  alınır — ikisini de global hook mekanik olarak engeller.
 - Uygulama plandan saparsa `plan.md` aynı commit içinde güncellenir.
 - Kapsam genişletme talebi sessizce eklenmez; "ayrı bir intent.md mi olsun?" diye sorulur.
-- Üretim derlemesinde ağ çağrısı yoktur; yeni bağımlılık eklerken "ağa veri gönderiyor
-  mu" kontrol edilir (spec güvenlik gereksinimi 2).
-
-## Paralel çalışma (git worktree)
-
-Bağımsız, farklı dosyalara dokunan işler ayrı worktree'lerde yürütülebilir (bkz.
-`plan.md` "Paralellik"). Pratik tavan: tek kişi için 2 oturum.
+- Üretim derlemesinde ağ çağrısı yoktur (release'te `INTERNET` izni yok, mekanik:
+  `scripts/check-apk-permissions.js`); yeni bağımlılık eklerken "ağa veri gönderiyor mu"
+  kontrol edilir (spec güvenlik gereksinimi 2).
+- Bağımsız, farklı dosyalara dokunan işler ayrı git worktree'lerde yürütülebilir (`plan.md`
+  "Paralellik"); pratik tavan tek kişi için 2 oturum.

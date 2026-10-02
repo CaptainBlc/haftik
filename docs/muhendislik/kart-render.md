@@ -37,11 +37,11 @@ Gerçek imza: `(ref: RefObject<ViewShotRef | null>) => Promise<string>` (bkz. `s
   `sweepSnapshotFiles()`: `cacheDirectory` altında yalnızca `ReactNative-snapshot-image*.png` siler
   (react-native-view-shot `TEMP_FILE_PREFIX`); açılışta ve `deleteAllData` sonunda çağrılır, en iyi çaba. S16b'den
   sonra yeni dosya üretilmez, yalnızca S16b öncesi sürümlerin kalıntıları içindir.
-- **Platform sınırı (hâlâ açık):** iOS'ta view-shot dosyayı `NSTemporaryDirectory()/ReactNative/` altına yazar
-  (`cacheDirectory` değil); `expo-file-system` bu dizini sunmadığı için iOS süpürmesi yapılamıyor — iOS artık
-  yola girdiği için (`docs/kararlar/2026-10-01-kapsam-ios-dagitim.md`) bu madde **aktif** bir açık uç, paylaşım
-  sonrası `deleteAsync` iOS'ta da uygulanmalı. Android tarafında `cacheDirectory` yalnızca dahili cache'tir ama
-  modülün kendi CleanTask'ı iki dizini de (dahili+harici) modül oluşurken/kapanırken temizler.
+- **[KAPANDI 2026-10-02, S16b — yalnızca kodla; iOS cihazda doğrulanmadı]** Eskiden iOS'ta view-shot dosyayı
+  `NSTemporaryDirectory()/ReactNative/` altına yazıyor, `expo-file-system` bu dizini sunmadığı için süpürülemiyordu.
+  `captureCardPng` artık `result:'base64'` kullanır ve PNG'yi her iki platformda uygulamaya özel
+  `cacheDirectory/haftik-share/` altına yazar; view-shot hiç geçici dosya üretmez. iOS'ta `cacheDirectory`ın aynı
+  süpürme/silme kapsamına girdiği iOS yapısı gelince (TestFlight, K5) bir kez gözle doğrulanmalı.
 - (2026-09-23, MOB/S7b) `expo-sharing`'in `shareAsync`'i tek dosya + `dialogTitle`/`mimeType`/`UTI` kabul eder;
   RN'in kendi `Share` API'sindeki `{url, message}` gibi ayrı bir "mesaj metni" **yok**. `dialogTitle` yalnızca
   Android+web'de paylaşım seçicisinin başlık çubuğunda görünür, hedef uygulamaya mesaj olarak taşınmaz; iOS'ta

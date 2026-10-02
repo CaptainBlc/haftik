@@ -1,0 +1,54 @@
+# Açık işler (canlı liste)
+
+> CLAUDE.md "Durum ve açık işler" bölümünden **2026-10-02'de taşındı**; güncel tutulan tek yer burası.
+> Bir iş bitince buradan silinir ve `docs/muhendislik/uygulama-gunlugu.md`'ye (tarihiyle, K kanıtıyla)
+> yazılır. Tamamlanan dilimlerin günlüğü orada; karar kayıtları `docs/kararlar/`'da.
+
+## Sıradaki
+
+S16a (içerik/adlandırma; Batuhan'ın metin onayı bekliyor) → P1 0.1.0 (hesaplar Batuhan'da) → çekirdek (S19+).
+Taban dilimleri bitti: S13, S14, S15, S16b, S17, S18 (`npm run verify`: 82 suite / 983 test yeşil, 2026-10-02).
+
+## Batuhan'ın onayladığı, henüz uygulanmamış kararlar
+
+Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
+- seviye kelimeleri + içerik paketi (A14/A15, S16a)
+- Ayarlar'daki ayrı "Kart hazır" anahtarı (A12'nin UI tarafı, S23)
+- paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı)
+- seviye/font/ikon/haptik/K3-banner/Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23)
+- 6 kişilik P0 görsel test oturumu (B12, S19'dan önce)
+- Maestro kurulumu (B14, çekirdek kapısında)
+
+## Batuhan'dan bekleyen
+
+- **Metin onayı** (copywriter önerisi, geçici): "Silinemedi", "Kaydedilemedi", "Yüklenemedi" +
+  "Tekrar dene", rapor önizleme girişi. Bildirim metinleri hâlâ eski "Karnen hazır" (S16a).
+- `app.json` `version` hâlâ `1.0.0`; plandaki ilk dış sürüm 0.1.0 (release-manager/Batuhan).
+- Karar C (denemeden önce, 10 madde) ve D (ikinci yapı, 10 madde).
+- N-9 uygulama kilidi/FLAG_SECURE (öneri: yalnız son uygulamalar önizlemesini gizle).
+- K10 KVKK/hukuki görüş, politika URL'si ve yayın yeri.
+- Hesaplar: Expo, Play (13 Kasım 2023 öncesi var mı), Apple Developer.
+
+## Cihaz/release kanıtı bekleyen (K4/K5)
+
+- D2D test modu (`bmgr`) + OEM aktarım (A17'nin "veri taşınmaz" sözünü tam kanıtlar).
+- 0.1.0'da PCAPdroid ağ gözlemi (INTERNET izni release'te yok, mekanik kanıt var; bu ikincil).
+- Başarılı paylaşım hedefinde (WhatsApp) görselin eksiksiz gittiği; K5 mağaza bağlantısının hedefe taşındığı.
+- Koyu moddaki cihazda 3 ekran ve 6 Önemli A11Y bulgusunun yeniden ölçümü (A11 sonrası).
+- Bildirim tıklaması sıcak/soğuk açılış (09 #1/#2/#5; kod/K2 testiyle doğrulandı, cihaz kanıtı kaldı).
+- API<31 exact alarm (R-23), kanal kapatma (R-25), Doze/standby turu; Pazar bildirimi gerçek teslim gecikmesi.
+- TZ/DST testleri (şu an `it.skip`).
+- iOS tümü: iCloud yedek hariç tutma, `cacheDirectory` süpürme, TestFlight turu.
+- AAB + EAS `mapping.txt` saklama (`buildArtifactPaths` alan adı doğrulanmadı; yerelde
+  `C:\dev\haftik-artifacts\`).
+- Takip: `docs/manual-checklist.md`, `docs/inceleme-2026-09-25/29-yol-haritasi.md` §6 (blokaj haritası).
+
+## Bilinen teknik borçlar
+
+- `openOrBuildCard` `now`'ı zorunlu kılma (TB-10; S14/S15 T1/S15 T3'te üç kez bilerek ertelendi; sıradaki
+  `open-card.ts` dokunuşunda).
+- Rapor v2 eksik alanlar (S19+ olayları) ve v2 birleştirme betiği (27 §4.3); eski v1 toplayıcı
+  (`metrics-calc.aggregateMetrics`) v2'ye uyarlanmadı.
+- `react-native-worklets` / Material Symbols kaldırma (isteğe bağlı, S18 ops.).
+- `data/delete-all.ts` katman istisnası (kart/rapor dosyası süpürmesini çağırır).
+- Ayarlar'daki sürüm satırında ayrı "kopyala" düğmesi yok (seçilebilir metin; `expo-clipboard` eklenmedi).

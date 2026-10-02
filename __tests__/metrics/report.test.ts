@@ -69,7 +69,7 @@ describe('deneme raporu içeriği', () => {
     await seed();
     const text = await buildReportText(NOW);
     expect(text).toContain('Kurulumdan bu yana gün: 10');
-    expect(text).toContain('7. günde check-in: var');
+    expect(text).toContain('7. günde işaretleme: var');
     expect(text).toContain('Paylaşım başlatma: 1, gizlenen satır: 2');
     const json = JSON.parse(text.split('\n').pop() as string);
     expect(json.v).toBe(2);

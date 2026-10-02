@@ -55,3 +55,16 @@
   proje yolu (`...\Desktop\Geliştirme için\...`) Gradle/RN derlemesini kırıyordu; derleme ASCII yollu bir
   kopyadan (`C:\hhk\haftik`) yapılıp robocopy ile senkronlanıyordu. Bu desen artık kullanılmıyor — ayrıntı
   `docs/muhendislik/arac-zinciri.md` "ASCII yol problemi".
+
+- **[ESKİ 2026-10-02: S16b'de kapandı, iOS yalnızca kodla]** (2026-09-23, S5-temizlik) view-shot PNG'si iOS'ta
+  `NSTemporaryDirectory` altına yazıyor, süpürme yalnızca Android'deydi ("iOS yola girdi, aktif açık uç").
+  S16b'de yakalama `result:'base64'` + adanmış `cacheDirectory/haftik-share/` dizinine geçti; iki platformda aynı
+  süpürme/silme. Ayrıntı: `docs/muhendislik/kart-render.md`.
+
+- **[ESKİ 2026-10-02: S16b'de yerini aldı]** (2026-09-23, MOB/S7b/S10) Paylaşılan kart PNG'si ve deneme raporu
+  `shareAsync` bitince `finally`de siliniyordu (E10 kararı, S10 I-1). Hedef uygulama dosyayı okumadan çözülebildiği
+  için silme boş görsel verebiliyordu (04 #4); artık silinmez, yaşa göre süpürülür. Ayrıntı: `kart-render.md`.
+
+- **[ESKİ 2026-10-02: S17/S18 sonrası]** (2026-09-23, OPS/S10) `INTERNET`in `app.json` `blockedPermissions` ile tüm
+  varyantlardan kaldırılması dev client/Metro'yu kırar (önerilmedi). Çözüldü: yalnız release varyantından plugin ile
+  (`plugins/with-permission-policy.js`, S17). Ayrıntı: `docs/muhendislik/bildirim-ve-izin.md`.

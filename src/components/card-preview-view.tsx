@@ -55,7 +55,7 @@ import { useTopInset } from '@/hooks/use-top-inset';
 import { trackShareInitiated } from '@/metrics/track';
 
 /** K5 yer tutucusunu içeren kısa paylaşım metni (görev talimatı madde 5). */
-const SHARE_MESSAGE = `Haftalık karnem hazır! ${STORE_LINK_PLACEHOLDER}`;
+const SHARE_MESSAGE = `Haftalık kartım hazır! ${STORE_LINK_PLACEHOLDER}`;
 
 export interface CardPreviewViewProps {
   snapshot: CardSnapshot;

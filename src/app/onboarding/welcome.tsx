@@ -8,9 +8,10 @@ export default function WelcomeScreen() {
 
   return (
     <OnboardingScreen
-      title="Her gün 8 saniye. Her pazar bir karne."
+      title="Günde dört emoji, Pazar akşamı bir kart."
       body={
-        'Hareket, uyku, harcama, sosyal: haftanı emojiyle anlat, pazar akşamı sonucu gör.'
+        'Hareket, uyku, harcama, sosyallik: haftanı emojiyle anlat. ' +
+        'Pazar akşamı esprili bir kart açılır; paylaşmak istersen paylaşırsın.'
       }
       actions={[
         {

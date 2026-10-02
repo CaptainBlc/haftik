@@ -125,6 +125,33 @@ MMDDhhmmYYYY.ss` ile (`settings put global auto_time 0`) Pazar 20:05'e alındı;
 (emülatörde WhatsApp yok, 04 #4 K5), `shrinkResources` sonrası bildirim simgesi (henüz yok), AAB (`production`
 profili `app-bundle`; yerel yalnız APK derlendi).
 
+## Emülatör ve adb: Windows git-bash tuzakları ve K4 yöntemi (2026-10-02)
+
+Hepsi S16b-S18 emülatör turlarında gerçekten yaşandı:
+
+- **Emülatörü proje klasörünün içinden başlatma.** `emulator.exe` bir `cd android` altında başlatılırsa o dizini
+  çalışma dizini olarak tutar; `expo prebuild` (`android/` silip yeniden üretir) ve `rm -rf android`
+  `EBUSY: resource busy or locked` verir, prebuild yarım kalır ve `./gradlew` kaybolur. Emülatörü nötr bir
+  dizinden (`cd /tmp`) başlat. Prebuild öncesi: `./gradlew --stop` ve kalan `java.exe`ları kontrol et.
+- **adb yolları.** git-bash `/sdcard/...` gibi cihaz yollarını Windows yoluna çevirir: `export MSYS_NO_PATHCONV=1`.
+  Bilgisayar tarafı dosya için Windows biçimi ver (`C:/dev/...`); `/c/...` adb'ye anlaşılmaz.
+  `adb install`/`push`/`pull` bu yüzden `C:/...` ister.
+- **Shell kaçışları.** `node -e "..."` ve çift tırnaklı heredoc içinde backtick komut olarak çalışır, `\r\n`/
+  `\d` kaçışları bozulur (bir kez regex'i sessizce bozdu). Çok satırlı kodu `Write` ile dosyaya yaz ya da tek
+  tırnaklı heredoc (`<<'EOF'`) kullan; dosyaya yazdıktan sonra test et.
+- **`run-as` release APK'da çalışmaz** (debuggable değil): AVD `google_apis` (Play Store'suz) olmalı ve
+  `adb root` kullanılır. AVD: `haftik_pixel`, Android 15, x86_64; release yalnızca x86_64 derlenir
+  (`-PreactNativeArchitectures=x86_64`).
+
+**K4 tur yöntemi (kodsuz, release APK'da):** ekranları `uiautomator dump` ile okuyup `resource-id`
+(= `testID`) sınırlarından orta noktaya `input tap` atan küçük bir yardımcı (`/tmp/k4.sh`, repoda yok).
+Uygun hafta için: `adb root`, uygulamayı `force-stop`, `files/SQLite/hhk.db`yi çek, `node:sqlite` ile
+`checkin` satırı ekle, geri it (`chown <uid>:<uid>`, `restorecon`), saati `settings put global auto_time 0`
++ `date MMDDhhmmYYYY.ss` ile Pazar 20:05'e al, bitince `auto_time 1`. Bildirim/alarm kontrolü:
+`dumpsys alarm | grep com.batuhan.haftik`; kanal: `dumpsys notification --noredact`; ağ yok kanıtı:
+`/proc/<pid>/status` `Groups` satırında `inet` (3003) olmaması. Hata taraması:
+`logcat -d | grep -E "FATAL EXCEPTION|ClassNotFound|NoSuchMethod|InvalidClass|CodedException|SecurityException|EACCES"`.
+
 ## ASCII yol problemi (2026-10-01'de kalıcı çözüldü)
 
 **[ESKİ 2026-10-01: artık geçersiz, bkz. `tuzak-arsivi.md`]** Repo artık kalıcı olarak `C:\dev\haftik`'te

@@ -28,15 +28,18 @@ export const CATEGORY_EMOJI: Record<Category, Record<CategoryValue, string>> = {
 
 /**
  * Seviye adları (erişilebilirlik etiketi + seçili seviyenin kısa gösterimi).
- * Kaynak: `spec.md` "Veri modeli" örnekleri (hareket durgun/hafif/yoğun, uyku
- * kötü/idare/iyi, harcama az/orta/çok, sosyal yalnız/ölçülü/kalabalık) —
- * sıralı yoğunluk anlatımı, tavsiye/yargı taşımaz (emülatör UX B2).
+ * Sıralı MİKTAR/yoğunluk anlatımı; iyi-kötü (kalite) ve kişilik/damga dili
+ * taşımaz (emülatör UX B2). **S16a (A14, 19 §3.1):** uyku kötü/idare/iyi ->
+ * **kısa/orta/uzun**, sosyal yalnız/ölçülü/kalabalık -> **sakin/orta/kalabalık**
+ * ("yalnız" damgalayıcı, "ölçülü" normatifti); hareket (durgun/hafif/yoğun) ve
+ * harcama (az/orta/çok) değişmedi. Kayıtlı değerler 1/2/3 olduğundan veri
+ * etkilenmez, yalnızca görünen kelime değişir.
  */
 export const CATEGORY_LEVEL_LABELS_TR: Record<Category, Record<CategoryValue, string>> = {
   movement: { 1: 'durgun', 2: 'hafif', 3: 'yoğun' },
-  sleep: { 1: 'kötü', 2: 'idare', 3: 'iyi' },
+  sleep: { 1: 'kısa', 2: 'orta', 3: 'uzun' },
   spending: { 1: 'az', 2: 'orta', 3: 'çok' },
-  social: { 1: 'yalnız', 2: 'ölçülü', 3: 'kalabalık' },
+  social: { 1: 'sakin', 2: 'orta', 3: 'kalabalık' },
 };
 
 export const CATEGORY_VALUES: readonly CategoryValue[] = [1, 2, 3];
