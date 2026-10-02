@@ -113,3 +113,32 @@ Pazar 20:00) kendisi doğrular, uygun değilse `notReady` döner ve ekran `/week
 (2026-09-23, MOB/S9) Rapor metninde emoji, takvim tarihi, epoch, kategori adı (İngilizce/Türkçe), kimlik yok
 (mekanik: `__tests__/metrics/report.test.ts`). Rapora yeni alan eklerken bu taramayı bozma; tarih yerine gün
 ofseti kullan.
+
+## Deneme raporu v2 ve silme (S16b, 2026-10-02)
+
+- **Şema v2** (`src/domain/report-v2.ts`, 27 §4.1): `v, build, ch (kanal), seq, day, perm, d{d1d3, d7,
+  firstCardDay}, cards{frozen, eligibleWeeks}, weeks[{i, fill, opened, share}], share{n, hiddenTotal}`. Saf
+  fonksiyon; veri okuma `metrics/report.ts` `prepareReport`. Tarih/epoch/kategori yok; haftalar yalnızca SIRA no.
+  `d1d3` karakterleri: `1` var, `0` yok, `-` o gün henüz gelmedi. `perm`: `granted` / `denied` (kalıcı ret) /
+  `unset` (hiç sorulmamış ya da Android 13+ `denied`+`canAskAgain`, BLG-01'e göre belirsiz).
+- **Spec'ten bilinçli sapmalar:** 27 §4.1'in henüz olay üretmeyen alanları yok (`fmt`, `src`, albüm, `notifOpened`,
+  `cardFeel`, `lateBuckets`, `titleVisibleDefault`, `defaultKept`, `strip`, `switched`) — ilgili özellikler (S19+)
+  olay üretince eklenir; `share.hiddenN` histogramı yerine toplam `hiddenTotal` var (paylaşım-bazlı olay gruplaması
+  yok). Bütünlük kuralları 27 §4.2: yalnızca 3-7 uygulanabilir (`validateReportV2`), 1-2 `hiddenN`/`fmt` ile gelir.
+  Birleştirme betiği (27 §4.3, Batuhan'ın elle toplaması) ve eski v1 toplayıcı (`metrics-calc.aggregateMetrics`)
+  v2'ye HENÜZ uyarlanmadı.
+- **Önizleme:** Ayarlar > "Deneme raporunu paylaş" artık tam metni gösteren Modal açar (`report-preview-view.tsx`,
+  rota/deep link yüzeyi yok); [Vazgeç] hiçbir şey yazmaz, [Paylaş] önizlenen metnin AYNISINI yazar
+  (`sharePreparedReport`). `seq` (`setting.report_seq`) yalnızca paylaşımda kalıcılaşır; önizleme/vazgeçme artırmaz;
+  "Tüm verilerimi sil" sıfırlar. Eski Alert onayı (`report-confirm.ts`) kaldırıldı.
+- **Sürüm satırı (26 R-1):** `lib/build-info.ts`: sürüm adı (`expo-constants`), build (`expo-application`
+  `nativeBuildVersion`; EAS uzak `versionCode`u yapı zamanında verir), kanal (`EXPO_PUBLIC_BUILD_CHANNEL`,
+  `eas.json` profil `env`; yerel derlemede `dev`), kısa commit (`app.config.js` `extra.commit`: EAS
+  `EAS_BUILD_GIT_COMMIT_HASH` ya da yerel `git rev-parse`), DB şema sürümü (`user_version`). Ayarlar'da seçilebilir
+  metin (uzun basıp kopyalanır; ayrı "kopyala" düğmesi eklenmedi: `expo-clipboard` yeni bağımlılık olurdu).
+  `expo-application` doğrudan bağımlılık yapıldı (zaten `expo-notifications` üzerinden transitifti, ağ kodu yok;
+  install referrer API'si çağrılmıyor, izni S17'de engelli). **Not:** `app.json` `version` hâlâ `1.0.0`, plandaki
+  ilk dış sürüm 0.1.0 (release-manager/Batuhan kararı).
+- **Silme:** `deleteAllData` artık `VACUUM` + `wal_checkpoint(TRUNCATE)` çalıştırır, bağlantı açılırken
+  `PRAGMA secure_delete=ON`; paylaşım dizini komple silinir. Cihazda doğrulandı: silme sonrası DB dosyasında
+  silinen veri yok.

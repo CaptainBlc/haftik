@@ -1,7 +1,7 @@
 /**
- * `shareCard` — `expo-sharing` ile paylaşım + paylaşım sonrası geçici PNG
- * temizliği (spec E10 açık noktası, `plan.md` S7b). Bkz. `src/card/share.ts`
- * başlığı. Gerçek cihaz/native modül yok; `expo-sharing` ve
+ * `shareCard` — `expo-sharing` ile paylaşım (S16b: paylaşım sonrası silme YOK,
+ * bkz. `src/card/share.ts` başlığı ve `__tests__/card/share-dir.test.ts`).
+ * Gerçek cihaz/native modül yok; `expo-sharing` ve
  * `expo-file-system/legacy` mock'lanır (aynı desen: `__tests__/card/capture.test.ts`).
  */
 import { shareCard } from '@/card/share';
@@ -51,28 +51,20 @@ describe('shareCard', () => {
     expect(Sharing.shareAsync).not.toHaveBeenCalled();
   });
 
-  it('paylaşım TAMAMLANDIĞINDA geçici PNG dosyasını siler (E10 açık noktasının çözümü)', async () => {
+  // S16b (04 #4, 24 §2.1): eski E10 kararı (finally'de silme) BİLİNÇLİ olarak
+  // kaldırıldı — seçici hedef uygulama dosyayı okumadan çözülebildiği için silmek
+  // boş/eksik görsel verebiliyordu. Temizlik artık share-dir.ts'te (yaşa göre
+  // süpürme, açılış, "Tüm verilerimi sil"). Aşağıdaki testler yeni sözleşmeyi korur.
+  it('paylaşım TAMAMLANINCA dosyayı SİLMEZ (hedef uygulama henüz okuyor olabilir)', async () => {
     const { FileSystem } = mocks();
     await shareCard('file:///fake/card.png');
-    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(
-      'file:///fake/card.png',
-      expect.objectContaining({ idempotent: true })
-    );
+    expect(FileSystem.deleteAsync).not.toHaveBeenCalled();
   });
 
-  it('dosya silme başarısız olsa bile paylaşım akışı hata fırlatmaz (en iyi çaba temizlik)', async () => {
-    const { FileSystem } = mocks();
-    FileSystem.deleteAsync.mockRejectedValueOnce(new Error('disk hatası'));
-    await expect(shareCard('file:///fake/card.png')).resolves.toBeUndefined();
-  });
-
-  it('shareAsync hata fırlatsa bile geçici dosya silme yine de denenir (finally)', async () => {
+  it('shareAsync hata fırlatsa da dosyayı silmez (temizlik süpürmeye bırakılır)', async () => {
     const { Sharing, FileSystem } = mocks();
-    Sharing.shareAsync.mockRejectedValueOnce(new Error('kullanıcı iptal etti değil, gerçek hata'));
+    Sharing.shareAsync.mockRejectedValueOnce(new Error('gerçek hata'));
     await expect(shareCard('file:///fake/card.png')).rejects.toThrow();
-    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(
-      'file:///fake/card.png',
-      expect.objectContaining({ idempotent: true })
-    );
+    expect(FileSystem.deleteAsync).not.toHaveBeenCalled();
   });
 });

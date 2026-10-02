@@ -3,16 +3,24 @@ import * as path from 'node:path';
 
 import { saveCheckin } from '@/data/checkin-repo';
 import { setFirstOpenDate } from '@/data/setting-repo';
-import { computeDeviceMetrics } from '@/domain/metrics-calc';
 import {
   REPORT_KNOWN_LIMITS,
-  buildReportPayload,
   buildReportText,
-  formatReportText,
+  prepareReport,
+  sharePreparedReport,
   shareReport,
 } from '@/metrics/report';
 import { trackEvent, trackShareInitiated } from '@/metrics/track';
 import { setupTestDb } from '../helpers/setup-test-db';
+
+const mockPermState = jest.fn(async () => ({
+  status: 'undetermined' as const,
+  granted: false,
+  canAskAgain: true,
+}));
+jest.mock('@/notify/wiring', () => ({
+  getNotificationPermissionState: () => mockPermState(),
+}));
 
 jest.mock('expo-sharing', () => ({
   __esModule: true,
@@ -23,6 +31,7 @@ jest.mock('expo-sharing', () => ({
 jest.mock('expo-file-system/legacy', () => ({
   __esModule: true,
   cacheDirectory: 'file:///cache/',
+  makeDirectoryAsync: jest.fn(async () => undefined),
   writeAsStringAsync: jest.fn(async () => undefined),
   deleteAsync: jest.fn(async () => undefined),
 }));
@@ -54,27 +63,51 @@ afterEach(() => jest.clearAllMocks());
 describe('deneme raporu içeriği', () => {
   setupTestDb();
 
-  it('sayaçları, D7 ve dolu gün sayısını doğru yansıtır', async () => {
+  // S16b: v2 (27 §4.1). Eski v1 alanları (filledDays/counts/cardSeen) hafta tablosu,
+  // kart ve paylaşım özetine taşındı; bu testler yeni şemayı korur.
+  it('v2: gün, ilk 3 gün deseni, D7, hafta tablosu ve paylaşım sayaçlarını doğru yansıtır', async () => {
     await seed();
     const text = await buildReportText(NOW);
-    expect(text).toContain('Dolu check-in günü: 2');
+    expect(text).toContain('Kurulumdan bu yana gün: 10');
     expect(text).toContain('7. günde check-in: var');
-    expect(text).toContain('Kart açıldı mı: evet');
-    expect(text).toContain('check_in_saved=1');
-    expect(text).toContain('card_opened=1');
-    expect(text).toContain('share_initiated=1');
-    expect(text).toContain('line_hidden=2');
+    expect(text).toContain('Paylaşım başlatma: 1, gizlenen satır: 2');
     const json = JSON.parse(text.split('\n').pop() as string);
-    expect(json.filledDays).toBe(2);
-    expect(json.d7).toBe('yes');
-    expect(json.dayNumber).toBe(10);
+    expect(json.v).toBe(2);
+    expect(json.day).toBe(10);
+    expect(json.d.d7).toBe('yes');
+    expect(json.d.d1d3).toBe('100'); // 1. gün dolu, 2-3. gün boş
+    // Olay zamanı gerçek saatten (Date.now) gelir, NOW sabit: yalnızca sayı olduğu ve
+    // tarih sızdırmadığı doğrulanır (gün ofseti hesabı domain testinde, report-v2.test.ts).
+    expect(typeof json.d.firstCardDay).toBe('number');
+    expect(json.share).toEqual({ n: 1, hiddenTotal: 2 });
+    // 2 check-in, iki ayrı haftada: sıra no 1 ve 2, tarih YOK.
+    expect(json.weeks).toEqual([
+      { i: 1, fill: 1, opened: 0, share: 0 },
+      { i: 2, fill: 1, opened: 1, share: 1 },
+    ]);
   });
 
-  it('kartı hiç görmeyen kullanıcı ayrı işaretlenir', async () => {
+  it('seq: ön izleme bir sonraki sayıyı gösterir, paylaşılınca kalıcılaşır (sonra artar)', async () => {
+    const first = await prepareReport(NOW);
+    expect(first.report.seq).toBe(1);
+    expect((await prepareReport(NOW)).report.seq).toBe(1); // önizleme yazmaz
+    await sharePreparedReport(first);
+    expect((await prepareReport(NOW)).report.seq).toBe(2);
+  });
+
+  it('önizlenen metin paylaşılan dosyayla BİREBİR aynıdır', async () => {
+    const { FS } = mocks();
+    const prepared = await prepareReport(NOW);
+    await sharePreparedReport(prepared);
+    expect(FS.writeAsStringAsync.mock.calls[0][1]).toBe(prepared.text);
+  });
+
+  it('kartı hiç açmayan kullanıcı ayrı işaretlenir', async () => {
     await setFirstOpenDate('2026-09-01');
     const text = await buildReportText(NOW);
-    expect(text).toContain('hayır (kartı hiç görmedi)');
-    expect(text).toContain('ölçülemez (kartı görmedi)');
+    expect(text).toContain('kart henüz açılmadı');
+    const json = JSON.parse(text.split('\n').pop() as string);
+    expect(json.d.firstCardDay).toBeNull();
   });
 
   it('bilinen sınırlar (fazla/eksik sayım, küçük örneklem) rapor metninde yazar', async () => {
@@ -97,33 +130,44 @@ describe('deneme raporu içeriği', () => {
     expect(text).not.toMatch(/deviceId|userId|uuid|email|@/i);
   });
 
-  it('payload yalnızca beklenen alanları taşır', async () => {
-    const payload = buildReportPayload(
-      computeDeviceMetrics({ events: [], firstOpenDate: '2026-09-01', checkinDates: [], today: '2026-09-02' })
+  it('payload yalnızca beklenen v2 alanlarını taşır (kimlik/tarih alanı yok)', async () => {
+    const { report } = await prepareReport(NOW);
+    expect(Object.keys(report).sort()).toEqual(
+      ['build', 'cards', 'ch', 'd', 'day', 'perm', 'seq', 'share', 'v', 'weeks'].sort()
     );
-    expect(Object.keys(payload).sort()).toEqual(
-      ['cardSeen', 'counts', 'd7', 'dayNumber', 'filledDays', 'schemaVersion', 'sharedGivenSeen'].sort()
-    );
-    expect(() => formatReportText(payload)).not.toThrow();
+    expect(Object.keys(report.d).sort()).toEqual(['d1d3', 'd7', 'firstCardDay']);
+    expect(Object.keys(report.cards).sort()).toEqual(['eligibleWeeks', 'frozen']);
+    expect(Object.keys(report.share).sort()).toEqual(['hiddenTotal', 'n']);
+  });
+
+  it('perm: verildi -> granted; kalıcı ret -> denied; hiç sorulmamış/Android 13+ denied+canAskAgain -> unset', async () => {
+    mockPermState.mockResolvedValueOnce({ status: 'granted' as never, granted: true, canAskAgain: false });
+    expect((await prepareReport(NOW)).report.perm).toBe('granted');
+    mockPermState.mockResolvedValueOnce({ status: 'denied' as never, granted: false, canAskAgain: false });
+    expect((await prepareReport(NOW)).report.perm).toBe('denied');
+    mockPermState.mockResolvedValueOnce({ status: 'denied' as never, granted: false, canAskAgain: true });
+    expect((await prepareReport(NOW)).report.perm).toBe('unset');
+    expect((await prepareReport(NOW)).report.perm).toBe('unset'); // varsayılan: undetermined
   });
 });
 
 describe('deneme raporu paylaşımı (kullanıcı tetikli, ağsız)', () => {
   setupTestDb();
 
-  it('geçici dosyaya yazar, paylaşım sayfasını açar, sonra siler', async () => {
+  it('adanmış paylaşım dizinine yazar ve paylaşım sayfasını açar; paylaşım sonrası SİLMEZ (S16b, 04 #4)', async () => {
     await seed();
     const { Sharing, FS } = mocks();
     await shareReport(NOW);
     expect(FS.writeAsStringAsync).toHaveBeenCalledTimes(1);
     const [uri, contents] = FS.writeAsStringAsync.mock.calls[0];
-    expect(uri).toBe('file:///cache/deneme-raporu.txt');
+    expect(uri).toBe('file:///cache/haftik-share/deneme-raporu.txt');
     expect(contents).toContain('deneme raporu');
     expect(Sharing.shareAsync).toHaveBeenCalledWith(
       uri,
       expect.objectContaining({ mimeType: 'text/plain' })
     );
-    expect(FS.deleteAsync).toHaveBeenCalledWith(uri, expect.objectContaining({ idempotent: true }));
+    // Eskiden finally'de siliniyordu; hedef uygulama okumadan silinebildiği için kaldırıldı.
+    expect(FS.deleteAsync).not.toHaveBeenCalled();
   });
 
   it('paylaşım kullanılamıyorsa hata fırlatır ve dosya yazılmaz', async () => {
@@ -133,11 +177,11 @@ describe('deneme raporu paylaşımı (kullanıcı tetikli, ağsız)', () => {
     expect(FS.writeAsStringAsync).not.toHaveBeenCalled();
   });
 
-  it('paylaşım hata verse de geçici dosya silinmeye çalışılır', async () => {
+  it('paylaşım hata verirse hata yayılır; dosya silinmez (temizlik açılış/silme süpürmesine bırakılır)', async () => {
     const { Sharing, FS } = mocks();
     Sharing.shareAsync.mockRejectedValueOnce(new Error('x'));
     await expect(shareReport(NOW)).rejects.toThrow();
-    expect(FS.deleteAsync).toHaveBeenCalled();
+    expect(FS.deleteAsync).not.toHaveBeenCalled();
   });
 
   it('ağ çağrısı yapmaz (fetch / XMLHttpRequest çağrılmaz)', async () => {

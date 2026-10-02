@@ -4,8 +4,12 @@ import { deleteAllData } from '@/data/delete-all';
 import { setupTestDb } from '../helpers/setup-test-db';
 
 const mockSweep = jest.fn(async () => undefined);
+const mockDeleteShareDir = jest.fn(async () => undefined);
 jest.mock('@/card/temp-cleanup', () => ({
   sweepSnapshotFiles: () => mockSweep(),
+}));
+jest.mock('@/card/share-dir', () => ({
+  deleteShareDir: () => mockDeleteShareDir(),
 }));
 
 describe('delete-all: snapshot süpürmesi', () => {
@@ -16,6 +20,11 @@ describe('delete-all: snapshot süpürmesi', () => {
   it('tablolar silindikten sonra süpürme çağrılır', async () => {
     await deleteAllData(() => undefined);
     expect(mockSweep).toHaveBeenCalledTimes(1);
+  });
+
+  it('S16b: adanmış paylaşım dizini (kart PNG + rapor) tamamen silinir', async () => {
+    await deleteAllData(() => undefined);
+    expect(mockDeleteShareDir).toHaveBeenCalledTimes(1);
   });
 });
 

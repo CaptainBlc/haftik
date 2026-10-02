@@ -1,4 +1,8 @@
-/** S10 I-1: paylaşım kullanılamadığında da geçici PNG silinir. */
+/**
+ * S10 I-1 testi, S16b'de (04 #4) YENİ sözleşmeye göre yeniden yazıldı: paylaşım
+ * kullanılamadığında da dosya `shareCard` içinde SİLİNMEZ (temizlik süpürmeye
+ * bırakılır, bkz. `src/card/share-dir.ts`); hata yine fırlatılır.
+ */
 import { shareCard } from '@/card/share';
 
 jest.mock('expo-sharing', () => ({
@@ -15,20 +19,17 @@ jest.mock('expo-file-system/legacy', () => ({
 afterEach(() => jest.clearAllMocks());
 
 describe('shareCard: isAvailableAsync false', () => {
-  it('hata fırlatır ama geçici PNG yine silinir', async () => {
+  it('hata fırlatır, shareAsync çağrılmaz, dosya silinmez', async () => {
     const FileSystem = jest.requireMock('expo-file-system/legacy') as { deleteAsync: jest.Mock };
+    const Sharing = jest.requireMock('expo-sharing') as { shareAsync: jest.Mock };
     await expect(shareCard('file:///fake/card.png')).rejects.toThrow(/kullanılamıyor/);
-    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(
-      'file:///fake/card.png',
-      expect.objectContaining({ idempotent: true })
-    );
+    expect(Sharing.shareAsync).not.toHaveBeenCalled();
+    expect(FileSystem.deleteAsync).not.toHaveBeenCalled();
   });
 
-  it('isAvailableAsync kendisi reddederse de PNG silinir', async () => {
+  it('isAvailableAsync kendisi reddederse hata aynen yayılır', async () => {
     const Sharing = jest.requireMock('expo-sharing') as { isAvailableAsync: jest.Mock };
-    const FileSystem = jest.requireMock('expo-file-system/legacy') as { deleteAsync: jest.Mock };
     Sharing.isAvailableAsync.mockRejectedValueOnce(new Error('native'));
     await expect(shareCard('file:///fake/card.png')).rejects.toThrow('native');
-    expect(FileSystem.deleteAsync).toHaveBeenCalledTimes(1);
   });
 });

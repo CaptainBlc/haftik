@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { AppState, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { sweepShareDir } from '@/card/share-dir';
 import { sweepSnapshotFiles } from '@/card/temp-cleanup';
 import { initAppDatabase } from '@/data/init';
 import { deleteReportFile } from '@/metrics/report-file';
@@ -46,6 +47,9 @@ export default function RootLayout() {
     void deleteReportFile();
     // S10 I-1: paylaşım sırasında öldürülmüş oturumdan kalan geçici kart PNG'leri.
     void sweepSnapshotFiles();
+    // S16b: paylaşım dizininde yaşı > 1 saat olan dosyalar (`share.ts` artık
+    // paylaşım sonrası silmiyor, 04 #4).
+    void sweepShareDir();
   }, []);
 
   // S8: açılışta ve öne gelişte bildirimleri yeniden planla (saat dilimi/izin

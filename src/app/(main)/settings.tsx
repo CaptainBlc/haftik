@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, AppState, Linking } from 'react-native';
 
 import { LoadingView } from '@/components/loading-view';
+import { ReportPreviewView } from '@/components/report-preview-view';
 import { SettingsView } from '@/components/settings-view';
 import { deleteAllData } from '@/data/delete-all';
 import {
@@ -17,8 +18,9 @@ import {
   setReminderTime,
   type Settings,
 } from '@/data/setting-repo';
+import { getBuildInfoText } from '@/lib/build-info';
 import { getNow } from '@/lib/now';
-import { confirmAndShareTrialReport } from '@/metrics/report-confirm';
+import { prepareReport, sharePreparedReport, type PreparedReport } from '@/metrics/report';
 import type { PermissionState } from '@/notify/scheduler';
 import {
   cancelAllNotifications,
@@ -32,6 +34,10 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [permission, setPermission] = useState<PermissionState | null>(null);
+  // S16b (27 §4.1): rapor tam metin önizlemesi (Modal); null = kapalı.
+  const [reportPreview, setReportPreview] = useState<PreparedReport | null>(null);
+  const [reportSharing, setReportSharing] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
 
   useEffect(() => {
     getAllSettings().then(setSettings);
@@ -110,9 +116,31 @@ export default function SettingsScreen() {
     ]);
   }
 
-  function handleTrialReport() {
-    // Kullanıcı tetikli (S9); önce ne gideceği gösterilir (I-2), otomatik gönderim yok.
-    confirmAndShareTrialReport(() => getNow());
+  async function handleTrialReport() {
+    // Kullanıcı tetikli (S9); önce TAM metin önizlemede gösterilir (I-2, S16b),
+    // [Paylaş] denmeden hiçbir şey yazılmaz/paylaşılmaz, otomatik gönderim yok.
+    try {
+      setReportError(null);
+      setReportPreview(await prepareReport(getNow()));
+    } catch {
+      Alert.alert('Deneme raporu', 'Rapor hazırlanamadı. Bir süre sonra tekrar deneyebilirsin.');
+    }
+  }
+
+  async function handleReportShare() {
+    if (!reportPreview || reportSharing) {
+      return;
+    }
+    setReportSharing(true);
+    setReportError(null);
+    try {
+      await sharePreparedReport(reportPreview);
+      setReportPreview(null);
+    } catch {
+      setReportError('Rapor paylaşılamadı. Bir süre sonra tekrar deneyebilirsin.');
+    } finally {
+      setReportSharing(false);
+    }
   }
 
   function handlePrivacyPress() {
@@ -122,20 +150,33 @@ export default function SettingsScreen() {
     });
   }
 
+  const buildInfoText = getBuildInfoText();
+
   return (
-    <SettingsView
-      reminderEnabled={settings.reminderEnabled}
-      reminderTime={settings.reminderTime}
-      onToggleReminder={handleToggleReminder}
-      onChangeTime={handleChangeTime}
-      onDeleteAll={handleDeleteAllPress}
-      onPrivacyPress={handlePrivacyPress}
-      onTrialReport={handleTrialReport}
-      notificationPermission={permission?.status ?? null}
-      canAskAgain={permission ? permission.canAskAgain : true}
-      onOpenSystemSettings={() => {
-        void Linking.openSettings();
-      }}
-    />
+    <>
+      <SettingsView
+        reminderEnabled={settings.reminderEnabled}
+        reminderTime={settings.reminderTime}
+        onToggleReminder={handleToggleReminder}
+        onChangeTime={handleChangeTime}
+        onDeleteAll={handleDeleteAllPress}
+        onPrivacyPress={handlePrivacyPress}
+        onTrialReport={handleTrialReport}
+        buildInfo={buildInfoText}
+        notificationPermission={permission?.status ?? null}
+        canAskAgain={permission ? permission.canAskAgain : true}
+        onOpenSystemSettings={() => {
+          void Linking.openSettings();
+        }}
+      />
+      <ReportPreviewView
+        visible={reportPreview !== null}
+        text={reportPreview?.text ?? ''}
+        sharing={reportSharing}
+        error={reportError}
+        onCancel={() => setReportPreview(null)}
+        onShare={handleReportShare}
+      />
+    </>
   );
 }

@@ -26,6 +26,15 @@ function renderSettings(props?: Partial<React.ComponentProps<typeof SettingsView
 }
 
 describe('SettingsView', () => {
+  it('S16b (26 R-1): buildInfo verilirse sürüm satırı seçilebilir metin olarak gösterilir, verilmezse yok', () => {
+    const text = 'Sürüm 0.1.0 (build 12)\npreview · abc1234 · şema 3';
+    const withInfo = renderSettings({ buildInfo: text }).tree.root.findByProps({ testID: 'build-info' });
+    expect(withInfo.props.children).toBe(text);
+    expect(withInfo.props.selectable).toBe(true);
+    const without = renderSettings().tree.root.findAllByProps({ testID: 'build-info' });
+    expect(without).toHaveLength(0);
+  });
+
   it('hatırlatma anahtarını değiştirmek onToggleReminder\'ı çağırır', () => {
     const { tree, onToggleReminder } = renderSettings();
     const toggle = tree.root.findByProps({ testID: 'reminder-enabled-switch' });

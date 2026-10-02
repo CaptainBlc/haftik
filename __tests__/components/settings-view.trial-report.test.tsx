@@ -1,12 +1,11 @@
-/** Ayarlar "Deneme raporu" düğmesi + paylaşım öncesi onay akışı (S9, I-2). */
-import { Alert } from 'react-native';
+/**
+ * Ayarlar "Deneme raporu" düğmesi (S9) ve rapor ÖNİZLEMESİ (S16b, 27 §4.1; I-2:
+ * paylaşımdan önce ne gideceği tam metinle gösterilir). Eski Alert onayı kaldırıldı.
+ */
 import { act, create } from 'react-test-renderer';
 
+import { ReportPreviewView, REPORT_PREVIEW_INTRO } from '@/components/report-preview-view';
 import { SettingsView } from '@/components/settings-view';
-import { confirmAndShareTrialReport } from '@/metrics/report-confirm';
-import { shareReport } from '@/metrics/report';
-
-jest.mock('@/metrics/report', () => ({ shareReport: jest.fn(async () => undefined) }));
 
 function renderSettings(onTrialReport?: () => void) {
   let tree: ReturnType<typeof create> | undefined;
@@ -45,47 +44,62 @@ describe('SettingsView deneme raporu düğmesi', () => {
   });
 });
 
-describe('deneme raporu onay Alert akışı', () => {
-  function openAlert() {
-    const spy = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
-    confirmAndShareTrialReport(() => new Date(2026, 8, 10));
-    const [title, message, buttons] = spy.mock.calls[0];
-    return { spy, title, message: message as string, buttons: buttons! };
+describe('ReportPreviewView (tam metin önizleme)', () => {
+  const TEXT = 'Haftik - deneme raporu (v2)\n\nBuild: 0.1.0+12 (preview), rapor no: 1';
+
+  function renderPreview(over: Partial<React.ComponentProps<typeof ReportPreviewView>> = {}) {
+    const onCancel = jest.fn();
+    const onShare = jest.fn();
+    let tree: ReturnType<typeof create> | undefined;
+    act(() => {
+      tree = create(
+        <ReportPreviewView
+          visible
+          text={TEXT}
+          sharing={false}
+          error={null}
+          onCancel={onCancel}
+          onShare={onShare}
+          {...over}
+        />
+      );
+    });
+    return { tree: tree!, onCancel, onShare };
   }
 
-  it('paylaşımdan önce ne gideceğini söyler ve henüz paylaşmaz', () => {
-    const { message, buttons } = openAlert();
-    expect(message).toMatch(/sayaç/);
-    expect(message).toMatch(/gün sayısı/);
-    expect(message).toMatch(/kimlik/);
-    expect(message).toMatch(/sen seçersin/);
-    expect(message).not.toMatch(/anonim/i);
-    expect(buttons.map((b) => b.text)).toEqual(['Vazgeç', 'Paylaş']);
-    expect(shareReport).not.toHaveBeenCalled();
+  it('raporun TAM metnini seçilebilir olarak gösterir', () => {
+    const { tree } = renderPreview();
+    const el = tree.root.findByProps({ testID: 'report-preview-text' });
+    expect(el.props.children).toBe(TEXT);
+    expect(el.props.selectable).toBe(true);
   });
 
-  it('Vazgeç paylaşım başlatmaz', async () => {
-    const { buttons } = openAlert();
-    await act(async () => {
-      await buttons[0].onPress?.();
-    });
-    expect(shareReport).not.toHaveBeenCalled();
+  it('paylaşımdan önce ne gideceğini söyler ve "anonim" demez (I-3)', () => {
+    expect(REPORT_PREVIEW_INTRO).toMatch(/sayaç/);
+    expect(REPORT_PREVIEW_INTRO).toMatch(/gün sayısı/);
+    expect(REPORT_PREVIEW_INTRO).toMatch(/kimlik/);
+    expect(REPORT_PREVIEW_INTRO).toMatch(/sen seçersin/);
+    expect(REPORT_PREVIEW_INTRO).not.toMatch(/anonim/i);
   });
 
-  it('Paylaş paylaşımı başlatır', async () => {
-    const { buttons } = openAlert();
-    await act(async () => {
-      await buttons[1].onPress?.();
+  it('Vazgeç yalnızca onCancel çağırır, Paylaş yalnızca onShare', () => {
+    const { tree, onCancel, onShare } = renderPreview();
+    act(() => {
+      tree.root.findByProps({ testID: 'report-preview-cancel' }).props.onPress();
     });
-    expect(shareReport).toHaveBeenCalledTimes(1);
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onShare).not.toHaveBeenCalled();
+    act(() => {
+      tree.root.findByProps({ testID: 'report-preview-share' }).props.onPress();
+    });
+    expect(onShare).toHaveBeenCalledTimes(1);
   });
 
-  it('paylaşım hata verirse ikinci bir bilgi Alert\'i gösterilir, çökmez', async () => {
-    (shareReport as jest.Mock).mockRejectedValueOnce(new Error('x'));
-    const { spy, buttons } = openAlert();
-    await act(async () => {
-      await buttons[1].onPress?.();
-    });
-    expect(spy).toHaveBeenCalledTimes(2);
+  it('paylaşım sürerken Paylaş pasif, hata varsa gösterilir', () => {
+    const { tree } = renderPreview({ sharing: true, error: 'Rapor paylaşılamadı.' });
+    expect(tree.root.findByProps({ testID: 'report-preview-share' }).props.disabled).toBe(true);
+    expect(tree.root.findByProps({ testID: 'report-preview-error' }).props.children).toBe(
+      'Rapor paylaşılamadı.'
+    );
   });
 });

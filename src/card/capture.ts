@@ -27,15 +27,23 @@
  * "hangi kategoriler gizli" bilgisi taşımak, tutarsızlık riski yaratır).
  * Tek kaynak `CardView`in prop'udur; bkz. o dosyanın başlığı.
  */
+import * as FileSystem from 'expo-file-system/legacy';
 import type { RefObject } from 'react';
 import { captureRef } from 'react-native-view-shot';
 import type { ViewShotRef } from 'react-native-view-shot';
 
 import { CARD_OUTPUT_HEIGHT, CARD_OUTPUT_WIDTH } from './layout';
+import { ensureShareDir, getShareFileUri, sweepShareDir } from './share-dir';
 
 /**
  * Zaten render edilmiş bir `CardView`in (`ViewShot` ref'i) 1080x1920 PNG'ye
  * yakalanmış dosya URI'sini döndürür.
+ *
+ * **S16b (22 F-8, 24 §2.1):** `result: 'base64'` ile yakalanır (view-shot kendi
+ * `ReactNative-snapshot-image*.png` geçici dosyasını ve harici önbellek
+ * seçimini hiç üretmez, 05 S-03) ve adanmış dizine sabit, tarihsiz adla
+ * (`haftik-share/Haftik-kart.png`) yazılır; eski dosyalar yaşa göre süpürülür.
+ * Dosya paylaşım sonrası burada silinmez (bkz. `share-dir.ts`, 04 #4).
  *
  * **Metadata/EXIF/kullanıcı adı/tarih PNG'ye gömülmez** (güvenlik
  * gereksinimi 3): `captureRef` yalnızca View ağacının görsel piksellerini
@@ -49,10 +57,16 @@ export async function captureCardPng(ref: RefObject<ViewShotRef | null>): Promis
   if (!ref.current) {
     throw new Error('captureCardPng: ref henüz bağlı değil (CardView mount olmamış).');
   }
-  return captureRef(ref, {
+  const base64 = await captureRef(ref, {
     width: CARD_OUTPUT_WIDTH,
     height: CARD_OUTPUT_HEIGHT,
     format: 'png',
     quality: 1,
+    result: 'base64',
   });
+  await ensureShareDir();
+  await sweepShareDir();
+  const uri = getShareFileUri();
+  await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
+  return uri;
 }

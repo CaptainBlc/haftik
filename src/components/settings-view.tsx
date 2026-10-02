@@ -43,6 +43,11 @@ export interface SettingsViewProps {
   onOpenSystemSettings?: () => void;
   /** S9: "Deneme raporu" düğmesi; verilmezse düğme gösterilmez (geriye dönük uyumlu). */
   onTrialReport?: () => void;
+  /**
+   * S16b (26 R-1): sürüm satırı (çok satırlı düz metin, `lib/build-info.ts`). Seçilebilir
+   * (uzun basıp kopyalanır); verilmezse gösterilmez (geriye dönük uyumlu).
+   */
+  buildInfo?: string;
 }
 
 export function SettingsView({
@@ -56,6 +61,7 @@ export function SettingsView({
   canAskAgain = true,
   onOpenSystemSettings,
   onTrialReport,
+  buildInfo,
 }: SettingsViewProps) {
   const theme = useTheme();
   const topInset = useTopInset();
@@ -170,6 +176,12 @@ export function SettingsView({
           style={styles.linkRow}>
           <ThemedText themeColor="textSecondary">Gizlilik politikası (yakında)</ThemedText>
         </Pressable>
+
+        {buildInfo ? (
+          <ThemedText testID="build-info" type="small" themeColor="textSecondary" selectable>
+            {buildInfo}
+          </ThemedText>
+        ) : null}
 
         <Pressable
           testID="delete-all-button"

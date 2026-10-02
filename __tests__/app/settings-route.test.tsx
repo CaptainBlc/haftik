@@ -33,7 +33,16 @@ jest.mock('@/data/delete-all', () => ({
   deleteAllData: (c: () => Promise<void>) => mockDeleteAllData(c),
 }));
 
-jest.mock('@/metrics/report-confirm', () => ({ confirmAndShareTrialReport: jest.fn() }));
+const mockPrepareReport = jest.fn(async () => ({
+  report: { seq: 1 },
+  text: 'Haftik - deneme raporu (v2)',
+  violations: [],
+}));
+const mockSharePrepared = jest.fn(async (_p: unknown) => undefined);
+jest.mock('@/metrics/report', () => ({
+  prepareReport: () => mockPrepareReport(),
+  sharePreparedReport: (p: unknown) => mockSharePrepared(p),
+}));
 
 const mockGetPermState = jest.fn();
 const mockRequestAndSync = jest.fn();
@@ -222,5 +231,61 @@ describe('Ayarlar rotası: silme sonrası (BLG-05)', () => {
       tree!.root.findByProps({ testID: 'privacy-link' }).props.onPress();
     });
     expect(JSON.stringify(alert.mock.calls[0])).not.toMatch(/S\d+/);
+  });
+});
+
+describe('Ayarlar rotası: rapor önizlemesi (S16b, 27 §4.1)', () => {
+  const press = async (testID: string) => {
+    await act(async () => {
+      await tree!.root.findByProps({ testID }).props.onPress();
+    });
+  };
+  const previewText = () => tree!.root.findByProps({ testID: 'report-preview-text' }).props.children;
+
+  it('Deneme raporu düğmesi TAM metni önizlemede gösterir; henüz paylaşmaz', async () => {
+    mockGetPermState.mockResolvedValue(GRANTED);
+    await render();
+    await press('trial-report-button');
+    expect(mockPrepareReport).toHaveBeenCalledTimes(1);
+    expect(previewText()).toBe('Haftik - deneme raporu (v2)');
+    expect(mockSharePrepared).not.toHaveBeenCalled();
+  });
+
+  it('Vazgeç önizlemeyi kapatır, hiçbir şey paylaşılmaz', async () => {
+    mockGetPermState.mockResolvedValue(GRANTED);
+    await render();
+    await press('trial-report-button');
+    await press('report-preview-cancel');
+    expect(mockSharePrepared).not.toHaveBeenCalled();
+    expect(tree!.root.findByProps({ visible: false })).toBeDefined();
+  });
+
+  it('Paylaş önizlenen hazır raporu paylaşır ve önizleme kapanır', async () => {
+    mockGetPermState.mockResolvedValue(GRANTED);
+    await render();
+    await press('trial-report-button');
+    await press('report-preview-share');
+    expect(mockSharePrepared).toHaveBeenCalledTimes(1);
+    expect(mockSharePrepared.mock.calls[0][0]).toMatchObject({ text: 'Haftik - deneme raporu (v2)' });
+    expect(tree!.root.findByProps({ visible: false })).toBeDefined();
+  });
+
+  it('paylaşım hata verirse önizleme AÇIK kalır ve hata gösterilir', async () => {
+    mockGetPermState.mockResolvedValue(GRANTED);
+    await render();
+    await press('trial-report-button');
+    mockSharePrepared.mockRejectedValueOnce(new Error('x'));
+    await press('report-preview-share');
+    expect(tree!.root.findByProps({ testID: 'report-preview-error' })).toBeDefined();
+  });
+
+  it('rapor hazırlanamazsa Alert gösterilir, önizleme açılmaz', async () => {
+    mockGetPermState.mockResolvedValue(GRANTED);
+    await render();
+    mockPrepareReport.mockRejectedValueOnce(new Error('db'));
+    const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+    await press('trial-report-button');
+    expect(alert).toHaveBeenCalledTimes(1);
+    expect(tree!.root.findAllByProps({ testID: 'report-preview-text' })).toHaveLength(0);
   });
 });

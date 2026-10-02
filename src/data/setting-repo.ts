@@ -25,7 +25,13 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   notificationIds: [],
 };
 
-type SettingKey = 'reminder_enabled' | 'reminder_time' | 'onboarding_done' | 'first_open_date' | 'notification_ids';
+type SettingKey =
+  | 'reminder_enabled'
+  | 'reminder_time'
+  | 'onboarding_done'
+  | 'first_open_date'
+  | 'notification_ids'
+  | 'report_seq';
 
 interface SettingRow {
   value: string;
@@ -89,6 +95,19 @@ export async function getNotificationIds(): Promise<string[]> {
 
 export async function setNotificationIds(value: string[]): Promise<void> {
   writeValue('notification_ids', value);
+}
+
+/**
+ * Deneme raporunun yerel artan sayaci (S16b, 27 §4.1 `seq`): ayni cihazin rapor
+ * kopyalarini ayirir, kimlik DEGILDIR. Son PAYLASILAN raporun numarasi; hic
+ * paylasilmadiysa 0. "Tum verilerimi sil" `setting` tablosunu bosalttigindan sifirlanir.
+ */
+export async function getReportSeq(): Promise<number> {
+  return readValue('report_seq', 0);
+}
+
+export async function setReportSeq(value: number): Promise<void> {
+  writeValue('report_seq', value);
 }
 
 /** Tum ayarlari tek nesnede dondurur (eksik anahtarlar icin varsayilan). */

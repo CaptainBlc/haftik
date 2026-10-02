@@ -215,16 +215,17 @@ render-sırasında ref yazımı): `docs/muhendislik/bildirim-ve-izin.md`. Kararl
 (A8, A12). `now` zorunlu kılma (TB-10) S14/S15 T1/S15 T3 boyunca üç kez bilerek ERTELENDİ (hiçbiri
 gerektirmedi; sıradaki `open-card.ts` dokunuşunda ele alınabilir). K4 (sıcak/soğuk açılış emülatör
 kanıtı) bu ortamda YOK. `npm run verify`: 77 suite / 924 test yeşil, 3 atlandı.
-· **S16b KISMEN** (2026-10-02): T6 açık tema kilidi (A11, `app.json` `userInterfaceStyle: light`);
-güvenli silme (silme sonrası `VACUUM` + `wal_checkpoint(TRUNCATE)`, açılışta `PRAGMA secure_delete=ON`);
-silme hatasında "Silinemedi" uyarısı, Bugün kayıt hatasında "Kaydedilemedi" uyarısı, Hafta/Bugün/Kart
-ekranlarında okuma hatası için `LoadErrorView` ("Yüklenemedi" + Tekrar dene); A11Y-01..06 + 15
-(önizleme Geri üst inset + 48 dp, gizle/göster 48 dp, satır sarma, anahtar etiketi, silme kontrastı
-`#B3142B`, reduce-motion, gizlilik Alert "Tamam"). **S16b KALAN:** paylaşım dosyası (`cache/haftik-share/`,
-tarihsiz `Haftik-kart.png`, `finally`de silmeyi bırakıp yaşa göre süpürme — 04 #4, K5 doğrulaması şart),
-sürüm satırı (26 R-1), rapor v2 (27 §4.1), K4 (koyu moddayken 3 ekran, 6 Önemli bulgu yeniden ölçüm).
-**Batuhan onayı bekleyen yeni metinler** (copywriter): "Silinemedi/Veriler silinemedi...", "Kaydedilemedi/
-Bugünün kaydı yapılamadı...", "Yüklenemedi." + "Tekrar dene".
+· **S16b TAMAMLANDI** (2026-10-02): T6 açık tema kilidi (A11); güvenli silme (VACUUM +
+wal_checkpoint, secure_delete); silme/kayıt/yükleme hatası geri bildirimi (Silinemedi,
+Kaydedilemedi, LoadErrorView); A11Y-01..06 + 15; paylaşım dosyası adanmış haftik-share/ dizininde
+sabit tarihsiz Haftik-kart.png, paylaşım sonrası SİLİNMEZ (04 #4), yaşa göre süpürme + silmede dizin
+komple; sürüm satırı (Ayarlar, build/kanal/commit/şema); rapor v2 + tam metin önizleme (Modal) +
+seq. Ayrıntı: docs/muhendislik/{kart-render,veri-ve-migration}.md. K4-rel (R8li release, emülatör):
+sürüm satırı, rapor önizleme/paylaşım seçici, kart PNG 1080x1920 (metadata yok), saat atlamasıyla
+yaşa göre süpürme, silmede dizin gitti. KALAN: K5 başarılı paylaşım hedefi (WhatsApp), koyu moddaki
+cihazda 3 ekran (K4), 6 Önemli A11Y bulgusunun yeniden ölçümü, rapor v2 eksik alanlar (S19+
+olayları) ve v2 birleştirme betiği. Batuhan onayı bekleyen yeni metinler (copywriter): Silinemedi /
+Kaydedilemedi / Yüklenemedi + Tekrar dene, rapor önizleme girişi.
 · **S17 Platform yapılandırması** (2026-10-02): `plugins/` altında 3 config plugin (`permission-policy`
 tek kaynak + `with-permission-policy` + `with-data-extraction-rules`), `scripts/check-apk-permissions.js`.
 Release APK izinleri altın listeyle birebir (INTERNET release'ten kalktı, debug/Metro'da duruyor), süreçte

@@ -23,11 +23,20 @@ Gerçek imza: `(ref: RefObject<ViewShotRef | null>) => Promise<string>` (bkz. `s
 
 ## view-shot'ın platform farkları
 
-- (2026-09-23, MOB/S10 SEC I-1) Geçici kart PNG'si her dalda silinir ve süpürülür. `shareCard`:
-  `isAvailableAsync` kontrolü `try/finally` içinde. `src/card/temp-cleanup.ts` `sweepSnapshotFiles()`:
-  `cacheDirectory` altında yalnızca `ReactNative-snapshot-image*.png` dosyalarını siler (react-native-view-shot
-  `RNViewShotModule.java` `TEMP_FILE_PREFIX` + `createTempFile`, node_modules'tan doğrulandı); açılışta ve
-  `deleteAllData` sonunda çağrılır, en iyi çaba.
+- **[GÜNCEL 2026-10-02, S16b — 04 #4, 24 §2.1, 22 F-8] Paylaşım dosyası sözleşmesi:** `captureCardPng`
+  `result:'base64'` ile yakalar (view-shot kendi geçici dosyasını/harici önbellek seçimini hiç üretmez),
+  PNG'yi adanmış `cacheDirectory/haftik-share/` dizinine SABİT, tarihsiz adla (`Haftik-kart.png`) yazar
+  (`src/card/share-dir.ts`). `shareCard` ve `shareReport` paylaşım sonrası dosyayı **silmez**: Android seçici
+  hedef uygulamayı başlatırken kapanıp promise'i çözebildiği için silmek hedefe boş/eksik görsel verebiliyordu.
+  Temizlik: her yakalamada ve açılışta yaşa göre (> 1 saat, yaşı bilinmeyen de silinir), "Tüm verilerimi sil"de
+  dizin komple. Deneme raporu da aynı dizinde (`deneme-raporu.txt`). Emülatörde doğrulandı (R8'li release):
+  PNG 1080x1920, tEXt/eXIf yok, cache'te `ReactNative-snapshot-image*` kalmıyor, seçici açılıyor, eski dosya
+  saat atlamasıyla yaşa göre süpürüldü, silme dizini kaldırıyor. **Açık (K5):** başarılı hedef seçiminde (WhatsApp)
+  görselin eksiksiz gittiği gerçek cihazda hâlâ doğrulanmadı. `FileProvider` `cache-path path="."` alt dizinleri kapsar.
+- (2026-09-23, MOB/S10 SEC I-1; hâlâ geçerli, eski kurulumlar için) `src/card/temp-cleanup.ts`
+  `sweepSnapshotFiles()`: `cacheDirectory` altında yalnızca `ReactNative-snapshot-image*.png` siler
+  (react-native-view-shot `TEMP_FILE_PREFIX`); açılışta ve `deleteAllData` sonunda çağrılır, en iyi çaba. S16b'den
+  sonra yeni dosya üretilmez, yalnızca S16b öncesi sürümlerin kalıntıları içindir.
 - **Platform sınırı (hâlâ açık):** iOS'ta view-shot dosyayı `NSTemporaryDirectory()/ReactNative/` altına yazar
   (`cacheDirectory` değil); `expo-file-system` bu dizini sunmadığı için iOS süpürmesi yapılamıyor — iOS artık
   yola girdiği için (`docs/kararlar/2026-10-01-kapsam-ios-dagitim.md`) bu madde **aktif** bir açık uç, paylaşım
@@ -39,8 +48,8 @@ Gerçek imza: `(ref: RefObject<ViewShotRef | null>) => Promise<string>` (bkz. `s
   hiç kullanılmaz. Mağaza bağlantısının PNG'nin yanında gerçek bir paylaşım mesajı olarak taşınıp taşınmadığı
   cihazsız doğrulanamadı — bağlantı bundan bağımsız olarak kartın gömülü damgasında (`CARD_STAMP_TEXT`) zaten
   PNG'nin içinde basılı.
-- (2026-09-23, MOB/S7b) Paylaşılan PNG, `Sharing.shareAsync` TAMAMLANDIĞINDA (hedef seçilse de iptal edilse de)
-  `expo-file-system/legacy`'nin `deleteAsync`'iyle silinir; silme en iyi çabadır. SDK 57'de eski
+- **[ESKİ 2026-10-02: S16b'de kaldırıldı, bkz. yukarıdaki güncel sözleşme]** (2026-09-23, MOB/S7b) Paylaşılan PNG,
+  `Sharing.shareAsync` TAMAMLANDIĞINDA `deleteAsync`'iyle siliniyordu. Hâlâ geçerli kalan kısım: SDK 57'de eski
   `deleteAsync(uri, opts)` tarzı fonksiyonlar yalnızca `expo-file-system/legacy` alt-yolunda — `src/card/share.ts`
   bilerek bu alt-yolu import eder (kod düz `file://` URI'leriyle çalışıyor); yeni `File` sınıfıyla legacy
   fonksiyonları karıştırma.

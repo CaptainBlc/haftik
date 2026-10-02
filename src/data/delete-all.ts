@@ -17,6 +17,7 @@
  * çalıştırır; böylece eşzamanlı bir sync silmeyle iç içe geçemez ve
  * sonraki sync `onboardingDone=false` görüp kalan bildirimleri temizler.
  */
+import { deleteShareDir } from '@/card/share-dir';
 import { sweepSnapshotFiles } from '@/card/temp-cleanup';
 import { deleteReportFile } from '@/metrics/report-file';
 
@@ -77,4 +78,6 @@ export async function deleteAllData(
   await deleteReportFile();
   // S10 I-1: kalan geçici kart PNG'leri (en iyi çaba).
   await sweepSnapshotFiles();
+  // S16b: adanmış paylaşım dizini (kart PNG'si + rapor) tamamen silinir (en iyi çaba).
+  await deleteShareDir();
 }

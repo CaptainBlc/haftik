@@ -6,21 +6,31 @@
  */
 import * as FileSystem from 'expo-file-system/legacy';
 
+import { getShareFileUri } from '@/card/share-dir';
+
 export const REPORT_FILE_NAME = 'deneme-raporu.txt';
 
-/** Önbellek dizini yoksa boş string ile SESSİZCE devam etmek yerine hata fırlatır. */
+/**
+ * S16b: rapor da adanmış paylaşım dizininde (`haftik-share/`) durur, böylece
+ * tek süpürme/silme kapsamı olur. Önbellek dizini yoksa hata fırlatır.
+ */
 export function getReportFileUri(): string {
-  const dir = FileSystem.cacheDirectory;
-  if (!dir) {
-    throw new Error('report-file: önbellek dizini bulunamadı.');
-  }
-  return `${dir}${REPORT_FILE_NAME}`;
+  return getShareFileUri(REPORT_FILE_NAME);
 }
 
 /** En iyi çaba, idempotent temizlik; hiçbir hata dışarı sızmaz. */
 export async function deleteReportFile(): Promise<void> {
   try {
     await FileSystem.deleteAsync(getReportFileUri(), { idempotent: true });
+  } catch {
+    // en iyi çaba
+  }
+  // S16b öncesi sürümlerin önbellek köküne yazdığı eski konum (varsa).
+  try {
+    const base = FileSystem.cacheDirectory;
+    if (base) {
+      await FileSystem.deleteAsync(`${base}${REPORT_FILE_NAME}`, { idempotent: true });
+    }
   } catch {
     // en iyi çaba
   }
