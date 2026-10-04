@@ -6,13 +6,12 @@
 
 ## Sıradaki
 
-S16a (içerik/adlandırma; Batuhan'ın metin onayı bekliyor) → P1 0.1.0 (hesaplar Batuhan'da) → çekirdek (S19+).
+S16a kod olarak hazır, **Batuhan metin onayı bekliyor** (`docs/s16a-metin-onayi.md`) → P1 0.1.0 (hesaplar Batuhan'da) → çekirdek (S19+).
 Taban dilimleri bitti: S13, S14, S15, S16b, S17, S18 (`npm run verify`: 82 suite / 983 test yeşil, 2026-10-02).
 
 ## Batuhan'ın onayladığı, henüz uygulanmamış kararlar
 
 Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
-- seviye kelimeleri + içerik paketi (A14/A15, S16a)
 - Ayarlar'daki ayrı "Kart hazır" anahtarı (A12'nin UI tarafı, S23)
 - paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı)
 - seviye/font/ikon/haptik/K3-banner/Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23)
@@ -21,8 +20,11 @@ Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
 
 ## Batuhan'dan bekleyen
 
-- **Metin onayı** (copywriter önerisi, geçici): "Silinemedi", "Kaydedilemedi", "Yüklenemedi" +
-  "Tekrar dene", rapor önizleme girişi. Bildirim metinleri hâlâ eski "Karnen hazır" (S16a).
+- **S16a metin onayı** (`docs/s16a-metin-onayi.md`): yeni kart/özet/unvan havuzu, seviye kelimeleri, karşılama ve
+  bildirim metinleri, site/mağaza metni (copywriter taslağı, `CONTENT_VERSION` 2). Aynı belgede 7 karar noktası var
+  (gizli çıkartma alt yazısı S19'a bırakıldı, "Tam Gaz" tekrarı, gizlilik sayfası düzeltmeleri K10'a girecek vb.).
+- **Metin onayı** (S16b'den, geçici): "Silinemedi", "Kaydedilemedi", "Yüklenemedi" + "Tekrar dene", rapor
+  önizleme girişi.
 - `app.json` `version` hâlâ `1.0.0`; plandaki ilk dış sürüm 0.1.0 (release-manager/Batuhan).
 - Karar C (denemeden önce, 10 madde) ve D (ikinci yapı, 10 madde).
 - N-9 uygulama kilidi/FLAG_SECURE (öneri: yalnız son uygulamalar önizlemesini gizle).

@@ -4,8 +4,8 @@
  * kaç gün kaldığı ipucu İÇERMEZ; tavsiyesiz, tanısız, suçlayıcı olmayan ton.
  * Plan çıktısı yalnızca `kind` taşır, metni scheduler bu dosyadan çözer.
  *
- * **S16a (19 §5.1, A15):** "Karnen hazır" -> "Haftanın kartı hazır" (kullanıcıya
- * dönük her yüzeyde "Kart"); `card-ready` metni K3 akışını (bugünü de işaretle)
+ * **S16a (19 §5.1, A15):** eski adlandırma yerine "Haftanın kartı hazır"
+ * (kullanıcıya dönük her yüzeyde "Kart"); `card-ready` metni K3 akışını (bugünü de işaretle)
  * önceden söyler. `daily` için 4 varyantlı havuz: hangi günde hangisi çıkacağı
  * haftanın gününe göre SABİT (deterministik, "sürpriz"/alışkanlık tasarımı yok,
  * veri sızdırmaz). "Vites" imgesi bildirimde kullanılmaz (A15). Metin taslağı

@@ -47,3 +47,17 @@ sonrası alarmlar korundu, Pazar kart akışı + paylaşım seçicisi + rapor + 
 yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `docs/muhendislik/arac-zinciri.md`.
 `mapping.txt` her release'te saklanmalı (`C:\dev\haftik-artifacts\`, repo dışı); EAS `buildArtifactPaths` doğrulanmadı.
 `npm run verify`: 79 suite / 944 test yeşil.
+- **S16a İçerik ve adlandırma** (2026-10-03; metin onayı Batuhan'da, bkz. `docs/s16a-metin-onayi.md`): `src/domain/content/tr.ts`
+  `CONTENT_VERSION` 2 — 40 unvan, 36 satır, 12 özet metni yeniden yazıldı (zamansızlaştırma: kartta "bu hafta" yok, yalnızca iç
+  kıyas "geçen haftaya göre"; yargı/damga/tıbbi dil, "mod", "kumbaracı", banka kartı sesteşliği ve "vites" temizlendi;
+  02 M-2/M-3/M-4 metinleri her tetiklenme durumunda doğru). Seviye kelimeleri (A14): uyku kısa/orta/uzun, sosyal
+  sakin/orta/kalabalık. `notification-texts.ts`: `card-ready` "Haftanın kartı hazır", `daily` 4 varyantlı havuz,
+  `getNotificationText` haftanın gününe göre deterministik. Karşılama, paylaşım mesajı, rapor metni, site ve mağaza
+  belgesi (8 saniye -> birkaç saniye, check-in -> işaretleme, "karne" -> "kart", App Store adı "Haftik: Haftalık Emoji
+  Kartı"). Mekanik: `__tests__/domain/content-lint.test.ts` (L1 yasak sözcük, L5 özette seviye sözcüğü yok, L6 zaman
+  zarfı, uzunluk, imge kotaları, "vites" 0), `__tests__/infra/naming-lint.test.ts` (R-12/L3 "karne" 0, "8 saniye" yok,
+  `textTransform`/`toUpperCase` yasağı). T4 damga: kart damgası zaten `Haftik · [mağaza bağlantısı]`; "HAFTANIN UNVANI" bandı
+  C yönü çizimiyle (S19) gelecek. Kapsam dışı bırakılan: gizli çıkartma alt yazısı (S19), karşılama dışındaki onboarding
+  metinleri/ÖRNEK kart/18 yaş notu (19 §3.3), havuz genişletme (~190 yeni metin, 19 §4.3) ve L2/L4/L7 lint'leri. Site gizlilik
+  sayfasında iki gerçek düzeltme (bildirim örneği, paylaşım dosyası silme cümlesi; K10 kapısı). `npm run verify`: 86 suite /
+  1203 test yeşil, 3 atlandı (K2; emülatör K4 yapılmadı).

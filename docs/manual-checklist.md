@@ -102,7 +102,7 @@ Sonuç: ilk kart eşiği (3 gün) tamam, saat gelmiş, Pazar'ın check-in'i boş
 
 ## 6. Bildirimler
 
-Önkoşul: dev panel `(gerçek)`; saat testleri SB ile telefon saatiyle yapılır. Bildirim metinleri sabit: günlük "Bugün nasıldı? / Birkaç saniyede bugünü işaretleyebilirsin."; kart "Karnen hazır / Bu haftanın kartı seni bekliyor."
+Önkoşul: dev panel `(gerçek)`; saat testleri SB ile telefon saatiyle yapılır. Bildirim metinleri sabit: günlük metin haftanın gününe göre 4 sabit varyanttan biri ("Bugün nasıldı?", "Bugünün emojisi hangisi?", "Sayfa seni bekliyor.", "Günün emoji özeti zamanı."; S16a); kart "Haftanın kartı hazır / Bugünü de işaretlediysen kart seni bekliyor."
 
 | ID | Adımlar | Beklenen | Sonuç | Kapattığı plan maddesi | Önem | Not | iOS (S11) |
 |---|---|---|---|---|---|---|---|
@@ -113,7 +113,7 @@ Sonuç: ilk kart eşiği (3 gün) tamam, saat gelmiş, Pazar'ın check-in'i boş
 | B-05 | SB: saat 19:58, check-in boş. (a) Ayarlar'da Günlük hatırlatmayı kapat > 20:00'yi bekle. (b) Tekrar aç, saati 20:00 yerine 21:00 çipine değiştir > 20:00 ve 21:00'i bekle (saati 20:58'e alarak hızlandırabilirsin). | (a) Kapalıyken gelmez. (b) 20:00'de gelmez; 21:00'de gelir; eski saat için kalıntı bildirim yok. | [ ] geçti [ ] kaldı | S8 (aç/kapa, saat değişimi, S-02) | Önemli | | [ ] |
 | B-06 | SB: temiz veri; telefon tarihini bir Pazartesi'ye kur (örn. bir sonraki Pzt), Pzt, Sal, Çar check-in'lerini her gün için tarihi +1 ilerleterek kaydet. Sonra tarihi o haftanın Pazar'ı 19:57'ye kur, uygulamayı öne getir, bekle. Bildirime dokun (bugün Pazar check-in'i boşken). | 20:00'de "Karnen hazır" gelir (3 dolu gün = ilk kart eşiği); dokununca Pazar check-in'i boş olduğundan "Bugünü de ekleyelim" ara ekranı, kayıttan sonra kart; bugün doluysa doğrudan kart. Çökme yok. | [ ] geçti [ ] kaldı | S8 (Pazar kartı bildirimi, dokunma akışı, C-08/C-13), S7a K3 | Blokör | | [ ] |
 | B-07 | SB, saat dilimi Berlin (UTC+2) yap, saat 19:58, hatırlatma 20:00 seçili. Önce İstanbul'dayken uygulamayı aç (plan kurulsun), sonra saat dilimini Berlin'e değiştir, uygulamayı öne getir. | Bildirim Berlin yerel 20:00'de gelir ve tek gelir; İstanbul saatine göre olan eski bildirim (ayrıca) gelmez. | [ ] geçti [ ] kaldı | S8 (T-04, saat dilimi değişimi cihazda) | Önemli | | [ ] |
-| B-08 | SB, saat dilimi New York yap, tarih o haftanın Pazar'ı 19:58 (3 dolu gün varken, B-06 kurulumu). | "Karnen hazır" New York yerel 20:00'de gelir; İstanbul'a göre "Pazartesi" ise yeni hafta sayılmaz (hafta yerel takvime göre). | [ ] geçti [ ] kaldı | S8 (T-02/T-03, Jest'te `skipped`) | Önemli | | [ ] |
+| B-08 | SB, saat dilimi New York yap, tarih o haftanın Pazar'ı 19:58 (3 dolu gün varken, B-06 kurulumu). | "Haftanın kartı hazır" New York yerel 20:00'de gelir; İstanbul'a göre "Pazartesi" ise yeni hafta sayılmaz (hafta yerel takvime göre). | [ ] geçti [ ] kaldı | S8 (T-02/T-03, Jest'te `skipped`) | Önemli | | [ ] |
 | B-09 | SB, saat dilimi New York, tarih 31 Ekim 2026 (DST sonu 1 Kasım 2026), hatırlatma 21:00; iki gün boyunca tarih/saati ileri sararak 21:00'e kadar git. | Her gün TAM bir kez, yerel 21:00'de gelir; çift ya da eksik gün yok. (T-06/T-07 "yok olan/iki kez yaşanan saat" bildirim saatleri arayüzden seçilemediği için cihazda uygulanamaz, yalnızca kodda.) | [ ] geçti [ ] kaldı | S8 (T-05) | Düşük | | [ ] |
 
 ## 7. Ayarlar ve "Tüm verilerimi sil"
@@ -129,7 +129,7 @@ Sonuç: ilk kart eşiği (3 gün) tamam, saat gelmiş, Pazar'ın check-in'i boş
 
 | ID | Adımlar | Beklenen | Sonuç | Kapattığı plan maddesi | Önem | Not | iOS (S11) |
 |---|---|---|---|---|---|---|---|
-| R-01 | Ayarlar > "Deneme raporunu paylaş". Onay penceresini oku. Önce Vazgeç. | "Deneme raporu" onayı okunur: yalnızca sayaçlar ve gün sayısı, içerik/tarih/kimlik yok; Vazgeç'te paylaşım sayfası hiç açılmaz. | [ ] geçti [ ] kaldı | S9 (SEC I-2 onay Alert'i) | Önemli | | [ ] |
+| R-01 | Ayarlar > "Deneme raporunu paylaş". Açılan önizlemede raporun TAM metnini oku (S16b). Önce Vazgeç. | Önizlemede yalnızca sayaçlar ve gün sayısı, içerik/tarih/kimlik yok; Vazgeç hiçbir şey paylaşmaz/yazmaz. | [ ] geçti [ ] kaldı | S9 (SEC I-2 onay Alert'i) | Önemli | | [ ] |
 | R-02 | Tekrar dene, Paylaş > sistem paylaşım sayfası > Mesajlar/WhatsApp/e-posta (kendine) hedefini seç; gelen dosyayı aç. | Paylaşım sayfası açılır; hedefte `.txt` okunur; içinde emoji, kart metni, takvim tarihi, kategori adı, kimlik yok; ölçüm sınırları (paylaşım fazla/ekran görüntüsü eksik sayılır) yazıyor. | [ ] geçti [ ] kaldı | S9 (rapor Android paylaşım sayfasıyla çıkar, .txt okunur) | Blokör | | [ ] |
 | R-03 | Temiz veriyle bilinen bir akış yap: 3 check-in, 1 kart açma, 1 paylaşım (uyku+harcama gizli), sonra rapor al. | Raporda check-in ve kart açma sayıları yaptıklarınla tutarlı; paylaşım başlatma = 1; gizlenen satır = 2; aynı hafta kartı için "kart açıldı/açılabilir" sayaçları bir kez sayılıyor (tekrar açış `card_opened` sayısını artırabilir, not al). | [ ] geçti [ ] kaldı | S9 (olayların gerçek akışta beklenen anlarda yazılması) | Önemli | | [ ] |
 

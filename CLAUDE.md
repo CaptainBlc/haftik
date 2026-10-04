@@ -49,7 +49,9 @@ Dosya adı kebab-case (tarihsel istisnalar: `src/card/CardView.tsx`, `CardReveal
 `src/domain/buildCard.ts`). Dizinler arası `@/…`, aynı dizin `./…`. Hook sarmaladığı modülün
 yanında yaşar (`useNow` → `lib/now`, `useNotificationRouting` → `notify/notification-routing`);
 `src/hooks/` yalnızca tema ve ekran geometrisi. Kullanıcıya dönük her yüzeyde "Kart", yeni
-metin/dosya "karne" kullanmaz (mekanik: R-12 — henüz eklenmedi, S16a işi).
+metin/dosya "karne" kullanmaz (mekanik: `__tests__/infra/naming-lint.test.ts`, R-12). Kart/bildirim
+metin havuzu `__tests__/domain/content-lint.test.ts` ile denetlenir (yasak sözcük, zaman zarfı
+yok, kota, uzunluk); `textTransform`/`toUpperCase` yasak (Türkçe i/İ).
 
 **Katmanlar** (yön: app → components/özellik modülleri → lib → data → domain):
 - `src/domain`: saf TS; react/expo/`node:*` yok; saat `now: Date` parametresiyle gelir.
