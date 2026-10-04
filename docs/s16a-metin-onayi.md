@@ -8,7 +8,7 @@
 > (yasak sözcük, zaman zarfı, kota, uzunluk) kendiliğinden denetler.
 > Commit'ten önce: bu belgeyi oku, değiştirmek istediklerini söyle ya da değiştir. Onayladıysan "Onay" satırını doldur.
 
-**Onay:** ☐ Olduğu gibi onaylıyorum  ☐ Şu satırlar değişsin: ______  (tarih: ____ )
+**Onay:** ☒ Olduğu gibi onaylıyorum  ☐ Şu satırlar değişsin: —  (Batuhan, 2026-10-04; commit `0aea7ae` sonrası sohbette onaylandı)
 
 ## 1. Ne değişti, neden (kısa)
 
