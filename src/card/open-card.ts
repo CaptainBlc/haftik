@@ -25,7 +25,7 @@
  * girdiyle (deep link `haftik://card/<Pazartesi>`) doğrudan
  * çağrılabilen tek yoldur; bu yüzden çağıran katmanın uygunluğu zaten
  * doğruladığına GÜVENMEZ. Kayıtlı kart yoksa `getWeekState(...).unlocked`
- * (dolu gün eşiği + Pazar 20:00) burada da kontrol edilir; uygun değilse
+ * (dolu gün eşiği + Pazar 20:00; zaman = çağıranın verdiği `now`) burada da kontrol edilir; uygun değilse
  * `{ status: 'notReady' }` döner: `buildCard`/`saveCard` çağrılmaz (kart
  * eksik veriyle erken dondurulmaz) ve ekran
  * `card_opened` saymaz. Kayıtlı kartın yeniden açılışı bu kontrolden ÖNCE
@@ -36,7 +36,7 @@ import { getCard, saveCard } from '@/data/card-repo';
 import { getCheckins, getCheckinsBefore } from '@/data/checkin-repo';
 import { buildCard, type PrevCardVariants } from '@/domain/buildCard';
 import type { CardSnapshot } from '@/domain/types';
-import { addLocalDays, getWeekState, hasQualifiedWeekBefore } from '@/domain/week';
+import { addLocalDays, getWeekState, hasQualifiedWeekBefore, toLocalDateString } from '@/domain/week';
 import { needsTodayCheckinBeforeCard } from '@/lib/card-flow';
 import { isValidWeekStartParam } from '@/lib/week-param';
 
@@ -61,19 +61,17 @@ function prevVariantsFrom(prevCard: CardSnapshot | null): PrevCardVariants | und
 }
 
 /**
+ * **TB-10 (08 M-3, 2026-10-05):** `now` ZORUNLUDUR ve zamanın tek kaynağıdır. Eskiden `today: string` ve isteğe
+ * bağlı `now?: Date` iki ayrı kaynaktı; `now` verilmezse `today`in gün sonu varsayılıyordu ve çağıran iki değeri
+ * tutarsız verebilirdi. Şimdi bugünün yerel tarihi (K3, geçerlilik) `now`'dan türer; çağıran tek değer geçer.
+ * `now`'ı isteğe bağlı yapmak tsc'de kırılır (`__tests__/card/open-card.signature.test.ts`).
+ *
  * @param weekStart Haftanın Pazartesi tarihi, `YYYY-MM-DD`.
- * @param today Bugünün yerel tarihi, `YYYY-MM-DD` (`toLocalDateString(now)`).
- *   Yalnızca K3 (Pazar çakışması) kontrolü için kullanılır; zaten dondurulmuş
- *   bir kart varsa hiç okunmaz.
- * @param now Uygunluk (Pazar 20:00) kontrolü için şimdiki an. Verilmezse
- *   `today`in gün sonu (23:59:59) varsayılır, yani yalnızca dolu gün eşiği
- *   ve "hafta bitti mi" ayırt edilir; üretim ekranı her zaman gerçek `now`ı geçer.
+ * @param now Şimdiki an: uygunluk (Pazar 20:00), K3 (Pazar çakışması) ve `weekStart` geçerliliği buna göre.
+ *   Zaten dondurulmuş bir kart varsa uygunluk ve K3 hiç okunmaz.
  */
-export async function openOrBuildCard(
-  weekStart: string,
-  today: string,
-  now?: Date
-): Promise<OpenCardResult> {
+export async function openOrBuildCard(weekStart: string, now: Date): Promise<OpenCardResult> {
+  const today = toLocalDateString(now);
   // Savunma amaçlı: geçersiz/ileri tarihli hafta `saveCard`a asla ulaşmaz.
   if (!isValidWeekStartParam(weekStart, today)) {
     throw new Error('invalid weekStart');
@@ -89,10 +87,9 @@ export async function openOrBuildCard(
     getCheckinsBefore(weekStart),
   ]);
 
-  const effectiveNow = now ?? new Date(`${today}T23:59:59`);
   const state = getWeekState({
     weekStart,
-    now: effectiveNow,
+    now,
     checkins: weekCheckins,
     // Kritik-1 düzeltmesi (A8): bkz. domain/week.ts hasQualifiedWeekBefore.
     hasQualifiedWeekBefore: hasQualifiedWeekBefore(priorCheckins, weekStart),

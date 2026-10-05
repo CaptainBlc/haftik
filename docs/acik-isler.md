@@ -50,8 +50,6 @@ Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
 
 ## Bilinen teknik borçlar
 
-- `openOrBuildCard` `now`'ı zorunlu kılma (TB-10; S14/S15 T1/S15 T3'te üç kez bilerek ertelendi; sıradaki
-  `open-card.ts` dokunuşunda).
 - Rapor v2 eksik alanlar (S19+ olayları) ve v2 birleştirme betiği (27 §4.3); eski v1 toplayıcı
   (`metrics-calc.aggregateMetrics`) v2'ye uyarlanmadı.
 - `react-native-worklets` / Material Symbols kaldırma (isteğe bağlı, S18 ops.).

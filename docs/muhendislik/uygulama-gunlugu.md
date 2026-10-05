@@ -89,3 +89,8 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   doğrulanır (yerel sürücülü animasyon Jest'te JS değerini ilerletmez); akıcılık K4/K5'te görülmedi. **Hâlâ yapılmadı:**
   haptik (S20 `expo-haptics`), bugünün noktasının dolması (Bugün'de nokta satırı yok, S23), "Yeni bir hafta, temiz sayfa"
   boş durum satırı (metin onayı bekliyor, sayfada yazılı). `npm run verify`: 99 suite / 1338 test yeşil, 3 atlandı.
+- **TB-10 kapandı** (2026-10-05): `openOrBuildCard(weekStart, now: Date)`. `today: string` parametresi ve `now?`
+  varsayılanı ("today'in gün sonu") kalktı; bugünün yerel tarihi `toLocalDateString(now)` ile içeride türer. Tek çağıran
+  (`src/app/card/[weekStart].tsx`) `now` geçer. Üç mevcut test dosyasında yalnız ÇAĞRI İMZASI değişti (beklentiler aynı);
+  eski varsayılanı birebir koruyan `endOfDay()` yardımcısı eklendi (`__tests__/helpers/end-of-day.ts`). Derleme zamanı koruması:
+  `__tests__/card/open-card.signature.test.ts` (`@ts-expect-error`; `now` opsiyonel yapılınca `tsc` kırılır, mutasyonla görüldü).

@@ -54,9 +54,8 @@ export default function CardScreen() {
     if (!validWeekStart || !weekStart) {
       return;
     }
-    const today = toLocalDateString(now);
     let cancelled = false;
-    openOrBuildCard(weekStart, today, now).then((value) => {
+    openOrBuildCard(weekStart, now).then((value) => {
       if (cancelled) {
         return;
       }

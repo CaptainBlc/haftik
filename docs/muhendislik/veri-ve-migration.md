@@ -56,9 +56,9 @@ TS tipiyle ve sözleşme testiyle korunur (`__tests__/data/metric-counter-repo.t
 `sqlite_master`'ı sorgular; `deleteAllData` sonrası bulduğu HER tablonun 0 satır olduğunu doğrular. Yeni bir
 kalıcı tablo eklenip `delete-all.ts`'e eklenmesi unutulursa bu test kırılır.
 
-**TB-10 (`openOrBuildCard`'da `now` zorunlu kılma) bilerek ertelendi:** kendi önceliği düşük ("bugün tek
-çağıran doğru, tetik BLG-09/ikinci çağıran eklendiğinde" — `08-muhendislik-tutarlilik.md` TB-10), ve Kritik-1
-düzeltmesi (S15, A8 kararı) zaten aynı fonksiyona dokunacak — ikisi birlikte yapılmak daha az çakışma yaratır.
+**TB-10 (`openOrBuildCard`'da `now` zorunlu kılma) KAPANDI (2026-10-05):** imza `openOrBuildCard(weekStart, now: Date)`;
+bugünün yerel tarihi (K3, `weekStart` geçerliliği) `now`'dan türer, eski `today: string` + `now?` çift kaynağı kalktı.
+Gevşetme `tsc`'de kırılır (`__tests__/card/open-card.signature.test.ts`). Önceki ertelemeler S14/S15'teydi.
 
 ## Kök ErrorBoundary (Ç29 kararı — **uygulandı 2026-10-01, S14**)
 

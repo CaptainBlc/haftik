@@ -122,8 +122,8 @@ olmalı). Çözüm: iki ref (`pendingRouteRef`, `navReadyRef`), ikisi de yalnız
 `useRouter()` expo-router'da modül seviyeli bir tekil döndürdüğü için (`node_modules/expo-router/build/
 hooks/useRouter.js`) mount-anı kapanışındaki `router` referansı da güvenle sabit kalır.
 
-**Önkoşul ertelendi:** TB-10 (`openOrBuildCard`'da `now`'ı zorunlu kılma) üçüncü kez bilerek ERTELENDİ — T3 onu
-gerektirmedi. **K4 kanıtı yok**: sıcak/soğuk açılışta gerçek yönlendirme (`am force-stop` sonra bildirime
+**Önkoşul (TB-10) sonradan kapandı (2026-10-05):** `openOrBuildCard(weekStart, now)`, `now` zorunlu. T3 onu o gün
+gerektirmemişti. **K4 kanıtı yok**: sıcak/soğuk açılışta gerçek yönlendirme (`am force-stop` sonra bildirime
 dokunma) bu ortamda doğrulanamadı, sonraki cihaz oturumuna kalıyor.
 
 ## V-03: izin diyaloğu geri tuşuyla kapatma (düzeltildi, 2026-10-01 S15)

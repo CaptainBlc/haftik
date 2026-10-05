@@ -28,7 +28,7 @@ describe('openOrBuildCard uygunluk (deep link)', () => {
 
   it('dolu gün eşiğin altındaysa (2 < 3) notReady; kart ve olay yazılmaz', async () => {
     await fill(FIVE.slice(0, 2));
-    const r = await openOrBuildCard(WEEK, '2026-09-22', new Date(2026, 8, 22, 12));
+    const r = await openOrBuildCard(WEEK, new Date(2026, 8, 22, 12));
     expect(r).toEqual({ status: 'notReady' });
     expect(rows('weekly_card')).toHaveLength(0);
     expect(rows('metric_event')).toHaveLength(0);
@@ -37,24 +37,24 @@ describe('openOrBuildCard uygunluk (deep link)', () => {
 
   it('Pazar 20:00 öncesi (eşik tamam) notReady', async () => {
     await fill(FIVE);
-    const r = await openOrBuildCard(WEEK, '2026-09-20', new Date(2026, 8, 20, 19, 59));
+    const r = await openOrBuildCard(WEEK, new Date(2026, 8, 20, 19, 59));
     expect(r).toEqual({ status: 'notReady' });
     expect(rows('weekly_card')).toHaveLength(0);
   });
 
   it('Pazar 20:00 sonrası ve eşik tamam: normal üretim', async () => {
     await fill([...FIVE, '2026-09-20']); // bugünün (Pazar) check-in'i var: K3 devreye girmez
-    const r = await openOrBuildCard(WEEK, '2026-09-20', new Date(2026, 8, 20, 20, 0));
+    const r = await openOrBuildCard(WEEK, new Date(2026, 8, 20, 20, 0));
     expect(r.status).toBe('ready');
     expect(rows('weekly_card')).toHaveLength(1);
   });
 
   it('kayıtlı kart uygunluk kontrolüne takılmadan yeniden açılır', async () => {
     await fill(FIVE);
-    const first = await openOrBuildCard(WEEK, '2026-09-22', new Date(2026, 8, 22, 12));
+    const first = await openOrBuildCard(WEEK, new Date(2026, 8, 22, 12));
     expect(first.status).toBe('ready');
     // Erken saat ve eksik veriyle bile (now=Salı sabahı değil, hafta içi) kayıtlı kart döner.
-    const again = await openOrBuildCard(WEEK, '2026-09-16', new Date(2026, 8, 16, 8));
+    const again = await openOrBuildCard(WEEK, new Date(2026, 8, 16, 8));
     expect(again).toEqual(first);
   });
 });

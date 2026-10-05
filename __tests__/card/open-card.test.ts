@@ -12,6 +12,7 @@ import { saveCheckin } from '@/data/checkin-repo';
 import { openOrBuildCard } from '@/card/open-card';
 import type { Checkin } from '@/domain/types';
 
+import { endOfDay } from '../helpers/end-of-day';
 import { setupTestDb } from '../helpers/setup-test-db';
 
 function checkin(localDate: string, value: 1 | 2 | 3): Checkin {
@@ -36,7 +37,7 @@ describe('openOrBuildCard', () => {
   it("hiç kart yoksa ilk açılışta buildCard+saveCard ile üretir ve dondurur", async () => {
     await saveWeek('2026-09-14', 5, 3); // Pzt-Cum, 5 dolu gün
 
-    const result = await openOrBuildCard('2026-09-14', '2026-09-25');
+    const result = await openOrBuildCard('2026-09-14', endOfDay('2026-09-25'));
 
     expect(result.status).toBe('ready');
     if (result.status !== 'ready') return;
@@ -49,7 +50,7 @@ describe('openOrBuildCard', () => {
 
   it('aynı hafta tekrar açılınca aynı görsel: ikinci çağrı, aradan yeni checkin eklenmiş olsa bile İLK sonucu döner', async () => {
     await saveWeek('2026-09-14', 5, 3);
-    const first = await openOrBuildCard('2026-09-14', '2026-09-25');
+    const first = await openOrBuildCard('2026-09-14', endOfDay('2026-09-25'));
     expect(first.status).toBe('ready');
 
     // Içerik havuzu/checkin verisi "değişmiş" gibi bir senaryo: aynı haftaya
@@ -57,7 +58,7 @@ describe('openOrBuildCard', () => {
     // değiştirirdi).
     await saveCheckin(checkin('2026-09-20', 1));
 
-    const second = await openOrBuildCard('2026-09-14', '2026-09-26');
+    const second = await openOrBuildCard('2026-09-14', endOfDay('2026-09-26'));
 
     expect(second).toEqual(first);
   });
@@ -65,7 +66,7 @@ describe('openOrBuildCard', () => {
   it("K3: bugün bu haftanın Pazar'ı ve bugünün check-in'i eksikse kartı ÜRETMEDEN 'needsTodayCheckin' döner", async () => {
     await saveWeek('2026-09-14', 6, 2); // Pzt-Cmt, 6 dolu gün (eşik zaten sağlanmış)
 
-    const result = await openOrBuildCard('2026-09-14', '2026-09-20'); // bugün = o haftanın Pazar'ı
+    const result = await openOrBuildCard('2026-09-14', endOfDay('2026-09-20')); // bugün = o haftanın Pazar'ı
 
     expect(result).toEqual({ status: 'needsTodayCheckin' });
     expect(await getCard('2026-09-14')).toBeNull();
@@ -73,11 +74,11 @@ describe('openOrBuildCard', () => {
 
   it("K3 çözüldükten sonra (bugünün check-in'i eklendi) normal şekilde üretir", async () => {
     await saveWeek('2026-09-14', 6, 2);
-    const blocked = await openOrBuildCard('2026-09-14', '2026-09-20');
+    const blocked = await openOrBuildCard('2026-09-14', endOfDay('2026-09-20'));
     expect(blocked.status).toBe('needsTodayCheckin');
 
     await saveCheckin(checkin('2026-09-20', 2));
-    const result = await openOrBuildCard('2026-09-14', '2026-09-20');
+    const result = await openOrBuildCard('2026-09-14', endOfDay('2026-09-20'));
 
     expect(result.status).toBe('ready');
     if (result.status !== 'ready') return;
@@ -89,18 +90,18 @@ describe('openOrBuildCard', () => {
 
     // "bugün" artık ertesi haftanın bir günü (Pazartesi'den sonra) -- K3
     // artık geçerli değil (pazar-akisi.md kenar durum #3).
-    const result = await openOrBuildCard('2026-09-14', '2026-09-22');
+    const result = await openOrBuildCard('2026-09-14', endOfDay('2026-09-22'));
 
     expect(result.status).toBe('ready');
   });
 
   it('önceki haftanın kartı varsa unvan/satır/özet tekrar-önleme zincirini gerçek dondurulmuş veriden besler', async () => {
     await saveWeek('2026-09-07', 5, 3); // önceki hafta
-    const prev = await openOrBuildCard('2026-09-07', '2026-09-18');
+    const prev = await openOrBuildCard('2026-09-07', endOfDay('2026-09-18'));
     expect(prev.status).toBe('ready');
 
     await saveWeek('2026-09-14', 5, 3); // bu hafta, aynı seviye deseni
-    const current = await openOrBuildCard('2026-09-14', '2026-09-25');
+    const current = await openOrBuildCard('2026-09-14', endOfDay('2026-09-25'));
     expect(current.status).toBe('ready');
     if (current.status !== 'ready' || prev.status !== 'ready') return;
 
