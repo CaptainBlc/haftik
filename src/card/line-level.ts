@@ -15,15 +15,34 @@
  * "CardView içeriği dondurulmuş alanlardan render eder, havuzu yeniden
  * çözümlemez" kuralını bozmaz.
  */
-import type { CategoryValue, Level } from '@/domain/types';
+import type { Category, CategoryValue, Level } from '@/domain/types';
 
-const VALID_LEVELS: readonly Level[] = ['low', 'medium', 'high'];
+/**
+ * **S19 / P-6 (21 §2e): satır kimliği biçimi DONDURULDU.** Biçim
+ * `line.<kategori>.<seviye>.<varyant>`; kategori `Category`, seviye `low|medium|high`,
+ * varyant 1'den başlayan tam sayı. Kimlikler `weekly_card` satırlarında kalıcıdır; biçim
+ * değişirse eski kartlar okunamaz. Tek ayrıştırıcı burasıdır (`parseLineId`); biçimi
+ * değiştirmek migration + yeni `CONTENT_VERSION` gerektirir (`__tests__/domain/id-format.test.ts`
+ * içerik havuzunun tamamını bu ayrıştırıcıdan geçirir).
+ */
+const LINE_ID_PATTERN = /^line\.(movement|sleep|spending|social)\.(low|medium|high)\.([1-9][0-9]*)$/;
+
+export interface ParsedLineId {
+  category: Category;
+  level: Level;
+  variant: number;
+}
+
+/** Biçime uymayan kimlik için `null` döner (fırlatmaz); sert denetim isteyen `levelFromLineId` kullanır. */
+export function parseLineId(id: string): ParsedLineId | null {
+  const m = LINE_ID_PATTERN.exec(id);
+  if (!m) return null;
+  return { category: m[1] as Category, level: m[2] as Level, variant: Number(m[3]) };
+}
 
 export function levelFromLineId(id: string): Level {
-  const level = id.split('.')[2];
-  if ((VALID_LEVELS as readonly string[]).includes(level)) {
-    return level as Level;
-  }
+  const parsed = parseLineId(id);
+  if (parsed) return parsed.level;
   throw new Error(`levelFromLineId: beklenmeyen id biçimi '${id}' (level ayrıştırılamadı).`);
 }
 

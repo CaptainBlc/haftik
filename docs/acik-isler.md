@@ -7,7 +7,11 @@
 ## Sıradaki
 
 S16a bitti (metin onayı 2026-10-04, `docs/s16a-metin-onayi.md`) → P1 0.1.0 (hesaplar Batuhan'da) → çekirdek (S19+).
-Taban dilimleri bitti: S13, S14, S15, S16b, S17, S18 (`npm run verify`: 82 suite / 983 test yeşil, 2026-10-02).
+Taban dilimleri bitti: S13, S14, S15, S16b, S17, S18 (`npm run verify`: 98 suite / 1333 test yeşil, 2026-10-05).
+**S22 kısmi (2026-10-05):** Kaydet anı bitti (haptik, nokta, X cümlesi, boş durum satırı kaldı; ayrıntı günlükte).
+**S19 kısmi (2026-10-05):** bağımsız altyapı bitti (token, R-7, P-6, fontlar, Sticker, R-15, R1 çerçevesi, fikstürler;
+`docs/muhendislik/kart-render.md`). `CardView` v2 için **P0 görsel oturum sonucu, F0-9 Story ölçümü ve `layout.test.ts`
+değişikliği onayı** bekleniyor (kontrol listesi: `docs/p0-gorsel-oturum-kontrol-listesi.md`). R1 K4 tamam (2,0x ve 2,625x, kenar 2,27/1,81 -> ~1,1 px); v2 kontur profili `CardView` v2 ile tekrarlanacak.
 
 ## Batuhan'ın onayladığı, henüz uygulanmamış kararlar
 
@@ -20,6 +24,8 @@ Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
 
 ## Batuhan'dan bekleyen
 
+- **S22 metin onayı** (Kaydet anı cümleleri, düğme etiketleri): `docs/s22-metin-onayi.md`.
+- **P0 görsel oturum + F0-9** (`CardView` v2 kapısı): `docs/p0-gorsel-oturum-kontrol-listesi.md`.
 - **Metin onayı** (S16b'den, geçici): "Silinemedi", "Kaydedilemedi", "Yüklenemedi" + "Tekrar dene", rapor
   önizleme girişi.
 - `app.json` `version` hâlâ `1.0.0`; plandaki ilk dış sürüm 0.1.0 (release-manager/Batuhan).

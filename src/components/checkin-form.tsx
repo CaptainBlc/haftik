@@ -3,7 +3,8 @@
  * Veri/router'a dokunmaz; tarih etiketi, geçiş yetkileri ve seçim durumu
  * dışarıdan (`src/app/(main)/today.tsx`) verilir.
  */
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { CategoryPicker } from '@/components/category-picker';
 import { ThemedText } from '@/components/themed-text';
@@ -13,7 +14,7 @@ import { useTopInset } from '@/hooks/use-top-inset';
 import { useTheme } from '@/hooks/use-theme';
 import type { Category, CategoryValue } from '@/domain/types';
 import { CATEGORIES } from '@/domain/types';
-import { isSelectionComplete, type CategorySelection } from '@/lib/checkin-form';
+import { isSelectionComplete, isSameSelection, type CategorySelection } from '@/lib/checkin-form';
 
 export interface CheckinFormProps {
   dateLabel: string;
@@ -26,7 +27,27 @@ export interface CheckinFormProps {
   onSave: () => void;
   /** Veri henüz yüklenirken veya kayıt sırasında Kaydet'i de ayrıca kapatır. */
   disabledExtra?: boolean;
+  /**
+   * S22: kayıtlı hâl. Verilirse (`null` = bu gün için kayıt yok) düğme yuvası durumlu olur: seçim kayıtlıyla
+   * aynıysa "Kaydedildi" (etkisiz bilgi), değiştiyse "Güncelle". Verilmezse eski davranış: her zaman "Kaydet".
+   */
+  savedSelection?: CategorySelection | null;
+  /** S22: Kaydet'ten sonraki ilerleme cümlesi; `id` her kayıtta artar (aynı metin tekrar duyurulabilsin). */
+  feedback?: { id: number; text: string } | null;
+  /**
+   * S22 (B8): kayıtlı durumdayken bekleyen geçen hafta kartı varsa düğme yuvası "Geçen haftanın kartını aç"
+   * olur (ödül, eylemden sonra; dikey bütçe +0).
+   */
+  onOpenPendingCard?: (() => void) | null;
 }
+
+/** Düğme yuvasının sabit etiketleri (S22). */
+export const SAVE_BUTTON_LABELS = {
+  save: 'Kaydet',
+  saved: '✓ Kaydedildi',
+  update: 'Güncelle',
+  openPendingCard: 'Geçen haftanın kartını aç',
+} as const;
 
 export function CheckinForm({
   dateLabel,
@@ -38,12 +59,38 @@ export function CheckinForm({
   onSelect,
   onSave,
   disabledExtra = false,
+  savedSelection,
+  feedback = null,
+  onOpenPendingCard = null,
 }: CheckinFormProps) {
   const theme = useTheme();
   const topInset = useTopInset();
+  const [pressed, setPressed] = useState(false);
   const complete = isSelectionComplete(selection);
-  const saveDisabled = !complete || disabledExtra;
   const remaining = CATEGORIES.filter((category) => selection[category] === undefined).length;
+  const hasSaved = savedSelection !== undefined && savedSelection !== null;
+  const unchanged = hasSaved && isSameSelection(selection, savedSelection);
+  const showPendingCard = unchanged && onOpenPendingCard !== null && !disabledExtra;
+  const saveDisabled = !complete || disabledExtra || unchanged;
+  const buttonDisabled = showPendingCard ? false : saveDisabled;
+  const buttonLabel = showPendingCard
+    ? SAVE_BUTTON_LABELS.openPendingCard
+    : hasSaved
+      ? unchanged
+        ? SAVE_BUTTON_LABELS.saved
+        : SAVE_BUTTON_LABELS.update
+      : SAVE_BUTTON_LABELS.save;
+  // Cümle yalnız kayıtlı hâl değişmeden görünür; seçim değişince normal ipucuna döner.
+  const hintText = feedback && unchanged ? feedback.text : complete ? ' ' : `${remaining} kategori kaldı`;
+  const announceId = feedback && unchanged ? feedback.id : null;
+  const announceText = feedback?.text ?? null;
+
+  // A11Y-07: gösterilen cümle ekran okuyucuya AYNEN okunur (kayıt başına bir kez).
+  useEffect(() => {
+    if (announceId !== null && announceText) {
+      AccessibilityInfo.announceForAccessibility(announceText);
+    }
+  }, [announceId, announceText]);
   // Hangi günün düzenlendiği başlıkta açıkça yazar (yanlış güne kayıt riski, B4).
   const dayCaption = canGoToToday ? 'Dün' : 'Bugün';
 
@@ -88,23 +135,27 @@ export function CheckinForm({
         themeColor="textSecondary"
         testID="save-hint"
         style={styles.saveHint}>
-        {complete ? ' ' : `${remaining} kategori kaldı`}
+        {hintText}
       </ThemedText>
 
       <Pressable
         testID="save-button"
         accessibilityRole="button"
-        accessibilityState={{ disabled: saveDisabled }}
-        disabled={saveDisabled}
-        onPress={onSave}
+        accessibilityState={{ disabled: buttonDisabled }}
+        disabled={buttonDisabled}
+        onPress={showPendingCard ? (onOpenPendingCard ?? undefined) : onSave}
+        // Basılı 0,97 (17 §2.8). Stil dizisi statik kalır: `checkin-single-screen-fit` testi `style`ı düzleştirir.
+        onPressIn={() => setPressed(true)}
+        onPressOut={() => setPressed(false)}
         style={[
           styles.saveButton,
-          { backgroundColor: saveDisabled ? theme.backgroundElement : theme.text },
+          { backgroundColor: buttonDisabled ? theme.backgroundElement : theme.text },
+          pressed && !buttonDisabled && styles.saveButtonPressed,
         ]}>
         <ThemedText
           type="smallBold"
-          style={{ color: saveDisabled ? theme.textSecondary : theme.background }}>
-          Kaydet
+          style={{ color: buttonDisabled ? theme.textSecondary : theme.background }}>
+          {buttonLabel}
         </ThemedText>
       </Pressable>
     </ThemedView>
@@ -143,6 +194,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     gap: Spacing.two,
+  },
+  saveButtonPressed: {
+    transform: [{ scale: 0.97 }],
   },
   saveButton: {
     minHeight: 48,

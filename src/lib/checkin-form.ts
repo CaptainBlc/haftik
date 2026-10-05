@@ -50,3 +50,8 @@ export function checkinToSelection(checkin: Checkin | null): CategorySelection {
     social: checkin.social,
   };
 }
+
+/** İki seçim aynı mı? (S22: "Kaydedildi" ile "Güncelle" ayrımı; kayıtsız/eksik kategori `undefined` sayılır.) */
+export function isSameSelection(a: CategorySelection, b: CategorySelection): boolean {
+  return CATEGORIES.every((category) => a[category] === b[category]);
+}

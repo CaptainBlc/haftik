@@ -6,6 +6,7 @@
     "node": ">=24.19.0 <25.0.0"
   },
   "dependencies": {
+    "@expo-google-fonts/fraunces": "0.4.1",
     "@expo-google-fonts/inter": "0.4.2",
     "expo": "~57.0.26",
     "expo-application": "~57.0.3",

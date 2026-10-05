@@ -51,7 +51,7 @@
  * verilmezse (PNG yakalama sırasında olduğu gibi) tüm bölümler tam opaktır.
  */
 import { forwardRef } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, PixelRatio, StyleSheet, Text, View } from 'react-native';
 import ViewShot, { type ViewShotRef } from 'react-native-view-shot';
 
 import { CARD_STAMP_TEXT } from '@/config/constants';
@@ -59,6 +59,7 @@ import { CATEGORY_EMOJI } from '@/constants/emoji';
 import { CATEGORIES } from '@/domain/types';
 import type { Category, CardSnapshot } from '@/domain/types';
 
+import { computeCaptureFrame } from './capture-frame';
 import { CARD_FONT_FAMILY } from './fonts';
 import { CARD_LOGICAL_HEIGHT, CARD_LOGICAL_WIDTH, CardLayout, SummaryTextLayout } from './layout';
 import { LEVEL_TO_VALUE, levelFromLineId } from './line-level';
@@ -91,6 +92,12 @@ export interface CardViewProps {
    * satır/unvan gizlenmez (S7a ile geriye dönük uyumlu varsayılan).
    */
   hiddenCategories?: ReadonlySet<Category>;
+  /**
+   * S19 / R1: YAKALAMA örneği. `true` ise yakalanan kök, piksel olarak tam 1080x1920 eden bir çerçeve
+   * olur ve kart içinde büyütülür; yakalama sonrası yeniden ölçekleme (bulanıklık) olmaz
+   * (`capture-frame.ts`). Ekrandaki örnekler `false` (varsayılan) kalır: 360x640 dp.
+   */
+  captureFrame?: boolean;
 }
 
 function categoryEmoji(category: Category, lineId: string): string {
@@ -99,13 +106,12 @@ function categoryEmoji(category: Category, lineId: string): string {
 }
 
 export const CardView = forwardRef<ViewShotRef, CardViewProps>(function CardView(
-  { snapshot, sectionOpacity, hiddenCategories },
+  { snapshot, sectionOpacity, hiddenCategories, captureFrame = false },
   ref
 ) {
   const titleHidden = shouldHideTitle(snapshot.title.basedOnCategories, hiddenCategories ?? EMPTY_HIDDEN_SET);
 
-  return (
-    <ViewShot ref={ref} options={{ format: 'png' }}>
+  const card = (
       <View style={styles.card}>
         <View style={{ height: CardLayout.topSpacer }} />
 
@@ -165,6 +171,28 @@ export const CardView = forwardRef<ViewShotRef, CardViewProps>(function CardView
         </View>
 
         <View style={{ height: CardLayout.bottomSpacer }} />
+      </View>
+  );
+
+  if (!captureFrame) {
+    return (
+      <ViewShot ref={ref} options={{ format: 'png' }}>
+        {card}
+      </ViewShot>
+    );
+  }
+
+  const frame = computeCaptureFrame(PixelRatio.get());
+  return (
+    <ViewShot ref={ref} options={{ format: 'png' }}>
+      <View
+        testID="card-capture-frame"
+        style={{ width: frame.widthDp, height: frame.heightDp, overflow: 'hidden' }}>
+        <View
+          testID="card-capture-scaler"
+          style={{ position: 'absolute', left: frame.offsetX, top: frame.offsetY, transform: [{ scale: frame.scale }] }}>
+          {card}
+        </View>
       </View>
     </ViewShot>
   );

@@ -61,3 +61,22 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   metinleri/ÖRNEK kart/18 yaş notu (19 §3.3), havuz genişletme (~190 yeni metin, 19 §4.3) ve L2/L4/L7 lint'leri. Site gizlilik
   sayfasında iki gerçek düzeltme (bildirim örneği, paylaşım dosyası silme cümlesi; K10 kapısı). `npm run verify`: 86 suite /
   1203 test yeşil, 3 atlandı (K2; emülatör K4 yapılmadı).
+- **S19 Kart v2 — bağımsız kısım** (2026-10-05; kısmi, P0/F0-9 kapısı açık): token'lar (kart + kabuk açık/koyu), R-7 renk
+  lint'i (eski ihlaller küçülen izin listesinde), P-6 satır kimliği dondurma, Fraunces+Inter v2 fontları (glif kapsaması
+  `.ttf` cmap'inden), `<Sticker>`, döndürülmüş kutu geometrisi, R-15 madde 1/3/8, R1 yakalama çerçevesi
+  (`CardView captureFrame`), 6 kartlık fikstür verisi. `CardView` v2, `LevelMark`, gizli satır görünümü, Story bandı ve
+  `layout.test.ts` değişikliği P0 sonucuna ve Batuhan'ın onayına bağlı, yapılmadı. R1 K4 yapıldı (2026-10-05): kenar geçişi 2,0x'te 2,27 -> 1,11 px, 2,625x'te 1,81 -> 1,13 px; ayrıntı kart-render.md.
+  Ayrıntı: `docs/muhendislik/kart-render.md`. `npm run verify`: 94 suite / 1288 test yeşil, 3 atlandı.
+- **S22 Günlük an — kısmi** (2026-10-05; metin onayı Batuhan'da, `docs/s22-metin-onayi.md`): Kaydet mikro-anı. Ekrana
+  yeni diyalog yok; mevcut iki yuva dönüşüyor. İpucu satırı kayıttan sonra ilerleme cümlesine döner (11 tür, A-I + yedek;
+  `src/domain/content/save-feedback-texts.ts`, karar `src/lib/save-feedback.ts`, yalnız gün sayısı ve zamandan türer,
+  seviye/kategori girdisi yok), aynı cümle `announceForAccessibility` ile okunur (A11Y-07). Düğme yuvası durumlu:
+  Kaydet -> ✓ Kaydedildi -> (seçim değişirse) Güncelle; bekleyen geçen hafta kartı varsa kilit kalkınca "Geçen haftanın
+  kartını aç" (B8). `useSingleFlight` (M-9): ref tabanlı tek uçuş + 900 ms kilit, hatada kilit hemen açılır. Basılı 0,97.
+  `check_in_saved` çift dokunuşta bir kez sayılır. **K4 (release APK, emülatör):** 0,4-0,6 sn'deki karede cümle ve
+  "✓ Kaydedildi" görünüyor; kilitten sonra yuva kart düğmesine dönüyor ve kart açılıyor; iki hızlı dokunuş DB'de yalnız
+  1 `check_in_saved` bıraktı (3 kayıt = 3 olay); `FATAL`/`InvalidClass`/`SecurityException` 0 satır. **Yapılmadı:** haptik
+  (`expo-haptics` S20), bugünün noktasının dolması (Bugün'de nokta satırı henüz yok, S23), 120 ms çapraz geçiş,
+  kayıt hatası cümlesi (X; S16b metin onayına bağlı), "4+ gün sonra Yeni bir hafta, temiz sayfa" boş durum satırı,
+  Pazar K3'te mikro-an yok kuralı (K3'te ekran zaten kart ekranına geçiyor). Ekran okuyucu duyurusu yalnız K2 (TalkBack K4/K5 yok).
+  `npm run verify`: 98 suite / 1333 test yeşil, 3 atlandı.

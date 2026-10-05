@@ -92,6 +92,57 @@ Mimari hangi tekniği seçerse seçsin, bu kurallar bozulmamalı (tam 8 madde ve
    tuvaline çizilmez, PNG ekrandan farklı çıkar. C'nin sert gölgesi ofsetli dolu `View`'dur, kuralla uyumlu.
 2. Veri taşımayan süsler (noktalı zemin, arka kâğıt, rozet) **sabit PNG** olur (döşeme/`resizeMode="repeat"`
    değil — ölçek/yuvarlama farkı riski).
-3-8. (ayrıntı için 28 raporuna bakılmalı; bu dosya S19 başlarken genişletilecek.)
+3-8. (ayrıntı için 28 raporuna bakılmalı.)
 
-**Henüz uygulanmadı** — bu bölüm S19 "Kart v2" dilimi başladığında somut kod referanslarıyla güncellenir.
+### S19 bağımsız kısım (2026-10-05): altyapı hazır, `CardView` v2 henüz yok
+
+P0 görsel oturumu ve F0-9 Story ölçümü kayıtlarda olmadığı için Batuhan "bağımsız kısımla başla" dedi.
+Yapılanlar (hepsi K2; `npm run verify`: 94 suite / 1288 test yeşil, 3 atlandı):
+
+| Madde | Dosya | Mekanik kontrol |
+|---|---|---|
+| Kart token'ları (renk, ton, eğim, gölge ofseti) | `src/card/tokens.ts` | `__tests__/constants/contrast.test.ts` |
+| Kabuk token'ları, açık+koyu (ekrana bağlanması S23) | `src/constants/tokens.ts` | aynı test; 17 §2.2'deki oranlar birebir tutuyor |
+| R-7 renk tek kaynak | `eslint.config.js` (`R7_LEGACY_FILES` yalnız küçülür) | `__tests__/infra/color-lint.test.ts` (sayı üst sınırı) |
+| P-6 satır kimliği dondurma | `src/card/line-level.ts` (`parseLineId`) | `__tests__/domain/id-format.test.ts` (havuzun tamamı) |
+| Fraunces 800 / 600i + Inter 500/700/800 | `src/card/fonts-v2.ts` (v1 `fonts.ts` yerinde) | `__tests__/card/fonts-v2.test.ts` (cmap'ten Türkçe glifler) |
+| `<Sticker>` ilkeli, `rotatedBounds` | `src/card/Sticker.tsx`, `geometry.ts` | `sticker.test.tsx`, `geometry.test.ts` |
+| R-15 madde 1, 3, 8 | — | `__tests__/card/render-contract.test.tsx` |
+| R1 yakalama çerçevesi | `src/card/capture-frame.ts`, `CardView` `captureFrame` | `__tests__/card/capture-frame.test.tsx` |
+| Fikstür galerisi verisi (6 kart) | `src/dev/card-fixtures.ts` | render-contract testi |
+
+Notlar:
+- Fraunces paketi (`@expo-google-fonts/fraunces@0.4.1`, 72 KB + 86 KB): bağımlılığı yok, kaynakta ağ çağrısı yok.
+- `Sticker` prop adı bilerek `dropOffset` (RN'in yasaklı `shadowOffset` stil adıyla çakışmasın; grep tabanlı
+  R-15 bunu yakaladı).
+- R1: yalnız yakalama örneği (`card-preview-view`'daki ekran dışı `CardView`) çerçeveli; ekrandaki örnekler 360x640 dp.
+  Çerçeve piksel olarak tam 1080x1920, kart merkez etrafında `1080/(360·PixelRatio)` ile büyür.
+- Kalan R-15 maddeleri (2 PNG varlık, 4 v2 yerleşim bütçesi, 5 gizli satır 7 kural, 6 `LevelMark`, 7 font yedeği)
+  `CardView` v2 ile eklenir.
+
+**K4 sonucu — R1 çalışıyor (2026-10-05, emülatör `haftik_pixel`, release APK, çalışma ağacı `bc52dca` + S19 değişiklikleri):**
+Aynı kart (aynı veri, tüm satırlar görünür), iki release APK: `captureFrame` kapalı ve açık; iki yoğunlukta
+(`wm density 320` = 2,0x ve 420 = 2,625x). PNG'ler uygulamanın kendi "Bu haliyle paylaş" yolundan, cache'teki
+`haftik-share/Haftik-kart.png`'den çekildi; hepsi 1080x1920. Ölçüt: yatay kenarların %10-%90 geçiş genişliği (px,
+düşük = keskin), güçlü kenar sayısı (gradyan > 100) ve %99 gradyan.
+
+| Yoğunluk | `captureFrame` | Kenar genişliği | Güçlü kenar | p99 gradyan | PNG boyutu |
+|---|---|---|---|---|---|
+| 2,0x (320) | kapalı | **2,27 px** | 5 488 | 134 | 236 KB |
+| 2,0x (320) | **açık** | **1,11 px** | 17 696 | 221 | 140 KB |
+| 2,625x (420) | kapalı | **1,81 px** | 10 968 | 163 | 225 KB |
+| 2,625x (420) | **açık** | **1,13 px** | 17 429 | 219 | 142 KB |
+
+- Kapalıyken keskinlik yoğunluğa bağlı (büyütme 1,5x → 2,27 px, 1,14x → 1,81 px); açıkken iki yoğunlukta da aynı
+  (~1,1 px) ve PNG daha küçük (yumuşak kenar sıkıştırmayı bozuyordu). Gözle de görülüyor (`crop-title.png`: 2,0x'te
+  başlık, üst kapalı, alt açık).
+- Yerleşim aynı: koyu piksel sınır kutusu iki durumda ±1 px (kesilme/kayma yok); yedek ölçüm tekrarlanabilir
+  (aynı koşulda iki yakalama bit-bit aynı sayıları verdi).
+- Kanıt dosyaları repo dışında: `C:\dev\haftik-artifacts\s19\` (PNG'ler, `crop-title.png`, `sharp.js` ölçüm betiği, iki APK).
+  Ölçüm betiği repoda yok; gerekirse `__tests__` dışına bir `scripts/` aracı olarak eklenebilir.
+- Sınırlar: tek cihaz profili (emülatör, yazılım tuvali, `swiftshader`), 2,0x ve 2,625x; 3,0x+ ve gerçek cihaz (OEM
+  render farkı) ölçülmedi. Kart henüz v1 (metin ağırlıklı); C yönünün kalın kenar/gölge/dönmüş çıkartma
+  yüzeylerinde (v2) aynı ölçüm `CardView` v2 ile tekrarlanmalı (S19 "2,0x/2,625x kontur profili" maddesi).
+
+**Bekleyen (P0/F0-9 sonucu):** L1 seviye işareti, gizli satır görünümü, Story bandı yerleşimi, `CardView` v2 ve
+`layout.test.ts` değişikliği (ayrı onay gerekir).

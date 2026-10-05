@@ -176,7 +176,7 @@ export function CardPreviewView({ snapshot, onBack, onShared }: CardPreviewViewP
        * (mount'lu) olmasını gerektirir.
        */}
       <View style={styles.captureSource} pointerEvents="none">
-        <CardView ref={viewShotRef} snapshot={snapshot} hiddenCategories={hidden} />
+        <CardView ref={viewShotRef} snapshot={snapshot} hiddenCategories={hidden} captureFrame />
       </View>
     </ThemedView>
   );
