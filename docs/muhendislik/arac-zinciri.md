@@ -98,10 +98,17 @@ preview ve production aynı yapılandırmayı kullanır. Ek keep kuralı GEREKME
 **react-native-reanimated:** uygulamada kullanılmıyor ama `react-native-drawer-layout`ın (expo-router
 bağımlılığı) zorunlu peer'i olduğu için `package.json`dan çıkarsak da npm kurar ve RN autolinking native kodunu
 derler (1,5 MB .so). Gerçek çıkarma: `react-native.config.js` `dependencies['react-native-reanimated'].platforms
-= {android: null, ios: null}` (`libreanimated.so` APK'dan düştü). `react-native-worklets` `expo-modules-core`
-bağımlılığı olarak KALIR. Geri alma: `react-native.config.js`i sil. Koruma: `__tests__/infra/release-config.test.ts`.
+= {android: null, ios: null}` (`libreanimated.so` APK'dan düştü). Geri alma: `react-native.config.js`i sil. Koruma:
+`__tests__/infra/release-config.test.ts`.
+
+**react-native-worklets (2026-10-05):** aynı yolla native derlemeden dışlandı. `expo-modules-core` bunu İSTEĞE BAĞLI peer sayar
+ve `findProject(":react-native-worklets")` boşsa Gradle entegrasyonunu atlar (`android/build.gradle` satır 64-79, 227; Kotlin
+kaynakları worklets sınıfı import etmez). `libworklets.so` (1,05 MB) APK'dan düştü. **JS tarafı pakette kalır** (42 dosya:
+`@expo/ui` ve expo-router'ın statik import zinciri), açılışta çökmüyor. `package.json`daki doğrudan bağımlılık sürümü sabitlemek
+için durur. Koruma: `__tests__/infra/native-exclusion.test.ts` (platforms null + `src/`te import yok).
 
 **Boyut (x86_64 release):** R8'siz+reanimated'lı 44,48 MB -> R8+shrink+reanimated yok **31,98 MB**.
+Sonrasında (S19-S22 kodu dahil) 33,57 MB; **worklets dışlanınca 32,46 MB** (2026-10-05, `libworklets.so` -1,05 MB).
 
 **K4-rel sonuçları** (release APK, emülatör `haftik_pixel`, Android 15 google_apis x86_64, rootlu; `adb` ile):
 

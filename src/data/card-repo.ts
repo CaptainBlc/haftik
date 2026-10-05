@@ -142,3 +142,15 @@ export async function getCardWeekStarts(): Promise<string[]> {
 // eşik artık kartların varlığına değil check-in geçmişine bakıyor
 // (`domain/week.ts` `hasQualifiedWeekBefore`), bu fonksiyon hiçbir yerden
 // çağrılmıyordu. Geçmiş: `docs/kararlar/2026-10-01-cekirdekten-once-kararlar.md` A8.
+
+/**
+ * Dondurulmuş kartların üretim anları (rapor v2 gecikme kovası için; epoch ms). Yalnız `week_start` ve
+ * `generated_at`; kart içeriği okunmaz.
+ */
+export async function getCardGeneratedTimes(): Promise<{ weekStart: string; generatedAt: number }[]> {
+  const driver = getDriver();
+  const rows = driver.all<{ week_start: string; generated_at: number }>(
+    'SELECT week_start, generated_at FROM weekly_card'
+  );
+  return rows.map((r) => ({ weekStart: r.week_start, generatedAt: r.generated_at }));
+}

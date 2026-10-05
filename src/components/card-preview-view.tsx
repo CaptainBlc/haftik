@@ -39,7 +39,7 @@ import type { ViewShotRef } from 'react-native-view-shot';
 
 import { captureCardPng } from '@/card/capture';
 import { CardView } from '@/card/CardView';
-import { defaultHiddenCategories, toggleHiddenCategory } from '@/card/hide-state';
+import { defaultHiddenCategories, isDefaultHiddenSet, toggleHiddenCategory } from '@/card/hide-state';
 import { LEVEL_TO_VALUE, levelFromLineId } from '@/card/line-level';
 import { shareCard } from '@/card/share';
 import { shouldHideTitle } from '@/card/title-visibility';
@@ -84,7 +84,7 @@ export function CardPreviewView({ snapshot, onBack, onShared }: CardPreviewViewP
     try {
       const uri = await captureCardPng(viewShotRef);
       // S9: paylaşım sayfası açılmadan hemen önce (en iyi çaba; kategori adı yok).
-      void trackShareInitiated(snapshot.weekStart, hidden.size);
+      void trackShareInitiated(snapshot.weekStart, hidden.size, isDefaultHiddenSet(hidden));
       await shareCard(uri, SHARE_MESSAGE);
       // Spec: gizleme yalnızca o paylaşım içindir — tamamlanınca sıfırlanır.
       setHidden(defaultHiddenCategories());

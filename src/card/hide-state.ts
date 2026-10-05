@@ -45,3 +45,11 @@ export function toggleHiddenCategory(
 export function isCategoryHidden(hidden: ReadonlySet<Category>, category: Category): boolean {
   return hidden.has(category);
 }
+
+/** Gizli küme, varsayılanla (uyku + harcama) BİREBİR aynı mı? (`share_default_kept` ölçümü; S19 rapor v2.) */
+export function isDefaultHiddenSet(hidden: ReadonlySet<Category>): boolean {
+  return (
+    hidden.size === DEFAULT_HIDDEN_CATEGORIES.length &&
+    DEFAULT_HIDDEN_CATEGORIES.every((category) => hidden.has(category))
+  );
+}

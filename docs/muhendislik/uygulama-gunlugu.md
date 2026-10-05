@@ -99,3 +99,16 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   (`kart-v2.html` prototipinin kodu, Edge headless 3x, v2 yazı tipleri, uygulamadakiyle aynı Noto emoji). Üretici:
   `docs/p0-materyal/make-c-cards.js`. Eski ve C aynı içerik. Gözlem: C'de "Adım Çok, Fiş Yok" statik Fraunces 800 ile iki
   satıra bölünüyor (CardView v2'de unvan kademesi gözden geçirilecek). Oturumun kendisi Batuhan'da.
+- **Rapor v2 genişletmesi** (2026-10-05; `docs/muhendislik/olcum-ve-rapor.md`): `metric_counter` (v3) ilk kez akışlara bağlandı:
+  `share_hidden_n`, `share_default_kept`, `notif_opened` (kapalı sözlük `COUNTER_DIMS`, `trackCounter`); rapora `share.hiddenN`,
+  `share.defaultKept`, `notifOpened` ve türetilmiş `cards.lateBuckets` eklendi (hepsi isteğe bağlı alan); yeni bütünlük kuralları.
+  **Birleştirme betiği** `scripts/merge-reports.js` (27 §4.3: son seq, build ayrımı, formüller, Wilson, alt/üst sınır; TS doğrulamasıyla
+  sınır-değer eşlik testi). Mevcut testlerde yalnız iki şekil beklentisi güncellendi (`report.test.ts`: `share` nesnesi ve alan izin
+  listesi; bilinçli alan eklemesi). K4: iki paylaşım, DB sayaçları ve önizleme metni doğru; `notif_opened` K2'de (cihaz dokunuşu yok).
+  `npm run verify`: 105 suite / 1409 test yeşil, 3 atlandı.
+- **worklets temizliği** (2026-10-05): `react-native-worklets` `react-native.config.js` ile native derlemeden dışlandı (reanimated ile aynı
+  desen). `expo-modules-core` onu isteğe bağlı peer sayar ve Gradle'da yokluğunu tolere eder. Release x86_64 APK 33,57 -> **32,46 MB**,
+  `libworklets.so` yok, izinler altın listeyle aynı. K4 (emülatör): açılış, sekmeler, kart reveal, paylaşım önizlemesi, rapor önizlemesi,
+  bildirim izni verilince 12 alarm + iki kanal; `FATAL`/`UnsatisfiedLink`/`NoClassDefFound`/worklets satırı 0. `package.json` doğrudan
+  bağımlılığı sürüm sabitlemek için KALDI. Yeni test: `__tests__/infra/native-exclusion.test.ts`. **Material Symbols yazı tipi (967 KB) bilerek
+  yapılmadı** (expo-router'ın statik import zinciri, Metro budamıyor; çözüm Expo iç modüllerini boşaltmak, risk > ~%3 kazanç; ayrıntı `acik-isler.md`).

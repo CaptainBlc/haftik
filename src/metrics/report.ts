@@ -22,8 +22,9 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 
 import { ensureShareDir } from '@/card/share-dir';
-import { getCardWeekStarts } from '@/data/card-repo';
+import { getCardGeneratedTimes, getCardWeekStarts } from '@/data/card-repo';
 import { getAllCheckins } from '@/data/checkin-repo';
+import { getAllCounters } from '@/data/metric-counter-repo';
 import { getAllEvents } from '@/data/metric-repo';
 import { getFirstOpenDate, getReportSeq, setReportSeq } from '@/data/setting-repo';
 import {
@@ -47,6 +48,7 @@ export const REPORT_KNOWN_LIMITS: readonly string[] = [
   'Örneklem küçük (20-30 kişi); oranlar kesin doğrulama değil, yalnızca güçlü sinyal olarak okunmalı.',
   'Raporu göndermeyen cihazlar görünmez; farklı build/kanallar ayrı okunmalı.',
   '7. gün "henüz ölçülemez" ise o cihaz D7 paydasına girmez.',
+  'Gizleme dağılımı ve bildirimle açılış, bu sürümden ÖNCEKİ paylaşım/açılışları saymaz; karışık sürümlü bir cihazın raporu bütünlük kuralını bozabilir (temiz kurulum önerilir).',
 ];
 
 const D7_TEXT: Record<ReportV2['d']['d7'], string> = {
@@ -75,6 +77,17 @@ export function formatReportText(report: ReportV2): string {
     `Kart: ${report.cards.frozen} açıldı, ${report.cards.eligibleWeeks} hafta uygun` +
       (report.d.firstCardDay === null ? ' (kart henüz açılmadı)' : `, ilk kart ${report.d.firstCardDay}. günde`),
     `Paylaşım başlatma: ${report.share.n}, gizlenen satır: ${report.share.hiddenTotal}`,
+    ...(report.share.hiddenN
+      ? [
+          `Paylaşım başına gizlenen satır (0-4): ${report.share.hiddenN.join(' / ')}; varsayılan gizleme korunan: ${report.share.defaultKept ?? 0}`,
+        ]
+      : []),
+    ...(report.cards.lateBuckets
+      ? [`Kart gecikmesi (Pazar'dan sonra: aynı gün / 1-2 gün / 3+ gün): ${report.cards.lateBuckets.join(' / ')}`]
+      : []),
+    ...(report.notifOpened
+      ? [`Bildirimle açılış: kart-hazır ${report.notifOpened.card}, günlük ${report.notifOpened.daily}`]
+      : []),
     '',
     'Haftalar (sıra no, dolu gün, kart açıldı mı, paylaşım):',
     ...(report.weeks.length === 0
@@ -106,13 +119,15 @@ function toPerm(state: { granted: boolean; canAskAgain: boolean }): ReportPerm {
 
 /** Yerel veriden raporu kurar (yalnızca okuma; `seq` ÖNİZLEME için bir sonraki sayıdır, yazılmaz). */
 export async function prepareReport(now: Date): Promise<PreparedReport> {
-  const [events, firstOpenDate, checkins, cardWeekStarts, permState, lastSeq] = await Promise.all([
+  const [events, firstOpenDate, checkins, cardWeekStarts, permState, lastSeq, counters, cardTimes] = await Promise.all([
     getAllEvents(),
     getFirstOpenDate(),
     getAllCheckins(),
     getCardWeekStarts(),
     getNotificationPermissionState(),
     getReportSeq(),
+    getAllCounters(),
+    getCardGeneratedTimes(),
   ]);
   const info = getBuildInfo();
   const report = buildReportV2({
@@ -125,6 +140,8 @@ export async function prepareReport(now: Date): Promise<PreparedReport> {
     checkins,
     cardWeekStarts,
     events: events.map((e) => ({ name: e.name, weekStart: e.weekStart, at: e.at })),
+    counters,
+    cards: cardTimes,
   });
   return { report, text: formatReportText(report), violations: validateReportV2(report) };
 }

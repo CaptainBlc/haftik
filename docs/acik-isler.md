@@ -50,8 +50,13 @@ Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
 
 ## Bilinen teknik borçlar
 
-- Rapor v2 eksik alanlar (S19+ olayları) ve v2 birleştirme betiği (27 §4.3); eski v1 toplayıcı
-  (`metrics-calc.aggregateMetrics`) v2'ye uyarlanmadı.
-- `react-native-worklets` / Material Symbols kaldırma (isteğe bağlı, S18 ops.).
+- Rapor v2 kalan alanlar (ilgili özellik gelince, `docs/muhendislik/olcum-ve-rapor.md`): `fmt`/`src`/`switched` (biçim seçici), `album`,
+  `cardFeel`, `strip`; `titleVisibleDefault` (küçük hücre bastırması + security-reviewer onayı). Eski v1 toplayıcı
+  (`metrics-calc.aggregateMetrics`) artık `scripts/merge-reports.js` ile örtüşüyor (yalnız testte kullanılıyor); silmek ayrı onay.
+- Rapor v2: privacy-compliance-analyst'e bildirim (rapor içeriği genişledi, politika/Data Safety cümlesi); `notif_opened` cihaz kanıtı.
+- Material Symbols yazı tipi (967 KB, APK'da `res/*.ttf`): expo-router'ın statik import zincirinden gelir (`native-tabs` -> `expo-symbols` ve
+  `@expo/ui`, 80 dosya); kullanmıyoruz ama Metro ağaç budamadığı için pakete giriyor. Çıkarmak Metro `resolveRequest` ile Expo iç
+  modüllerini boşaltmak demektir (açılışta çökme riski, doğrulanmadı) ve kazanç ~%3; **bilerek yapılmadı** (2026-10-05). APK bütçesi
+  (40 MB) sıkışırsa yeniden bak.
 - `data/delete-all.ts` katman istisnası (kart/rapor dosyası süpürmesini çağırır).
 - Ayarlar'daki sürüm satırında ayrı "kopyala" düğmesi yok (seçilebilir metin; `expo-clipboard` eklenmedi).

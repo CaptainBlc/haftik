@@ -19,6 +19,7 @@ import type { NotificationKind } from '@/domain/content/notification-texts';
 import { toLocalDateString } from '@/domain/week';
 import { getNow } from '@/lib/now';
 import { isValidWeekStartParam } from '@/lib/week-param';
+import { trackCounter } from '@/metrics/track';
 import { getDefaultScheduler, type NotificationScheduler } from './scheduler';
 
 const VALID_KINDS: readonly NotificationKind[] = ['daily', 'card-ready'];
@@ -53,6 +54,14 @@ export function resolveNotificationRoute(
     return { pathname: '/card/[weekStart]', params: { weekStart } };
   }
   return { pathname: '/week' };
+}
+
+/** `data.kind` -> `notif_opened` boyutu; bilinmeyen/eksik tür için `null` (sayılmaz). */
+export function notificationOpenedDim(data: Record<string, unknown> | undefined): 'card_ready' | 'daily' | null {
+  const kind = data && typeof data.kind === 'string' ? data.kind : null;
+  if (kind === 'daily') return 'daily';
+  if (kind === 'card-ready') return 'card_ready';
+  return null;
 }
 
 /**
@@ -91,6 +100,12 @@ export function useNotificationRouting(overrides: { scheduler?: NotificationSche
     function handle(data: Record<string, unknown>) {
       const today = toLocalDateString(getNow());
       pendingRouteRef.current = resolveNotificationRoute(data, today);
+      // S22/rapor v2: bildirimle açılış sayacı. Yalnız izin listesindeki tür sayılır (dış girdi:
+      // `data` bilinmeyen/eksikse hiçbir şey yazılmaz); en iyi çaba, yönlendirmeyi etkilemez.
+      const opened = notificationOpenedDim(data);
+      if (opened) {
+        trackCounter('notif_opened', { dim: opened }).catch(() => undefined);
+      }
       // Bir kez işlenir: hemen temizlenir, aynı yanıt bir daha işlenmez
       // (ör. uygulama tekrar öne gelince). En iyi çaba, hata akışı bozmaz.
       scheduler.clearLastResponse().catch(() => undefined);

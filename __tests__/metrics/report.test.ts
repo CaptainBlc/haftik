@@ -79,7 +79,9 @@ describe('deneme raporu içeriği', () => {
     // Olay zamanı gerçek saatten (Date.now) gelir, NOW sabit: yalnızca sayı olduğu ve
     // tarih sızdırmadığı doğrulanır (gün ofseti hesabı domain testinde, report-v2.test.ts).
     expect(typeof json.d.firstCardDay).toBe('number');
-    expect(json.share).toEqual({ n: 1, hiddenTotal: 2 });
+    // Rapor v2 genişletmesi: `trackShareInitiated('...', 2)` artık `share_hidden_n` dim=2 sayacını da artırır
+    // (hiddenN = [0,0,1,0,0], toplam share.n ile aynı); `defaultKept` bu çağrıda verilmediği için 0.
+    expect(json.share).toEqual({ n: 1, hiddenTotal: 2, hiddenN: [0, 0, 1, 0, 0], defaultKept: 0 });
     // 2 check-in, iki ayrı haftada: sıra no 1 ve 2, tarih YOK.
     expect(json.weeks).toEqual([
       { i: 1, fill: 1, opened: 0, share: 0 },
@@ -132,12 +134,16 @@ describe('deneme raporu içeriği', () => {
 
   it('payload yalnızca beklenen v2 alanlarını taşır (kimlik/tarih alanı yok)', async () => {
     const { report } = await prepareReport(NOW);
+    // Rapor v2 genişletmesi (2026-10-05, Batuhan onaylı): bu bir İZİN LİSTESİDİR; yeni alanlar (27 §2.3-2.4
+    // "uyumlu" sınıfı: sayaç/enum/kova) bilinçli eklendi: notifOpened, cards.lateBuckets, share.hiddenN,
+    // share.defaultKept. Tarih/kimlik/kategori alanı hâlâ yok (üstteki yasak-desen testi).
     expect(Object.keys(report).sort()).toEqual(
-      ['build', 'cards', 'ch', 'd', 'day', 'perm', 'seq', 'share', 'v', 'weeks'].sort()
+      ['build', 'cards', 'ch', 'd', 'day', 'notifOpened', 'perm', 'seq', 'share', 'v', 'weeks'].sort()
     );
     expect(Object.keys(report.d).sort()).toEqual(['d1d3', 'd7', 'firstCardDay']);
-    expect(Object.keys(report.cards).sort()).toEqual(['eligibleWeeks', 'frozen']);
-    expect(Object.keys(report.share).sort()).toEqual(['hiddenTotal', 'n']);
+    expect(Object.keys(report.cards).sort()).toEqual(['eligibleWeeks', 'frozen', 'lateBuckets']);
+    expect(Object.keys(report.share).sort()).toEqual(['defaultKept', 'hiddenN', 'hiddenTotal', 'n']);
+    expect(Object.keys(report.notifOpened ?? {}).sort()).toEqual(['card', 'daily']);
   });
 
   it('perm: verildi -> granted; kalıcı ret -> denied; hiç sorulmamış/Android 13+ denied+canAskAgain -> unset', async () => {
