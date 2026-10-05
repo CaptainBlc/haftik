@@ -22,16 +22,10 @@
   (öz-bildirim). Dağılım: 2 ağır paylaşan (haftada 3+), 2 ara sıra, 1-2 nadir/izleyen. Tasarımcı/geliştirici yok
   (yanlılık), aile büyüğü ve en yakın arkadaş yok ("nazik evet" yanlılığı). Android/iPhone karışık.
 - [ ] **Sıra dengeleme:** 3 kişi Eski önce, 3 kişi C önce. (5 kişiyle tam denge olmaz, bu yüzden 6.)
-- [ ] **Görselleri hazırla (1080x1920 PNG, nötr dosya adı: `a.png`, `b.png`, ...):**
-  - [ ] **Eski-görünür:** uygulamadan gerçek kart PNG'si, tüm satırlar açık.
-  - [ ] **Eski-gizli:** aynı kart, varsayılan gizleme (uyku + harcama gizli, unvan da `???`).
-  - [ ] **C-görünür** ve **C-gizli:** `docs/inceleme-2026-09-25/14-gorsel-prototipler/v2/kart-v2.html`'in 3x ekran
-    görüntüsü (yön C'nin yetişkin sürümü). **Eski ve C aynı içeriği taşımalı** (aynı unvan, satırlar, özet).
-  - [ ] Damga yer tutucu **"Haftik"** olsun. Görselde **"[mağaza bağlantısı]" görünmemeli** (emülatör çıktısında
-    görünüyor, silinmeli ya da değiştirilmeli).
-  - [ ] **ÖRNEK kart** (onboarding'de gösterilecek, `kart-v2.html` bölüm 2): "ÖRNEK" bantlı, −14° şeritli.
-  - [ ] **Seviye işareti** karşılaştırması: `v2/seviye.html` (L1 konum işareti).
-  - [ ] Her görselin **küçük önizleme** hâli (WhatsApp balonu boyutu, ~%25-%50): sohbette gerçekten böyle düşecek.
+- [x] **Görseller hazır (2026-10-05):** `C:/dev/haftik-artifacts/p0/gosterilecek/g1.png ... g6.png` (nötr adlar).
+  Hangi dosyanın ne olduğu, sıra dengeleme ve farklar: `docs/p0-materyal/README.md`. Eski ve C **aynı içerikte**
+  (unvan "Adım Çok, Fiş Yok", aynı satırlar/özet/emojiler), damga "haftik" (mağaza bağlantısı yok). ÖRNEK kart ve L1
+  seviye karşılaştırması da dahil. Küçük önizleme için ayrı dosya yok: görseli WhatsApp'a resim olarak gönder.
 - [ ] Kayıt tablosu hazır (kâğıt ya da yerel tablo, `docs/` dışında): sütunlar bölüm D'de.
 - [ ] Ses kaydı yalnız kişi açıkça izin verirse; tutulmadan silinir. Bulut anket aracı yok, e-posta/ad yok.
 - [ ] Katılımcıya baştan söyle: doğru/yanlış cevap yok, ürünü değil görseli test ediyoruz, istediği an bırakabilir.

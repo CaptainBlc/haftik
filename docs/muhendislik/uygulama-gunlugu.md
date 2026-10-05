@@ -94,3 +94,8 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   (`src/app/card/[weekStart].tsx`) `now` geçer. Üç mevcut test dosyasında yalnız ÇAĞRI İMZASI değişti (beklentiler aynı);
   eski varsayılanı birebir koruyan `endOfDay()` yardımcısı eklendi (`__tests__/helpers/end-of-day.ts`). Derleme zamanı koruması:
   `__tests__/card/open-card.signature.test.ts` (`@ts-expect-error`; `now` opsiyonel yapılınca `tsc` kırılır, mutasyonla görüldü).
+- **P0 görselleri hazırlandı** (2026-10-05): 6 PNG (`C:/dev/haftik-artifacts/p0/gosterilecek/`, repo dışı): Eski görünür/gizli
+  (gerçek uygulama, release APK; damga geçici "haftik", sabit geri alındı), C görünür/gizli/ÖRNEK ve L1 seviye şeridi
+  (`kart-v2.html` prototipinin kodu, Edge headless 3x, v2 yazı tipleri, uygulamadakiyle aynı Noto emoji). Üretici:
+  `docs/p0-materyal/make-c-cards.js`. Eski ve C aynı içerik. Gözlem: C'de "Adım Çok, Fiş Yok" statik Fraunces 800 ile iki
+  satıra bölünüyor (CardView v2'de unvan kademesi gözden geçirilecek). Oturumun kendisi Batuhan'da.
