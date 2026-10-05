@@ -9,6 +9,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -43,3 +44,15 @@ jobs:
 
       - name: Expo saglik kontrolu (expo-doctor)
         run: npx expo-doctor
+
+      # 26-yayin-plani-v2.md D3: surum = CHANGELOG ust basligi, kimlik kilidi, eas.json autoIncrement,
+      # repoda anahtar/derleme dosyasi yok. Hizli, agsiz; her push/PR'da.
+      - name: Surum ve kimlik kapisi (check-release)
+        run: node scripts/check-release.js
+
+      # Yalnizca etiket (v*) push'unda: etiket = v+surum, yer tutucu sozcukler (0.2.0 ve sonrasi KIRMIZI),
+      # npm audit (kabul edilmemis high/critical = 0; kabul listesi scripts/audit-accepted.json),
+      # uretim paketinde dev menu/fikstur dizeleri 0 (pozitif kontrollu).
+      - name: Etiket kapisi (check-release --audit --bundle)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: node scripts/check-release.js --audit --bundle

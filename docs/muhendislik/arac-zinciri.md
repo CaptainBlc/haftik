@@ -177,3 +177,26 @@ boşluksuz seçilmeli (bu dersin kendisi kalıcı, derleme pratiği değil).
 - `.githooks/pre-commit` (A3 kararı): `npm run verify` (typecheck+lint+test) çalıştırır, ölçülen süre ~8,5
   saniye (10 sn sınırının altında). Kurulumu `package.json`'daki `"prepare": "git config core.hooksPath
   .githooks"` script'i `npm install` sırasında otomatik yapar.
+
+## Sürüm ve kimlik kapısı: `scripts/check-release.js` (26 D3, 2026-10-05)
+
+```bash
+node scripts/check-release.js                     # hızlı, ağsız (her push/PR'da CI)
+node scripts/check-release.js --tag v0.1.0        # + etiket = v+sürüm, yer tutucu sözcükler
+node scripts/check-release.js --audit             # + npm audit (ağ)
+node scripts/check-release.js --bundle            # + üretim paketinde dev menü/fikstür dizeleri (pozitif kontrollü, ~20 sn)
+```
+
+| | Denetim | Not |
+|---|---|---|
+| a | `app.json` sürümü = CHANGELOG üst başlığı (= etiket) | |
+| b | kimlik kilidi: paket adı, ios bundle id, şema, slug, ad | değişirse betikteki `IDENTITY` bilinçli düzenlenir |
+| c | `eas.json` preview ve production `autoIncrement` | |
+| d | `com.anonymous`, `TASLAK`, `[mağaza bağlantısı]` (yalnız etiket koşusu) | 0.1.x UYARI (bilinen sınır, CHANGELOG), **0.2.0 ve sonrası KIRMIZI** (`PLACEHOLDER_FREE_FROM`) |
+| e | `git ls-files`: keystore/jks/apk/aab/credentials.json/service-account/google-services yok | |
+| f | `npm audit --omit=dev`: kabul edilmemiş high/critical yok | kabul listesi `scripts/audit-accepted.json` (yalnız küçülür; `approved:false` kapıyı KIRMIZI tutar) |
+| g | üretim JS paketinde dev menü ve fikstür dizeleri yok | önce `--dev` paketinde dizelerin bulunabildiği doğrulanır (kör dedektör KIRMIZI) |
+
+CI: `.github/workflows/ci.yml` hızlı modu her push/PR'da, `--audit --bundle`'ı yalnız `v*` etiketinde koşar. **İlk gerçek bulgu:** `--audit` iki
+high advisory (node-forge, braces; yalnız `@expo/cli`, üretim paketinde yok) buldu; S10'daki "15 moderate, 0 high" artık geçerli değil
+(advisory veritabanı değişti). Betik plandaki `.mjs` yerine `.js` (repodaki betikler CommonJS, Jest'ten `require` edilebilir).

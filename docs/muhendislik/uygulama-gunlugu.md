@@ -137,3 +137,13 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   ve kararlardan derlendi; kanıtı olmayan iddia yok (ör. cihazdan cihaza aktarımın `bmgr` kanıtı henüz yok, "Bilinen sınırlar"da). Koruma:
   `__tests__/infra/version.test.ts` (üst başlık = app.json sürümü, tekrarsız/sıralı başlıklar, zorunlu bölümler, yer tutucu sözcük yok).
   26 D3'ün tam betiği (`scripts/check-release`: etiket = sürüm, kimlik kilidi, `npm audit`, dev menü dizeleri) hâlâ yok.
+- **`scripts/check-release.js`** (2026-10-05; 26 D3 a-g): sürüm/kimlik/autoIncrement/duyarlı dosya/yer tutucu/npm audit/paket dizesi kapısı; CI'ya bağlandı
+  (`ci.yml`: her push/PR'da hızlı mod, `v*` etiketinde `--audit --bundle`). 40 test (`__tests__/scripts/check-release.test.ts`): her denetimin geçer ve kırılır
+  yönü, sınır değerleri (0.2.0 eşiği, 0.10.0 sayısal karşılaştırma), pozitif kontrol; 8 mutasyonla doğrulandı (7'si yakalandı, 1'i denkti). K1: `--bundle`
+  gerçek koşuda geçti (dev paketinde dizeler bulundu, üretimde 0); `--tag v0.1.0` yer tutucuları UYARI verdi. **Bulgu:** `--audit` gerçek koşuda KIRMIZI
+  (node-forge GHSA-86w9-cpqp-85rv ve braces GHSA-vfj7-8cjw-p6xm, high; yalnız `@expo/cli`, üretim kaynak haritasında 0 dosya); kabul Batuhan'da
+  (`scripts/audit-accepted.json`, `approved:false`). CI'nın kendisi (GitHub Actions) bu oturumda KOŞMADI; yalnız yerelde ve Jest ile doğrulandı.
+- **npm audit: SDK yaması denemesi** (2026-10-05, Batuhan isteği): sonuç **düzeltme yok.** `npx expo install --check`: bağımlılıklar güncel; `@expo/cli` 57.0.27
+  (son); npm'de `node-forge` son 1.4.0 ve `braces` son 3.0.3, ikisi de advisory aralığının İÇİNDE (<=1.4.0, <=3.0.3). `package.json`/`package-lock.json`
+  DEĞİŞMEDİ. `scripts/audit-accepted.json` kayıtlarındaki yanlış varsayım ("Expo SDK yaması yolu") düzeltildi: "düzeltilmiş sürüm yok" kanıtıyla, `reviewedAt`
+  eklendi. Kapı KIRMIZI kalır (`approved:false`) ta ki Batuhan kabul edene ya da upstream yama çıkana kadar.

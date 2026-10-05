@@ -1,0 +1,23 @@
+{
+  "_aciklama": "npm audit (--omit=dev) high/critical bulgularından KABUL EDİLENLER (check-release (f)). Liste YALNIZCA küçülür. Bir kayıt, Batuhan onaylayana kadar `approved: false` kalır ve kapıyı KIRMIZI tutar; onay sonrası `approved: true` yapılır (kapı UYARI verir, kayıt görünür kalır). Kayıt: advisory kimliği (GHSA), paket, neden güvenli sayıldığı, kanıt, düzeltme durumu. Her etiket öncesi `node scripts/check-release.js --audit` yeniden koşulur; düzeltilmiş sürüm çıkarsa kayıt SİLİNİR ve paket yükseltilir.",
+  "accepted": [
+    {
+      "id": "GHSA-86w9-cpqp-85rv",
+      "package": "node-forge",
+      "scope": "yalnız yapı zamanı: expo -> @expo/cli -> @expo/code-signing-certificates / node-forge (Expo güncelleme imzası; bu projede OTA yok, E3)",
+      "evidence": "Üretim JS paketinin kaynak haritasında node-forge ve @expo/code-signing-certificates 0 dosya (2026-10-05). Uygulamada ağ yok, RSA imza doğrulaması çalışma zamanında kullanılmaz.",
+      "fix": "DÜZELTİLMİŞ SÜRÜM YOK (2026-10-05): npm'deki son node-forge 1.4.0 ve advisory aralığı <=1.4.0. `npx expo install --check`: SDK 57 bağımlılıkları güncel; @expo/cli 57.0.27 son sürüm, yani SDK yaması yok. npm'in önerdiği düzeltme expo@44.0.6 (2022 SDK'ya düşürme) kullanılamaz; `overrides` ile de çözülmez (yamalı sürüm yok). Upstream yamayı bekle.",
+      "reviewedAt": "2026-10-05",
+      "approved": false
+    },
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "scope": "yalnız geliştirme/yapı zamanı: expo -> @expo/cli -> @expo/metro-file-map -> micromatch -> braces (Metro dosya taraması, jest)",
+      "evidence": "Üretim JS paketinin kaynak haritasında braces ve micromatch 0 dosya (2026-10-05). Etki: derin iç içe desenle yığın taşması (DoS), yalnız geliştirici makinesinde/CI'da.",
+      "fix": "DÜZELTİLMİŞ SÜRÜM YOK (2026-10-05): npm'deki son braces 3.0.3 ve advisory aralığı <=3.0.3. `npx expo install --check`: SDK 57 bağımlılıkları güncel; @expo/cli 57.0.27 son sürüm. npm'in önerdiği düzeltme expo@44.0.6 (düşürme) kullanılamaz; `overrides` ile de çözülmez. Upstream yamayı bekle. `npm audit fix --force` YAPMA.",
+      "reviewedAt": "2026-10-05",
+      "approved": false
+    }
+  ]
+}

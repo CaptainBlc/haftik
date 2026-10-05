@@ -24,11 +24,16 @@ Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
 
 ## Batuhan'dan bekleyen
 
+- **npm audit kabulü** (etiket kapısı `check-release --audit` bunsuz KIRMIZI): iki high advisory yalnız `@expo/cli` üzerinden geliyor (yapı/geliştirme
+  zamanı, üretim paketinde 0 dosya): `node-forge` GHSA-86w9-cpqp-85rv ve `braces` GHSA-vfj7-8cjw-p6xm. **SDK yaması DENENDİ ve mümkün DEĞİL (2026-10-05):**
+  `npx expo install --check` "bağımlılıklar güncel", @expo/cli 57.0.27 son sürüm, npm'deki son node-forge 1.4.0 / braces 3.0.3 ve advisory aralıkları
+  (<=1.4.0, <=3.0.3) bu sürümleri KAPSIYOR: yamalı sürüm hiç yok (`overrides` de çözmez; npm'in önerdiği expo@44 düşürmedir, kullanılamaz).
+  Seçenekler: (1) gerekçeli KABUL (öneri): `scripts/audit-accepted.json`'da ikisini `approved: true` yap, kapı UYARI verir, her etiket öncesi yeniden bakılır;
+  (2) upstream yamayı bekle ve etiketi ertele. `npm audit fix --force` YAPMA.
 - **P0 görsel oturum + F0-9** (`CardView` v2 kapısı): `docs/p0-gorsel-oturum-kontrol-listesi.md`.
 - **Metin onayı** (S16b'den, geçici): "Silinemedi", "Yüklenemedi" + "Tekrar dene", rapor önizleme girişi.
   ("Kaydedilemedi" uyarı kutusu Bugün'de kalktı, yerini S22'nin onaylı hata cümlesi aldı.)
-- P1 (0.1.0) için KALANLAR (26 §2-3; sürüm adı `0.1.0`, `preview.autoIncrement` AÇIK): `v0.1.0` etiketi + sürüm kaydı (`docs/surumler/v0.1.0.md`; CHANGELOG hazır, tarih/build/versionCode etiket günü doldurulur), `scripts/check-release` (26 D3: app.json sürümü = CHANGELOG
-  üst başlığı), keystore yedeği + parmak izi, EAS hesabı. Hepsi Batuhan'ın onay/eylemiyle.
+- P1 (0.1.0) için KALANLAR (26 §2-3; sürüm adı `0.1.0`, `preview.autoIncrement` AÇIK): `v0.1.0` etiketi + sürüm kaydı (`docs/surumler/v0.1.0.md`; CHANGELOG hazır, tarih/build/versionCode etiket günü doldurulur), keystore yedeği + parmak izi, EAS hesabı. Hepsi Batuhan'ın onay/eylemiyle.
 - S16a'dan devreden: gizli çıkartma alt yazısı ("bilerek saklandı") S19 çizimiyle; onboarding'in kalan metinleri/ÖRNEK kart/18 yaş notu (19 §3.3) ve havuz genişletme (19 §4.3, ~190 metin) ayrı turlar; gizlilik sayfası düzeltmeleri K10 hukuki görüşüne güncel hâliyle verilecek.
 - Karar C (denemeden önce, 10 madde) ve D (ikinci yapı, 10 madde).
 - N-9 uygulama kilidi/FLAG_SECURE (öneri: yalnız son uygulamalar önizlemesini gizle).
