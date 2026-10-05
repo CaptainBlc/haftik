@@ -112,3 +112,7 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   bildirim izni verilince 12 alarm + iki kanal; `FATAL`/`UnsatisfiedLink`/`NoClassDefFound`/worklets satırı 0. `package.json` doğrudan
   bağımlılığı sürüm sabitlemek için KALDI. Yeni test: `__tests__/infra/native-exclusion.test.ts`. **Material Symbols yazı tipi (967 KB) bilerek
   yapılmadı** (expo-router'ın statik import zinciri, Metro budamıyor; çözüm Expo iç modüllerini boşaltmak, risk > ~%3 kazanç; ayrıntı `acik-isler.md`).
+- **P0 oturum araçları** (2026-10-05): oturumun kendisi Batuhan'da. Hazırlananlar: `docs/p0-materyal/kayit-sablonu.csv`,
+  `scripts/p0-sonuc.js` (CSV -> karar tablosu: M1-M6, L1, ÖRNEK ve GEÇ/BELİRSİZ/DUR önerisi; eşikler kontrol listesi bölüm C ile birebir,
+  `__tests__/scripts/p0-sonuc.test.ts`, eşik kaydırma mutasyonlarıyla doğrulandı), `docs/p0-materyal/davet-ve-oturum.md` (davet taslağı,
+  oturum günü kartı). Sonuç gelince karar `docs/kararlar/`'a işlenir; S19'un kalanı (CardView v2) ona bağlı.

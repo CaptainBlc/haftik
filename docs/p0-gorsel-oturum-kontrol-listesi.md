@@ -71,21 +71,9 @@ Tek başına 3/5 anlamsız (fark yokken bile %50 olasılıkla çıkar); 5/5 ayn�
 
 ## D. Kayıt tablosu (kişi başı bir satır)
 
-| Sütun | Değer |
-|---|---|
-| P-kodu, platform (Android/iPhone), paylaşım sıklığı bandı (ağır/ara sıra/nadir) | |
-| Görsel sırası (Eski önce / C önce) | |
-| 3 sn: unvanı doğru söyledi (E/H) · Eski-görünür / C-görünür | |
-| İlk soru (sohbet simülasyonu) | |
-| Koyar mıydın (E/B/H) · Eski-görünür / Eski-gizli / C-görünür / C-gizli | |
-| Seçilen engeller | |
-| Yaş / çocuk-yetişkin (1-5) / iş arkadaşına atar mıydı | |
-| Gizli hâl: ne düşündürdü / şaka mı saklama mı / unvanlı mı gizli mi | |
-| Gizlilik: ne öğrenir / nereye gider sanıyor | |
-| L1: sağdaki daha mı iyi (E/H) · orta en iyisi mi (E/H) | |
-| ÖRNEK: kime ait (kendi kartı sandı E/H) | |
-| Ad: açık cevap / seçenek / Play'de arama ifadesi | |
-| 24 saat sonra gerçekten koydu mu (E/H) | |
+Artık hazır şablon var: `docs/p0-materyal/kayit-sablonu.csv` (repo DIŞINA kopyala, kişisel not). Sütunlar ve değer biçimleri
+dosyanın başındaki yorumlarda. Sonucu hesaplatmak için: `node scripts/p0-sonuc.js <kayit.csv>`. Davet metni taslağı ve oturum
+günü kartı: `docs/p0-materyal/davet-ve-oturum.md`.
 
 ## E. F0-9: Story/Durum bant ölçümü (10 dk, yalnız sen, kendi telefonunda)
 

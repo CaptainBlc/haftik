@@ -1,0 +1,9 @@
+# P0 görsel oturumu kayıt şablonu. Bu satırlar yok sayılır. Başlığı DEĞİŞTİRME; kişi başı bir satır, kod P1..P6 (ad yazma).
+# E = evet, H = hayır, B = belki. koyar_* sütunları: "Bunu Durumuna/Hikayene koyar mıydın?" (E/B/H), her görsel için.
+# unvan_*: 3 sn gösterip kapattıktan sonra unvanı doğru söyledi mi (E/H). cocuk_c: 1 yetişkin espri ... 5 çocuk oyunu.
+# cocuksu_acik: açık uçlu soruda kendiliğinden "çocuksu" dedi mi (E/H). gizli_secim: unvanli / gizli / esit.
+# engel: seçtiği ANA engel için tek kısa sözcük (örn: ifsa, cocuksu, ilgisiz, cirkin, anlamadi, ugrasmam).
+# l1_*: "sağdaki daha mı iyi?" ve "orta en iyisi mi?" (E/H). ornek_kendi: ÖRNEK kartı kendi kartı sandı mı (E/H).
+# gercek_koydu: 24 saat sonra C'yi gerçekten koydu mu (E/H); henüz bakılmadıysa boş bırak.
+# sira: E = Eski önce, C = C önce. platform: android / iphone. sikiklik: agir / ara / nadir.
+kod,platform,sikiklik,sira,unvan_eski,unvan_c,koyar_eski_gorunur,koyar_eski_gizli,koyar_c_gorunur,koyar_c_gizli,cocuk_c,cocuksu_acik,gizli_secim,engel,l1_sagdaki_iyi,l1_orta_en_iyi,ornek_kendi,gercek_koydu
