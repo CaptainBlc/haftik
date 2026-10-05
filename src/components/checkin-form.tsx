@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { CategoryPicker } from '@/components/category-picker';
+import { CrossFade } from '@/components/cross-fade';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -35,6 +36,11 @@ export interface CheckinFormProps {
   /** S22: Kaydet'ten sonraki ilerleme cümlesi; `id` her kayıtta artar (aynı metin tekrar duyurulabilsin). */
   feedback?: { id: number; text: string } | null;
   /**
+   * S22 (X): kayıt başarısız oldu. Cümle ipucu satırında görünür (seçimler korunur, Kaydet aktif kalır) ve
+   * ekran okuyucuya okunur. Seçim değişince ya da yeni kayıt denenince üst katman bunu temizler.
+   */
+  saveError?: { id: number; text: string } | null;
+  /**
    * S22 (B8): kayıtlı durumdayken bekleyen geçen hafta kartı varsa düğme yuvası "Geçen haftanın kartını aç"
    * olur (ödül, eylemden sonra; dikey bütçe +0).
    */
@@ -61,6 +67,7 @@ export function CheckinForm({
   disabledExtra = false,
   savedSelection,
   feedback = null,
+  saveError = null,
   onOpenPendingCard = null,
 }: CheckinFormProps) {
   const theme = useTheme();
@@ -80,17 +87,25 @@ export function CheckinForm({
         ? SAVE_BUTTON_LABELS.saved
         : SAVE_BUTTON_LABELS.update
       : SAVE_BUTTON_LABELS.save;
-  // Cümle yalnız kayıtlı hâl değişmeden görünür; seçim değişince normal ipucuna döner.
-  const hintText = feedback && unchanged ? feedback.text : complete ? ' ' : `${remaining} kategori kaldı`;
-  const announceId = feedback && unchanged ? feedback.id : null;
-  const announceText = feedback?.text ?? null;
+  // Hata her şeyden önce gelir; ilerleme cümlesi yalnız kayıtlı hâl değişmeden görünür (seçim değişince
+  // normal ipucuna döner).
+  const showFeedback = feedback !== null && unchanged;
+  const hintText = saveError
+    ? saveError.text
+    : showFeedback
+      ? feedback.text
+      : complete
+        ? ' '
+        : `${remaining} kategori kaldı`;
+  const announceKey = saveError ? `e${saveError.id}` : showFeedback ? `f${feedback.id}` : null;
+  const announceText = saveError ? saveError.text : showFeedback ? feedback.text : null;
 
-  // A11Y-07: gösterilen cümle ekran okuyucuya AYNEN okunur (kayıt başına bir kez).
+  // A11Y-07: gösterilen cümle ekran okuyucuya AYNEN okunur (kayıt/hata başına bir kez).
   useEffect(() => {
-    if (announceId !== null && announceText) {
+    if (announceKey !== null && announceText) {
       AccessibilityInfo.announceForAccessibility(announceText);
     }
-  }, [announceId, announceText]);
+  }, [announceKey, announceText]);
   // Hangi günün düzenlendiği başlıkta açıkça yazar (yanlış güne kayıt riski, B4).
   const dayCaption = canGoToToday ? 'Dün' : 'Bugün';
 
@@ -152,11 +167,13 @@ export function CheckinForm({
           { backgroundColor: buttonDisabled ? theme.backgroundElement : theme.text },
           pressed && !buttonDisabled && styles.saveButtonPressed,
         ]}>
-        <ThemedText
-          type="smallBold"
-          style={{ color: buttonDisabled ? theme.textSecondary : theme.background }}>
-          {buttonLabel}
-        </ThemedText>
+        <CrossFade changeKey={buttonLabel}>
+          <ThemedText
+            type="smallBold"
+            style={{ color: buttonDisabled ? theme.textSecondary : theme.background }}>
+            {buttonLabel}
+          </ThemedText>
+        </CrossFade>
       </Pressable>
     </ThemedView>
   );

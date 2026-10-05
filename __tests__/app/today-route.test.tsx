@@ -7,7 +7,7 @@ import { AccessibilityInfo, Alert } from 'react-native';
 import { act, create, type ReactTestRenderer } from 'react-test-renderer';
 
 import TodayScreen from '@/app/(main)/today';
-import { SAVE_FEEDBACK_TEXTS } from '@/domain/content/save-feedback-texts';
+import { SAVE_FEEDBACK_ERROR_TEXTS, SAVE_FEEDBACK_TEXTS } from '@/domain/content/save-feedback-texts';
 import type { Checkin } from '@/domain/types';
 
 const mockPush = jest.fn();
@@ -174,13 +174,16 @@ describe('Bugün: Kaydet anı', () => {
     expect(announce).not.toHaveBeenCalled();
   });
 
-  it('kayıt hatası: uyarı çıkar, seçim korunur, kilit hemen açılır ve yeniden denenebilir', async () => {
+  it('kayıt hatası (X): uyarı kutusu yok, cümle ipucu satırında ve duyurulur; seçim korunur, kilit hemen açılır', async () => {
     const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
     mockSaveCheckin.mockRejectedValueOnce(new Error('disk'));
     await mount();
     await pick(ALL_PICKS);
     await pressSave();
-    expect(alert).toHaveBeenCalledTimes(1);
+    expect(alert).not.toHaveBeenCalled();
+    expect(SAVE_FEEDBACK_ERROR_TEXTS).toContain(text('save-hint'));
+    expect(announce).toHaveBeenCalledTimes(1);
+    expect(announce).toHaveBeenCalledWith(text('save-hint'));
     expect(mockTrack).not.toHaveBeenCalled();
     expect(byId('save-button').props.disabled).toBe(false); // seçim ve Kaydet yerinde
     expect(buttonLabel()).toBe('Kaydet');
@@ -188,6 +191,17 @@ describe('Bugün: Kaydet anı', () => {
     await pressSave(); // 900 ms beklemeden tekrar
     expect(mockSaveCheckin).toHaveBeenCalledTimes(2);
     expect(buttonLabel()).toBe('✓ Kaydedildi');
+    expect(SAVE_FEEDBACK_ERROR_TEXTS).not.toContain(text('save-hint')); // hata kalktı, ilerleme cümlesi geldi
+  });
+
+  it('hata cümlesi, seçim değişince kalkar ve normal ipucuna dönülür', async () => {
+    mockSaveCheckin.mockRejectedValueOnce(new Error('disk'));
+    await mount();
+    await pick(ALL_PICKS);
+    await pressSave();
+    expect(SAVE_FEEDBACK_ERROR_TEXTS).toContain(text('save-hint'));
+    await pick([['movement', 1]]);
+    expect(text('save-hint').trim()).toBe('');
   });
 
   it('K3: kart akışından gelindiyse kayıttan sonra kart ekranına geçer (cümle "sundayK3" türünden)', async () => {

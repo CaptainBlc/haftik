@@ -12,13 +12,13 @@
  */
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert } from 'react-native';
 
 import { CheckinForm } from '@/components/checkin-form';
 import { LoadErrorView } from '@/components/load-error-view';
 import { LoadingView } from '@/components/loading-view';
 import { getCardWeekStarts } from '@/data/card-repo';
 import { getAllCheckins, getCheckins, saveCheckin } from '@/data/checkin-repo';
+import { getSaveErrorText } from '@/domain/content/save-feedback-texts';
 import type { Category, CategoryValue } from '@/domain/types';
 import { addLocalDays, findOpenableWeeks, getWeekStart, toLocalDateString } from '@/domain/week';
 import {
@@ -74,6 +74,8 @@ export default function TodayScreen() {
   /** B8: kayıttan sonra düğme yuvasında önerilecek, bekleyen GEÇEN hafta kartı (varsa). */
   const [pendingCardWeek, setPendingCardWeek] = useState<string | null>(null);
   const [pendingRefresh, setPendingRefresh] = useState(0);
+  /** X: son kayıt denemesi başarısızsa ipucu satırındaki hata cümlesi (seçim değişince ya da yeni denemede kalkar). */
+  const [saveError, setSaveError] = useState<{ id: number; text: string } | null>(null);
   // S16b (04 #7): okuma hatasında sonsuz yükleme yerine hata ekranı + yeniden deneme.
   const [attempt, setAttempt] = useState(0);
   const [failedAttempt, setFailedAttempt] = useState<number | null>(null);
@@ -127,6 +129,7 @@ export default function TodayScreen() {
 
   function handleSelect(category: Category, value: CategoryValue) {
     setSelection((prev) => ({ ...prev, [category]: value }));
+    setSaveError(null);
   }
 
   async function handleSave() {
@@ -135,6 +138,7 @@ export default function TodayScreen() {
     }
     const toSave = selection;
     let failed = false;
+    setSaveError(null);
     try {
       await runSave(async () => {
         // Kayıttan ÖNCEKİ durum: düzenleme mi, geçmiş var mı, dönüş mü (yalnız gün sayısı/zaman; seviye karara girmez).
@@ -170,8 +174,9 @@ export default function TodayScreen() {
       failed = true;
     }
     if (failed) {
-      // S16b (04 #7): kayıt hatası sessiz kalmasın; seçim ekranda korunur, tekrar denenebilir.
-      Alert.alert('Kaydedilemedi', 'Bugünün kaydı yapılamadı. Lütfen tekrar dene.');
+      // S22 (X): kayıt hatası sessiz kalmasın. Cümle ipucu satırında (uyarı kutusu yok); seçim ekranda korunur,
+      // Kaydet aktif kalır, kilit hemen açılır, yeniden denenebilir (`useSingleFlight` hatada kilit tutmaz).
+      setSaveError((prev) => ({ id: (prev?.id ?? 0) + 1, text: getSaveErrorText(selectedDate) }));
     }
   }
 
@@ -194,6 +199,7 @@ export default function TodayScreen() {
       onSave={handleSave}
       disabledExtra={saving}
       savedSelection={savedSelection}
+      saveError={saveError}
       feedback={feedback && feedback.date === selectedDate ? { id: feedback.id, text: feedback.text } : null}
       onOpenPendingCard={
         pendingCardWeek && dayOffset === 0

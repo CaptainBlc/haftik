@@ -65,7 +65,7 @@ export const SAVE_FEEDBACK_TEXTS: Readonly<Record<SaveFeedbackKind, readonly str
 /** Yalnız "Pazar 20:00" gibi gelecekteki bir kart zamanı iddia edebilen türler (19 §3.2 denetim 2). */
 export const SAVE_FEEDBACK_FUTURE_CLAIM_KINDS: readonly SaveFeedbackKind[] = ['thresholdReached', 'extraDay', 'fullWeek'];
 
-/** Kayıt başarısız (X). Şimdilik `today.tsx`'teki uyarı kutusu kullanılıyor; metin onay bekliyor. */
+/** Kayıt başarısız (X): ipucu satırında gösterilir; onaylı (Batuhan, 2026-10-05, `docs/s22-metin-onayi.md`). */
 export const SAVE_FEEDBACK_ERROR_TEXTS: readonly string[] = [
   'Kaydedemedik. Bir kez daha dener misin?',
   'Bu sefer olmadı. Bir kez daha dener misin?',
@@ -85,4 +85,9 @@ export function getSaveFeedbackText(kind: SaveFeedbackKind, localDate: string, r
   const pool = SAVE_FEEDBACK_TEXTS[kind];
   const text = pool[dayNumber(localDate) % pool.length];
   return text.replace('{r}', String(remaining));
+}
+
+/** Kayıt hatası cümlesi (X). Gün numarasına göre deterministik; çare içerir ("bir kez daha dener misin?"). */
+export function getSaveErrorText(localDate: string): string {
+  return SAVE_FEEDBACK_ERROR_TEXTS[dayNumber(localDate) % SAVE_FEEDBACK_ERROR_TEXTS.length];
 }

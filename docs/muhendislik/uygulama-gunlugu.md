@@ -80,3 +80,12 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   kayıt hatası cümlesi (X; S16b metin onayına bağlı), "4+ gün sonra Yeni bir hafta, temiz sayfa" boş durum satırı,
   Pazar K3'te mikro-an yok kuralı (K3'te ekran zaten kart ekranına geçiyor). Ekran okuyucu duyurusu yalnız K2 (TalkBack K4/K5 yok).
   `npm run verify`: 98 suite / 1333 test yeşil, 3 atlandı.
+- **S22 devam** (2026-10-05; metin onayı alındı: `docs/s22-metin-onayi.md`): (1) **Kayıt hatası (X)**: uyarı kutusu kalktı,
+  onaylı cümle ipucu satırında + `announceForAccessibility`; seçim korunur, kilit hemen açılır. K4: DB dosyası salt okunur
+  yapılınca (`chmod 444`) "Bu sefer olmadı. Bir kez daha dener misin?" çıktı, Kaydet aktif kaldı, uyarı kutusu yok; uygulama
+  yeniden başlatılınca (SQLite bağlantısı salt okunur açılmıştı, süreç içinde izin düzeltmek yetmedi) kayıt çalıştı.
+  (2) **`CrossFade`** (`src/components/cross-fade.tsx`): Kaydet etiketi 120 ms opaklık geçişi, yalnız `opacity` ve yerel sürücü
+  (hareket içermediği için azaltılmış harekette de aynı). K2'de yalnız başlangıç değeri ve başlatılan geçişin yapılandırması
+  doğrulanır (yerel sürücülü animasyon Jest'te JS değerini ilerletmez); akıcılık K4/K5'te görülmedi. **Hâlâ yapılmadı:**
+  haptik (S20 `expo-haptics`), bugünün noktasının dolması (Bugün'de nokta satırı yok, S23), "Yeni bir hafta, temiz sayfa"
+  boş durum satırı (metin onayı bekliyor, sayfada yazılı). `npm run verify`: 99 suite / 1338 test yeşil, 3 atlandı.

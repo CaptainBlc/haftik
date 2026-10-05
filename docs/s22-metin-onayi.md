@@ -6,7 +6,7 @@
 > Mekanik denetim: `__tests__/domain/save-feedback-texts.test.ts` (en çok 52 karakter, yasak dil, seviye/kategori sözcüğü
 > yok, "Pazar 20:00" iddiası yalnız D/E/F, ardışık gün aynı varyant yok).
 
-**Onay:** ☐ Olduğu gibi onaylıyorum · ☐ Aşağıdaki değişikliklerle onaylıyorum · ☐ Reddediyorum
+**Onay:** ☒ Olduğu gibi onaylıyorum · ☐ Aşağıdaki değişikliklerle onaylıyorum · ☐ Reddediyorum  (Batuhan, 2026-10-05; sohbette onaylandı)
 
 ## Düğme yuvası (sabit etiketler)
 
@@ -38,8 +38,18 @@
 **Kodda eklenen, belgede olmayan tek şey:** "Yedek" satırı. Belgenin D/E/F cümleleri Pazar 20:00 sonrası yanlış olurdu;
 bu durum için sade bir "Kaydedildi." seçtim. Değiştirmek istersen söyle.
 
-## Henüz koda alınmayan: kayıt hatası (X)
+## Kayıt hatası (X): koda alındı (2026-10-05)
 
-Belgedeki metinler: "Kaydedemedik. Bir kez daha dener misin?" · "Bu sefer olmadı. Bir kez daha dener misin?" Şimdilik
-uyarı kutusu ("Kaydedilemedi / Bugünün kaydı yapılamadı. Lütfen tekrar dene.") duruyor; o metin S16b onayında bekliyor
-(`docs/acik-isler.md`). İkisi birlikte karara bağlanmalı. Seçenek: X cümlesi ipucu satırına, uyarı kutusu kalkar.
+"Kaydedemedik. Bir kez daha dener misin?" · "Bu sefer olmadı. Bir kez daha dener misin?" artık **ipucu satırında**
+görünür (gün numarasına göre deterministik) ve ekran okuyucuya okunur; seçimler korunur, Kaydet aktif kalır, kilit hemen
+açılır. **Uyarı kutusu ("Kaydedilemedi / Bugünün kaydı yapılamadı…") kaldırıldı**; S16b'nin o metni artık kullanılmıyor
+(`docs/acik-isler.md`'deki "Kaydedilemedi" onay maddesi bu ekran için düştü; "Silinemedi" ve "Yüklenemedi" duruyor).
+Onay kapsamı: bu belgenin X bölümü "olduğu gibi" kabul edildi; yalnız yeri (satır) bir seçimdi, geri alınabilir.
+
+## Onay bekleyen ek metin (koda alınmadı)
+
+| Yer | Metin | Ne zaman |
+|---|---|---|
+| Bugün boş durumu (ipucu satırı) | Yeni bir hafta, temiz sayfa. | Bugün boşken ve son kayıt ≥ 4 gün önceyse, "4 kategori kaldı" yerine (18 §3 tablo, kaç gün geçtiği yazılmaz) |
+
+Bu cümle 18 numaralı UX belgesinden gelir, bu onay sayfasındaki 19 §3.2 havuzunda yoktu. Onaylarsan koda alırım.

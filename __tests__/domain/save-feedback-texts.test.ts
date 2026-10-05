@@ -3,6 +3,7 @@ import {
   SAVE_FEEDBACK_ERROR_TEXTS,
   SAVE_FEEDBACK_FUTURE_CLAIM_KINDS,
   SAVE_FEEDBACK_TEXTS,
+  getSaveErrorText,
   getSaveFeedbackText,
   type SaveFeedbackKind,
 } from '@/domain/content/save-feedback-texts';
@@ -90,6 +91,19 @@ describe('getSaveFeedbackText', () => {
         const d2 = new Date(Date.UTC(2026, 9, 2 + i)).toISOString().slice(0, 10);
         expect(getSaveFeedbackText(kind, d1, 2)).not.toBe(getSaveFeedbackText(kind, d2, 2));
       }
+    }
+  });
+});
+
+describe('getSaveErrorText (X)', () => {
+  it('onaylı havuzdan döner, aynı gün aynı cümle, çare içerir, yargılamaz', () => {
+    for (let i = 0; i < 10; i++) {
+      const d = new Date(Date.UTC(2026, 9, 1 + i)).toISOString().slice(0, 10);
+      const t = getSaveErrorText(d);
+      expect(SAVE_FEEDBACK_ERROR_TEXTS).toContain(t);
+      expect(t).toBe(getSaveErrorText(d));
+      expect(t).toMatch(/dener misin\?$/);
+      expect(t).not.toMatch(/hata|başarısız|yanlış|sen\b/i);
     }
   });
 });
