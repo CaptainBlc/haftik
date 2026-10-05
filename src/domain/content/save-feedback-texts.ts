@@ -91,3 +91,9 @@ export function getSaveFeedbackText(kind: SaveFeedbackKind, localDate: string, r
 export function getSaveErrorText(localDate: string): string {
   return SAVE_FEEDBACK_ERROR_TEXTS[dayNumber(localDate) % SAVE_FEEDBACK_ERROR_TEXTS.length];
 }
+
+/**
+ * Bugün ekranının BOŞ durumunda, uzun bir aradan sonra yeni haftanın ilk girişinden önce ipucu satırında görünen tek cümle
+ * (18 §3 tablo; Batuhan onayı 2026-10-05, `docs/s22-metin-onayi.md`). Kaç gün geçtiği YAZILMAZ (kayıp/kaçırma dili yok).
+ */
+export const FRESH_WEEK_TEXT = 'Yeni bir hafta, temiz sayfa.';

@@ -41,6 +41,11 @@ export interface CheckinFormProps {
    */
   saveError?: { id: number; text: string } | null;
   /**
+   * S22: boş durum ipucu (ör. uzun aradan sonra yeni hafta). Yalnız HİÇ kategori seçilmemişken "4 kategori kaldı"nın yerine
+   * görünür; ilk seçimle normal ipucuna döner.
+   */
+  emptyHint?: string | null;
+  /**
    * S22 (B8): kayıtlı durumdayken bekleyen geçen hafta kartı varsa düğme yuvası "Geçen haftanın kartını aç"
    * olur (ödül, eylemden sonra; dikey bütçe +0).
    */
@@ -68,6 +73,7 @@ export function CheckinForm({
   savedSelection,
   feedback = null,
   saveError = null,
+  emptyHint = null,
   onOpenPendingCard = null,
 }: CheckinFormProps) {
   const theme = useTheme();
@@ -96,7 +102,9 @@ export function CheckinForm({
       ? feedback.text
       : complete
         ? ' '
-        : `${remaining} kategori kaldı`;
+        : remaining === CATEGORIES.length && emptyHint
+          ? emptyHint
+          : `${remaining} kategori kaldı`;
   const announceKey = saveError ? `e${saveError.id}` : showFeedback ? `f${feedback.id}` : null;
   const announceText = saveError ? saveError.text : showFeedback ? feedback.text : null;
 

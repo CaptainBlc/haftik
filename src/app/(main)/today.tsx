@@ -18,7 +18,7 @@ import { LoadErrorView } from '@/components/load-error-view';
 import { LoadingView } from '@/components/loading-view';
 import { getCardWeekStarts } from '@/data/card-repo';
 import { getAllCheckins, getCheckins, saveCheckin } from '@/data/checkin-repo';
-import { getSaveErrorText } from '@/domain/content/save-feedback-texts';
+import { FRESH_WEEK_TEXT, getSaveErrorText } from '@/domain/content/save-feedback-texts';
 import type { Category, CategoryValue } from '@/domain/types';
 import { addLocalDays, findOpenableWeeks, getWeekStart, toLocalDateString } from '@/domain/week';
 import {
@@ -28,6 +28,7 @@ import {
   type CategorySelection,
 } from '@/lib/checkin-form';
 import { formatTurkishDateLabel } from '@/lib/date-format';
+import { shouldShowFreshWeekLine } from '@/lib/fresh-week';
 import { getNow, useNow } from '@/lib/now';
 import { getSaveFeedback } from '@/lib/save-feedback';
 import { useSingleFlight } from '@/lib/use-single-flight';
@@ -74,6 +75,8 @@ export default function TodayScreen() {
   /** B8: kayıttan sonra düğme yuvasında önerilecek, bekleyen GEÇEN hafta kartı (varsa). */
   const [pendingCardWeek, setPendingCardWeek] = useState<string | null>(null);
   const [pendingRefresh, setPendingRefresh] = useState(0);
+  /** "Yeni bir hafta, temiz sayfa." koşulu (uzun aradan sonra; yalnız tarihlere bakar). */
+  const [freshWeek, setFreshWeek] = useState(false);
   /** X: son kayıt denemesi başarısızsa ipucu satırındaki hata cümlesi (seçim değişince ya da yeni denemede kalkar). */
   const [saveError, setSaveError] = useState<{ id: number; text: string } | null>(null);
   // S16b (04 #7): okuma hatasında sonsuz yükleme yerine hata ekranı + yeniden deneme.
@@ -116,10 +119,12 @@ export default function TodayScreen() {
           (ws) => ws < currentWeek
         );
         setPendingCardWeek(openable.length > 0 ? openable[openable.length - 1] : null);
+        setFreshWeek(shouldShowFreshWeekLine({ today, checkinDates: allCheckins.map((c) => c.localDate) }));
       })
       .catch(() => {
         if (!cancelled) {
           setPendingCardWeek(null);
+          setFreshWeek(false);
         }
       });
     return () => {
@@ -200,6 +205,7 @@ export default function TodayScreen() {
       disabledExtra={saving}
       savedSelection={savedSelection}
       saveError={saveError}
+      emptyHint={freshWeek && dayOffset === 0 && savedSelection === null ? FRESH_WEEK_TEXT : null}
       feedback={feedback && feedback.date === selectedDate ? { id: feedback.id, text: feedback.text } : null}
       onOpenPendingCard={
         pendingCardWeek && dayOffset === 0

@@ -116,3 +116,7 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   `scripts/p0-sonuc.js` (CSV -> karar tablosu: M1-M6, L1, ÖRNEK ve GEÇ/BELİRSİZ/DUR önerisi; eşikler kontrol listesi bölüm C ile birebir,
   `__tests__/scripts/p0-sonuc.test.ts`, eşik kaydırma mutasyonlarıyla doğrulandı), `docs/p0-materyal/davet-ve-oturum.md` (davet taslağı,
   oturum günü kartı). Sonuç gelince karar `docs/kararlar/`'a işlenir; S19'un kalanı (CardView v2) ona bağlı.
+- **S22: boş durum satırı** (2026-10-05, metin onaylı): Bugün ekranında uzun aradan sonra, hiçbir şey seçilmemişken "4 kategori kaldı" yerine
+  "Yeni bir hafta, temiz sayfa." (`src/lib/fresh-week.ts` saf koşul: bu hafta kayıt yok + geçmiş var + son kayıt >= 4 gün önce; bugün/dün ayrımı
+  rotada). Eşik kaydırma ve koşul mutasyonlarıyla doğrulandı (`__tests__/lib/fresh-week.test.ts`, `today-route.test.tsx`). S22'de kalan:
+  haptik (S20) ve bugünün noktasının dolması (S23).

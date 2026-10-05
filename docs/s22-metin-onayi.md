@@ -46,10 +46,12 @@ açılır. **Uyarı kutusu ("Kaydedilemedi / Bugünün kaydı yapılamadı…") 
 (`docs/acik-isler.md`'deki "Kaydedilemedi" onay maddesi bu ekran için düştü; "Silinemedi" ve "Yüklenemedi" duruyor).
 Onay kapsamı: bu belgenin X bölümü "olduğu gibi" kabul edildi; yalnız yeri (satır) bir seçimdi, geri alınabilir.
 
-## Onay bekleyen ek metin (koda alınmadı)
+## Ek metin: "Yeni bir hafta, temiz sayfa." (onaylandı ve koda alındı, 2026-10-05)
 
 | Yer | Metin | Ne zaman |
 |---|---|---|
-| Bugün boş durumu (ipucu satırı) | Yeni bir hafta, temiz sayfa. | Bugün boşken ve son kayıt ≥ 4 gün önceyse, "4 kategori kaldı" yerine (18 §3 tablo, kaç gün geçtiği yazılmaz) |
+| Bugün boş durumu (ipucu satırı) | Yeni bir hafta, temiz sayfa. | HİÇ kategori seçilmemişken "4 kategori kaldı"nın yerine; yalnız bugün için |
 
-Bu cümle 18 numaralı UX belgesinden gelir, bu onay sayfasındaki 19 §3.2 havuzunda yoktu. Onaylarsan koda alırım.
+Koşul (`src/lib/fresh-week.ts`, yalnız check-in tarihlerine bakar): bu haftada (Pzt..bugün) hiç kayıt yok, geçmişte kayıt var (ilk kullanımda
+gösterilmez) ve son kayıt bugünden en az 4 gün önce. "Yeni hafta" iddiası yanlış olamasın diye aynı haftada kaydı olana gösterilmez.
+Kaç gün geçtiği yazılmaz. İlk seçimle normal ipucuna döner; dünü düzenlerken görünmez. Onay: Batuhan, sohbette (2026-10-05).

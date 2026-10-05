@@ -7,7 +7,7 @@ import { AccessibilityInfo, Alert } from 'react-native';
 import { act, create, type ReactTestRenderer } from 'react-test-renderer';
 
 import TodayScreen from '@/app/(main)/today';
-import { SAVE_FEEDBACK_ERROR_TEXTS, SAVE_FEEDBACK_TEXTS } from '@/domain/content/save-feedback-texts';
+import { FRESH_WEEK_TEXT, SAVE_FEEDBACK_ERROR_TEXTS, SAVE_FEEDBACK_TEXTS } from '@/domain/content/save-feedback-texts';
 import type { Checkin } from '@/domain/types';
 
 const mockPush = jest.fn();
@@ -263,5 +263,55 @@ describe('Bugün: bekleyen geçen hafta kartı (B8)', () => {
     mockGetCardWeekStarts.mockRejectedValue(new Error('x'));
     await mount();
     expect(buttonLabel()).toBe('Kaydet');
+  });
+});
+
+describe('Bugün: boş durum satırı ("Yeni bir hafta, temiz sayfa.")', () => {
+  // Saat: Sal 2026-09-29, hafta başı 2026-09-28. Önceki hafta kayıtları: 09-21..09-23 (son kayıt 6 gün önce).
+  const older = ['2026-09-21', '2026-09-22', '2026-09-23'].map(day);
+  const hint = () => text('save-hint');
+
+  it('uzun aradan sonra, hiçbir şey seçilmemişken "4 kategori kaldı" yerine görünür', async () => {
+    mockGetAllCheckins.mockResolvedValue(older);
+    await mount();
+    expect(hint()).toBe(FRESH_WEEK_TEXT);
+  });
+
+  it('ilk seçimle normal ipucuna döner ("3 kategori kaldı")', async () => {
+    mockGetAllCheckins.mockResolvedValue(older);
+    await mount();
+    await pick([['movement', 3]]);
+    expect(hint()).toBe('3 kategori kaldı');
+  });
+
+  it('geçmiş yoksa (ilk kullanım), bu hafta kayıt varsa ya da aralık < 4 gün ise görünmez', async () => {
+    await mount(); // geçmiş yok
+    expect(hint()).toBe('4 kategori kaldı');
+    await act(async () => tree!.unmount());
+
+    mockGetAllCheckins.mockResolvedValue([...older, day('2026-09-28')]); // bu hafta kayıt var
+    await mount();
+    expect(hint()).toBe('4 kategori kaldı');
+    await act(async () => tree!.unmount());
+
+    mockGetAllCheckins.mockResolvedValue([day('2026-09-26')]); // Cmt -> Sal: 3 gün
+    await mount();
+    expect(hint()).toBe('4 kategori kaldı');
+  });
+
+  it('bugünün kaydı varsa görünmez; dünü düzenlerken de görünmez', async () => {
+    mockGetAllCheckins.mockResolvedValue(older);
+    mockGetCheckins.mockResolvedValue([{ ...day('2026-09-29'), movement: 3, sleep: 2, spending: 1, social: 2 }]);
+    await mount();
+    expect(hint().trim()).toBe('');
+
+    await act(async () => tree!.unmount());
+    mockGetCheckins.mockResolvedValue([]);
+    await mount();
+    expect(hint()).toBe(FRESH_WEEK_TEXT);
+    await act(async () => {
+      byId('date-nav-back').props.onPress();
+    });
+    expect(hint()).toBe('4 kategori kaldı'); // dün için "yeni hafta" iddiası yok
   });
 });
