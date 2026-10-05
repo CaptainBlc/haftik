@@ -5,6 +5,7 @@
   },
   "build": {
     "preview": {
+      "autoIncrement": true,
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_BUILD_CHANNEL": "preview"

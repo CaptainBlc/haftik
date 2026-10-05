@@ -120,3 +120,15 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   "Yeni bir hafta, temiz sayfa." (`src/lib/fresh-week.ts` saf koşul: bu hafta kayıt yok + geçmiş var + son kayıt >= 4 gün önce; bugün/dün ayrımı
   rotada). Eşik kaydırma ve koşul mutasyonlarıyla doğrulandı (`__tests__/lib/fresh-week.test.ts`, `today-route.test.tsx`). S22'de kalan:
   haptik (S20) ve bugünün noktasının dolması (S23).
+- **Sürüm 0.1.0** (2026-10-05, Batuhan kararı): `app.json` `version` 1.0.0 -> **0.1.0** (sürüm planı 26 §1.3: 0.x -> 0.9.0 Play kapalı test -> 1.0.0).
+  `package.json` ve `package-lock.json` kökü de aynı sürüme çekildi (ayrışmasın); `__tests__/infra/version.test.ts` üçünün eşitliğini ve `0.x`
+  biçimini korur (1.0.0'a geçiş bilinçli karar ve o testin onaylı güncellemesidir). `android/` `prebuild --clean` ile yeniden üretildi: `versionName
+  0.1.0`, `versionCode 1` (yerel; EAS sayacı ayrı). K4: release APK (32,46 MB) `aapt2 badging` versionName 0.1.0; izinler altın liste, worklets/reanimated
+  .so yok; eski sürümün (1.0.0, kod 1) üstüne `adb install -r` ile kuruldu, veri korundu, Ayarlar'da "Sürüm 0.1.0 (build 1)". **Dokunulmadı:**
+  `preview.autoIncrement` (Karar C7/26 S3 onayı), CHANGELOG, etiket (acik-isler P1 listesi).
+- **`preview.autoIncrement: true`** (2026-10-05, Batuhan onayı; Karar C7 / 26 S3, A4): `eas.json` `preview` profiline eklendi. `appVersionSource: remote`
+  iken yalnız `autoIncrement` olan profil uzak `versionCode` sayacını artırır ve sayaç ortaktır; artırmazsa her arkadaş APK'sı `versionCode=1` çıkardı
+  (hangi build hangi telefonda ayırt edilemez). **Kural (26 §1.4): `eas build:version:set` ile sayacı ASLA geri çekme** (Play yalnız "öncekinden büyük"
+  ister; boşluklar zararsız). Koruma: `__tests__/infra/eas-config.test.ts` (preview + production autoIncrement, remote kaynak, yalnız iki profil,
+  kanal yok/OTA kapalı; autoIncrement'i silince kırıldığı görüldü). **Doğrulanmadı:** gerçek EAS build'inde sayacın artması (hesap yok, P1);
+  26 E15 kanıtı (iki ardışık preview APK üst üste, veri korunuyor mu) o zaman alınır.
