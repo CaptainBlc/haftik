@@ -27,7 +27,7 @@ Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
 - **P0 görsel oturum + F0-9** (`CardView` v2 kapısı): `docs/p0-gorsel-oturum-kontrol-listesi.md`.
 - **Metin onayı** (S16b'den, geçici): "Silinemedi", "Yüklenemedi" + "Tekrar dene", rapor önizleme girişi.
   ("Kaydedilemedi" uyarı kutusu Bugün'de kalktı, yerini S22'nin onaylı hata cümlesi aldı.)
-- P1 (0.1.0) için KALANLAR (26 §2-3; sürüm adı `0.1.0`, `preview.autoIncrement` AÇIK): `CHANGELOG.md` + `v0.1.0` etiketi + sürüm kaydı, `scripts/check-release` (26 D3: app.json sürümü = CHANGELOG
+- P1 (0.1.0) için KALANLAR (26 §2-3; sürüm adı `0.1.0`, `preview.autoIncrement` AÇIK): `v0.1.0` etiketi + sürüm kaydı (`docs/surumler/v0.1.0.md`; CHANGELOG hazır, tarih/build/versionCode etiket günü doldurulur), `scripts/check-release` (26 D3: app.json sürümü = CHANGELOG
   üst başlığı), keystore yedeği + parmak izi, EAS hesabı. Hepsi Batuhan'ın onay/eylemiyle.
 - S16a'dan devreden: gizli çıkartma alt yazısı ("bilerek saklandı") S19 çizimiyle; onboarding'in kalan metinleri/ÖRNEK kart/18 yaş notu (19 §3.3) ve havuz genişletme (19 §4.3, ~190 metin) ayrı turlar; gizlilik sayfası düzeltmeleri K10 hukuki görüşüne güncel hâliyle verilecek.
 - Karar C (denemeden önce, 10 madde) ve D (ikinci yapı, 10 madde).

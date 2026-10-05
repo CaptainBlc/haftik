@@ -132,3 +132,8 @@ yapılmayanlar (R-23 API<31, R-25, Doze, başarılı paylaşım hedefi, AAB): `d
   ister; boşluklar zararsız). Koruma: `__tests__/infra/eas-config.test.ts` (preview + production autoIncrement, remote kaynak, yalnız iki profil,
   kanal yok/OTA kapalı; autoIncrement'i silince kırıldığı görüldü). **Doğrulanmadı:** gerçek EAS build'inde sayacın artması (hesap yok, P1);
   26 E15 kanıtı (iki ardışık preview APK üst üste, veri korunuyor mu) o zaman alınır.
+- **CHANGELOG.md** (2026-10-05): kökte, Türkçe, 26 §2.5 şablonuyla; `0.1.0` girdisi (Eklendi/Değişti/Düzeltildi/Güvenlik/Bilinen sınırlar/Veri ve
+  şema notu/Kanıt). Tarih, build numarası ve `versionCode` bilerek BOŞ ("Yayın öncesi"; etiket günü yazılır, uydurulmadı). İçerik uygulama günlüğü
+  ve kararlardan derlendi; kanıtı olmayan iddia yok (ör. cihazdan cihaza aktarımın `bmgr` kanıtı henüz yok, "Bilinen sınırlar"da). Koruma:
+  `__tests__/infra/version.test.ts` (üst başlık = app.json sürümü, tekrarsız/sıralı başlıklar, zorunlu bölümler, yer tutucu sözcük yok).
+  26 D3'ün tam betiği (`scripts/check-release`: etiket = sürüm, kimlik kilidi, `npm audit`, dev menü dizeleri) hâlâ yok.
