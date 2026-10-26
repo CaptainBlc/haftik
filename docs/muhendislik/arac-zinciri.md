@@ -50,6 +50,12 @@
   import etmesi Jest'i kırıyordu, `jest.moduleNameMapper`'a CSS mock eklenmişti. Web yığını kaldırıldığında
   (`react-dom`, `react-native-web`) bu import da kalktı; `css-mock.js` ve `moduleNameMapper` girdisi artık ölü
   kod — bir sonraki dokunulduğunda silinebilir, test kırmıyor diye bırakıldı.
+- (2026-10-26, CI) `jest.testTimeout` 20000 ms (varsayılan 5000). CI'da Jest dönüşüm önbelleği boş ve runner 2
+  çekirdek: `today-route` ve `settings-route` dosyalarının İLK testi tüm modüllerin ilk dönüşümünü üstlenip 5 sn'yi
+  aşıyordu (test mantığı sağlam, tek başına ~360 ms). Yerelde yeniden üretme: `taskset -c 0,1 jest --ci --no-cache
+  --maxWorkers=2` (Node `.nvmrc` sürümüyle). Zaman aşımını artırmak assertion gevşetmez. Ayrıca `src/global-css.d.ts`
+  (`declare module '*.css'`): `expo-env.d.ts` .gitignore'da olduğundan taze klonda/CI'da `@/global.css` TS2882 veriyordu.
+
 - (2026-09-23, test) `react-test-renderer` ağacı `unmount()` edilmeden bırakılırsa ve bileşen
   `useNativeDriver: true` ile bir `Animated` zamanlayıcısı başlatmışsa, Jest süreci test dosyası bittikten
   **sonra** çöker (`ReferenceError: Jest environment has been torn down` → `TypeError:
