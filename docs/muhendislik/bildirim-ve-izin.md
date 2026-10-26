@@ -67,6 +67,23 @@ ve `device_*` alanları `exclude`, hiç `include` yok) ve manifestte `android:da
 manifestten başvurulduğu için `shrinkResources` atmaz. **Cihaz kanıtı kalan:** `aapt2 dump xmltree` ile
 manifestte görünmesi (release APK) + GMS'li imajda D2D test modu (`bmgr`, 22 §1.5) + OEM aktarım araçları (K5).
 
+## iOS: iCloud/iTunes yedek hariç tutma
+
+`expo-sqlite` iOS'ta DB'yi `Documents/SQLite` altında açar ve iOS bu klasörü varsayılan olarak iCloud/iTunes
+yedeğine alır — Android'deki A17 sözü ("telefon değişirse veri taşınmaz") iOS'ta kanıtsızdı.
+
+**Uygulandı (K2, JS tarafı):** `modules/haftik-backup` (yerel Expo modülü, yalnız `apple`, ağ yok) bir klasörü
+`URLResourceValues.isExcludedFromBackup = true` ile işaretler (klasör işareti içindeki dosyaları da kapsar). Sarmalayıcı
+`src/lib/backup-exclusion.ts`, `_layout.tsx`'ten `initAppDatabase()` ÖNCESİ bir kez çağrılır (DB dosyası oluşmadan
+önce klasör hazır olsun). En iyi çaba: hata uygulamayı düşürmez, sabit metinli uyarı. Android/Jest'te native modül yok,
+çağrı no-op. Test: `__tests__/lib/backup-exclusion.test.ts`. Autolinking: apple'da `HaftikBackup` pod'u çözülüyor,
+android'de modül yok.
+
+**Cihaz kanıtı kalan (K4/K5, Mac/EAS iOS derlemesi gerekir):** Swift kodu bu ortamda DERLENMEDİ. TestFlight derlemesinde:
+(1) derleme geçiyor mu; (2) `Documents/SQLite`'ta `isExcludedFromBackup` gerçekten `true` mu (Xcode > Devices > container
+ya da `xattr`/`NSURLIsExcludedFromBackupKey` okuma); (3) iCloud Yedekleme boyutunda uygulama verisi görünmüyor mu.
+Paylaşım/rapor dosyaları `cacheDirectory`'dedir (yedeğe girmez), ayrı işlem gerekmez.
+
 ## Exact alarm ve gecikme
 
 (2026-09-23, MOB/S8) `SCHEDULE_EXACT_ALARM` izni bilerek eklenmedi (izin/mağaza riski); sistem bildirimi tam
