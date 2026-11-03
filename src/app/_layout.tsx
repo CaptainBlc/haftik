@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { sweepShareDir } from '@/card/share-dir';
 import { sweepSnapshotFiles } from '@/card/temp-cleanup';
 import { initAppDatabase } from '@/data/init';
+import { excludeDatabaseDirFromBackup } from '@/lib/backup-exclusion';
 import { deleteReportFile } from '@/metrics/report-file';
 import { useNotificationRouting } from '@/notify/notification-routing';
 import { configureNotificationHandler } from '@/notify/scheduler';
@@ -31,6 +32,10 @@ if (__DEV__) {
 }
 
 export default function RootLayout() {
+  // iOS: DB dosyası oluşmadan önce klasörü yedekten hariç tut. Idempotent
+  // (bkz. `lib/backup-exclusion.ts`), her render'da güvenle çağrılır.
+  excludeDatabaseDirFromBackup();
+
   // Idempotent (bkz. `data/init.ts`): her render'da güvenle tekrar
   // çağrılabilir, yalnızca ilk çağrıda gerçekten sürücü kurar.
   initAppDatabase();
