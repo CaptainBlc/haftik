@@ -24,6 +24,18 @@
   yeşil). Sapma olursa `npx expo install --fix` ile düzeltilir, elle tek tek sürüm yazılmaz (2026-10-01'de
   6 paket bu şekilde yama sürümüne çekildi, bkz. commit "S13: hijyen başlangıcı").
 
+- (2026-11-03, CI) SDK 57 yama sürümleri çıkınca `expo-doctor` "Patch version mismatches" ile kırmızıya döner (zamanla
+  kendiliğinden olur, koddan bağımsız). Düzeltme: 9 paket doktorun istediği sürüme çekildi (`expo` 57.0.31, `expo-router`
+  57.0.29 vb., `jest-expo` 57.0.6 tam sürüm). `npx expo install --fix` Expo API'sine erişim ister (bulut oturumunda
+  engelli); bu yüzden `npm install <paketler>@<sürüm>` ile TEK komutta, sırayla değil. **`package.json` `overrides`:**
+  `react-dom: 19.2.3` ve `react-native-reanimated: 4.5.1`. Gerekçe: bu ikisi uygulamada kullanılmaz (web yığını ve
+  reanimated native'i dışlandı), ama expo-router'ın isteğe bağlı/zorunlu peer'leri olarak kilide girer; yeni expo-router
+  sürümüyle npm bunların EN YENİSİNİ seçip (`react-dom 19.3.1` → `react ^19.3.1`; `reanimated 4.7.1` → `worklets 0.13.x`)
+  projedeki `react 19.2.3` / `react-native-worklets 0.10.1` ile çakışıyor. `npm install` uyarıyla geçiyor ama CI'ın
+  `npm ci`'ı `ERESOLVE` ile düşüyor. Override'sız kilit üretme; yeni Expo yama sürümünde bu çakışma yeniden çıkarsa
+  override sürümlerini `react` ve `react-native-worklets` sürümüne göre güncelle. Kilidi CI'ın araçlarıyla doğrula:
+  Node `.nvmrc` + `npm@11 ci`.
+
 ## eslint-config-expo tuzakları
 
 - (2026-09-22, MOB/S1) `react-hooks/set-state-in-effect` kuralı, `src/hooks/use-color-scheme.web.ts`'teki
@@ -50,6 +62,12 @@
   import etmesi Jest'i kırıyordu, `jest.moduleNameMapper`'a CSS mock eklenmişti. Web yığını kaldırıldığında
   (`react-dom`, `react-native-web`) bu import da kalktı; `css-mock.js` ve `moduleNameMapper` girdisi artık ölü
   kod — bir sonraki dokunulduğunda silinebilir, test kırmıyor diye bırakıldı.
+- (2026-10-26, CI) `jest.testTimeout` 20000 ms (varsayılan 5000). CI'da Jest dönüşüm önbelleği boş ve runner 2
+  çekirdek: `today-route` ve `settings-route` dosyalarının İLK testi tüm modüllerin ilk dönüşümünü üstlenip 5 sn'yi
+  aşıyordu (test mantığı sağlam, tek başına ~360 ms). Yerelde yeniden üretme: `taskset -c 0,1 jest --ci --no-cache
+  --maxWorkers=2` (Node `.nvmrc` sürümüyle). Zaman aşımını artırmak assertion gevşetmez. Ayrıca `src/global-css.d.ts`
+  (`declare module '*.css'`): `expo-env.d.ts` .gitignore'da olduğundan taze klonda/CI'da `@/global.css` TS2882 veriyordu.
+
 - (2026-09-23, test) `react-test-renderer` ağacı `unmount()` edilmeden bırakılırsa ve bileşen
   `useNativeDriver: true` ile bir `Animated` zamanlayıcısı başlatmışsa, Jest süreci test dosyası bittikten
   **sonra** çöker (`ReferenceError: Jest environment has been torn down` → `TypeError:
