@@ -146,11 +146,33 @@ const migrationV3MetricCounter: Migration = {
   },
 };
 
+/**
+ * v4 -- paylasim unvani ve ozeti sutunlari (S21; karar kaydi
+ * `docs/kararlar/2026-11-19-paylasim-unvani-tasarim.md`, `21-mimari-ve-efor.md` 2a). Hepsi NULL
+ * olabilir: v4 oncesi kartlarda deger YOKTUR ve geriye doldurma YAPILMAZ (S-3: dondurulmus kart
+ * degismez); bu kartlar gizleme varken serit gosterir. `share_title_scope` JSON dizi
+ * (or. `["movement","social"]`) ve unvan ile ozet icin ORTAKTIR. Yalnizca nullable ADD COLUMN:
+ * veri kaybi yok, eski kod yeni sutunlari yok sayar. Yeni TABLO yok, `delete-all` listesi degismez.
+ */
+const migrationV4ShareTitle: Migration = {
+  version: 4,
+  description:
+    'weekly_card: share_title_id/text/scope ve share_summary_id/text (nullable, geriye doldurma yok).',
+  up: (driver) => {
+    driver.exec(`ALTER TABLE weekly_card ADD COLUMN share_title_id TEXT;`);
+    driver.exec(`ALTER TABLE weekly_card ADD COLUMN share_title_text TEXT;`);
+    driver.exec(`ALTER TABLE weekly_card ADD COLUMN share_title_scope TEXT;`);
+    driver.exec(`ALTER TABLE weekly_card ADD COLUMN share_summary_id TEXT;`);
+    driver.exec(`ALTER TABLE weekly_card ADD COLUMN share_summary_text TEXT;`);
+  },
+};
+
 /** Surum sirasina gore migration listesi (artan). */
 export const MIGRATIONS: readonly Migration[] = [
   migrationV1,
   migrationV2Placeholder,
   migrationV3MetricCounter,
+  migrationV4ShareTitle,
 ];
 
 /** Su an tanimli en yuksek sema surumu. */

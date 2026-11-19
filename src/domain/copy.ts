@@ -86,10 +86,18 @@ export function selectLine(params: SelectLineParams): LineResult {
  * yalnızca yükselen/düşen/sabit kategori sayısına göre sınıflandırma var).
  */
 export function classifySummaryBucket(deltas: Record<Category, Delta>): SummaryBucket {
-  const values = CATEGORIES.map((category) => deltas[category]);
+  return classifyDeltaValues(CATEGORIES.map((category) => deltas[category]));
+}
+
+/**
+ * `classifySummaryBucket`in çekirdeği: kaç kategoriye bakılacağından bağımsızdır
+ * (ana özet dörde, paylaşım özeti `share-title.ts` yalnızca kapsam-içi ikiye bakar;
+ * 21 §2a). Davranış dört değer için eskisiyle birebir aynıdır.
+ */
+export function classifyDeltaValues(values: readonly Delta[]): SummaryBucket {
   const nullCount = values.filter((value) => value === null).length;
 
-  if (nullCount === CATEGORIES.length) {
+  if (nullCount === values.length) {
     return 'firstCard';
   }
   if (nullCount > 0) {
@@ -125,7 +133,15 @@ export interface SelectSummaryParams {
  */
 export function selectSummary(params: SelectSummaryParams): LineResult {
   const { deltas, weekStart, prevVariantId } = params;
-  const bucket = classifySummaryBucket(deltas);
+  return selectSummaryForBucket(classifySummaryBucket(deltas), weekStart, prevVariantId);
+}
+
+/** Kovası belli bir özet için havuzdan `week_start` tabanlı sabit tohumla varyant seçer. */
+export function selectSummaryForBucket(
+  bucket: SummaryBucket,
+  weekStart: string,
+  prevVariantId: string | null
+): LineResult {
   const pool = SUMMARY_VARIANTS[bucket];
   if (!pool || pool.length === 0) {
     throw new Error(`selectSummary: '${bucket}' şablonu için metin havuzu boş/eksik.`);

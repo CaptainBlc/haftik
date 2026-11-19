@@ -4,9 +4,15 @@ Onaylayan: Batuhan (oturum seçimleri, 2026-11-19). Önceki kayıt: B1 (`2026-10
 "paylaşım unvanı evet; security-reviewer görüşü S21 başlamadan önce şart." Tasarım kaynağı:
 `docs/inceleme-2026-09-25/21-mimari-ve-efor.md` §2a, S-2, S-3; `13-urun-vizyonu.md` Z18.
 
-**Durum:** tasarım kararları VERİLDİ. Güvenlik kapısı (Karar 0) **yarım**: analiz adımı bu belgedir (K1 + K2);
-bağımsız inceleme adımı kod yazıldıktan sonra yapılacak ve burada işaretlenecek. Bu belge bir security-reviewer
-görüşü DEĞİLDİR.
+**Durum (2026-11-19):** tasarım kararları VERİLDİ (Karar 0-5, iki yeni metin onaylandı). Domain + veri katmanı
+**kodlandı ve test edildi** (K2): `src/domain/share-title.ts`, migration v4, repo, `buildCard`. **UI bağlanmadı**
+(S19/P0'a bağlı). Güvenlik kapısı (Karar 0) **yarım**: analiz adımı bu belgedir (K1 + K2); bağımsız inceleme adımı
+(kod bitti, **henüz yapılmadı**) burada işaretlenecek. Bu belge bir security-reviewer görüşü DEĞİLDİR.
+
+Kanıt (K2): `__tests__/domain/share-title.test.ts` (kurallar, 16 gizleme alt kümesi), `share-title.noninterference.test.ts`
+(21.870 kart, uyku/harcama bu hafta + geçen hafta süpürülür; mutasyon kontrolüyle sızıntıyı yakaladığı gösterildi),
+`__tests__/data/card-repo.share-title.test.ts` (round-trip, v3 → v4, kesintide ROLLBACK, bozuk kapsam). Varsayılan
+gizlemede paylaşım unvanı 81/81 (bugünkü ana unvan %20).
 
 ## Karar 0 — Güvenlik kapısı nasıl karşılanır: B (analiz + bağımsız inceleme)
 - Adım 1 (bu belge): tehdit modeli ve mevcut sızıntının ölçümü. **Tamam.**
@@ -133,7 +139,7 @@ kaydı gerekirdi), S3 (gizlemede sabit nötr cümle, paylaşılan kartlarda "ge�
 ikisi için ortaktır.
 
 ## Sonraki turlara bırakılan
-1. İki yeni boşluk metni için kullanıcı onayı (aday metinler hazır, onay bekliyor).
+1. ~~İki yeni boşluk metni için kullanıcı onayı~~ — onaylandı: "Kulaklıkla Koşan Hafta", "Az Adım, Çok Muhabbet".
 2. UI (paylaşım seçici, şerit, önizleme = ölçeklenmiş `CardView`): S19 `CardView` v2'ye, yani P0 ve F0-9'a bağlı.
 3. Bağımsız inceleme (Karar 0, adım 2): kod bittikten sonra.
 

@@ -57,6 +57,8 @@ function prevVariantsFrom(prevCard: CardSnapshot | null): PrevCardVariants | und
       social: prevCard.lines.social.id,
     },
     summary: prevCard.summary.id,
+    shareTitle: prevCard.shareTitle?.id ?? null,
+    shareSummary: prevCard.shareSummary?.id ?? null,
   };
 }
 

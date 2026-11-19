@@ -98,6 +98,25 @@ export interface TitleResult {
  * veri katmanında, kart ilk kez kalıcı hale getirilirken eklenir (`buildCard`
  * saf bir fonksiyondur, `now` parametresi almaz).
  */
+/**
+ * Paylaşım unvanı (karar kaydı `docs/kararlar/2026-11-19-paylasim-unvani-tasarim.md`):
+ * yalnızca `scope` kategorilerinin seviyesinden/deltasından ve gün sayısından türer,
+ * gizli kategorileri tip gereği görmez (`domain/share-title.ts`). Kartla birlikte dondurulur.
+ */
+export interface ShareTitleResult {
+  id: string;
+  text: string;
+  /** Bu unvanın dayandığı kategoriler; gizli küme bununla kesişirse unvan gösterilmez. */
+  scope: Category[];
+}
+
+/** Paylaşım özeti: `ShareTitleResult` ile aynı kapsam ve görüntü kuralı. */
+export interface ShareSummaryResult {
+  id: string;
+  text: string;
+  scope: Category[];
+}
+
 export interface CardSnapshot {
   /** Haftanın Pazartesi tarihi, `YYYY-MM-DD` (yerel). */
   weekStart: string;
@@ -109,4 +128,11 @@ export interface CardSnapshot {
   summary: LineResult;
   /** Metin havuzu sürümü (spec "Veri modeli" > `weekly_card.content_version`). */
   contentVersion: number;
+  /**
+   * Paylaşım unvanı ve özeti (v4). Eski kartlarda (sütunlar NULL) `null`/`undefined`:
+   * "yok" demektir, gizleme varken şerit gösterilir, geriye doldurma yapılmaz (S-3).
+   * İsteğe bağlıdır ki v4 öncesi kartları kuran kod/fikstür derlenmeye devam etsin.
+   */
+  shareTitle?: ShareTitleResult | null;
+  shareSummary?: ShareSummaryResult | null;
 }

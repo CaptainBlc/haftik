@@ -82,6 +82,13 @@ bu kuralı değiştirmeyecek şekilde tasarlanacak — dondurulmuş, ayrı bir "
 Ayrıntı: `docs/inceleme-2026-09-25/21-mimari-ve-efor.md` §2a (ayrıca bu raporun bulduğu çıkarım-sızıntısı riski
 için `security-reviewer` turu S21'in girdi kapısı).
 
+**Güncelleme (2026-11-19, S21 domain+veri tamam, UI bekliyor):** paylaşım unvanı/özeti kodlandı
+(`src/domain/share-title.ts`, v4). Katı görüntü kuralı `resolveVisibleTitle` / `resolveVisibleSummary`'de toplandı; asıl
+unvan yalnızca HİÇBİR kategori gizli değilken görünür. **`CardView` ve önizleme henüz bu fonksiyonları ÇAĞIRMIYOR:**
+mevcut `shouldHideTitle` (`title-visibility.ts`) UI bağlantısı yapılana kadar yerinde duruyor, yani ölçülen çıkarım
+sızıntısı UI'da hâlâ geçerli. Bağlantı `CardView` v2'ye (S19, P0 + F0-9 sonucu) ya da ayrı bir karar ile ondan önceye
+alınabilir. Ayrıntı: `docs/kararlar/2026-11-19-paylasim-unvani-tasarim.md`.
+
 ## C yönü: kart render sözleşmesi (karar 1, Batuhan; teknik seçim mimari §2b)
 
 Mimari hangi tekniği seçerse seçsin, bu kurallar bozulmamalı (tam 8 madde ve her birinin testi:

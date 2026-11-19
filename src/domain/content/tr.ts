@@ -23,7 +23,7 @@
 import type { Category, Level, LineResult } from '../types';
 
 /** `weekly_card.content_version` — bu havuzun sürümü (spec "Veri modeli"). */
-export const CONTENT_VERSION = 2;
+export const CONTENT_VERSION = 3;
 
 // ---------------------------------------------------------------------------
 // Unvanlar (title) — 28 kombinasyon/özel kural + 12 temel unvan.
@@ -75,6 +75,12 @@ export const TITLE_TEXTS: Record<string, string> = {
   'title.combo.socialHighSpendingLow': 'Kalabalıkta Cüzdan Cepte',
   'title.combo.movementHighSpendingLow': 'Adım Çok, Fiş Yok',
   'title.combo.sleepHighSocialLow': 'Yastıkla Baş Başa',
+
+  // Paylaşım unvanı boşlukları (CONTENT_VERSION 3, `domain/share-title.ts`; Batuhan onayı 2026-11-19):
+  // hareket x sosyal karışık uçları için ana kural motorunda karşılık yoktu. Yalnızca paylaşım
+  // unvanı bunları seçer; `selectTitle` bu kimlikleri üretmez.
+  'title.combo.movementHighSocialLow': 'Kulaklıkla Koşan Hafta',
+  'title.combo.socialHighMovementLow': 'Az Adım, Çok Muhabbet',
 
   // --- (b) Temel unvanlar: 4 kategori x 3 seviye (kapsama garantisi) ---
   'title.basic.movement.low': 'Kanepe Filozofu',

@@ -32,6 +32,7 @@ import { computeCategoryAverage, computeLevel } from './score';
 import { computeDelta } from './delta';
 import { selectTitle } from './titles';
 import { selectLine, selectSummary } from './copy';
+import { selectShareSummary, selectShareTitle } from './share-title';
 import { CONTENT_VERSION } from './content/tr';
 
 export interface PrevCardVariants {
@@ -39,6 +40,10 @@ export interface PrevCardVariants {
   lines?: Partial<Record<Category, string>>;
   /** Bir önceki haftanın özet satırı kimliği. */
   summary?: string | null;
+  /** Bir önceki haftanın paylaşım unvanı kimliği (v4; eski kartta yok). */
+  shareTitle?: string | null;
+  /** Bir önceki haftanın paylaşım özeti kimliği (v4; eski kartta yok). */
+  shareSummary?: string | null;
 }
 
 /**
@@ -96,6 +101,21 @@ export function buildCard(
     prevVariantId: prevVariants?.summary ?? null,
   });
 
+  // Paylaşım unvanı/özeti (S21): girdi YALNIZCA kapsam-içi iki kategoriyi taşır; uyku/harcama
+  // buraya hiç girmez (yapısal girişim-sızmazlık, bkz. `share-title.ts`). Kart kurulurken
+  // dondurulur, render hiçbir şeyi yeniden çözümlemez.
+  const shareTitle = selectShareTitle({
+    levels: { movement: levels.movement, social: levels.social },
+    deltas: { movement: deltas.movement, social: deltas.social },
+    checkinDays,
+    prevShareTitleId: prevVariants?.shareTitle ?? null,
+  });
+  const shareSummary = selectShareSummary({
+    deltas: { movement: deltas.movement, social: deltas.social },
+    weekStart,
+    prevVariantId: prevVariants?.shareSummary ?? null,
+  });
+
   return {
     weekStart,
     checkinDays,
@@ -104,5 +124,7 @@ export function buildCard(
     deltas,
     summary,
     contentVersion: CONTENT_VERSION,
+    shareTitle,
+    shareSummary,
   };
 }

@@ -31,9 +31,47 @@ interface WeeklyCardRow {
   summary_id: string;
   summary_text: string;
   content_version: number;
+  /** v4; v4 oncesi kartlarda NULL (geriye doldurma yok). */
+  share_title_id: string | null;
+  share_title_text: string | null;
+  share_title_scope: string | null;
+  share_summary_id: string | null;
+  share_summary_text: string | null;
+}
+
+function shareScopeJson(c: CardSnapshot): string | null {
+  const scope = (c.shareTitle ?? c.shareSummary)?.scope;
+  return scope ? JSON.stringify(scope) : null;
+}
+
+const VALID_CATEGORIES: readonly string[] = ['movement', 'sleep', 'spending', 'social'];
+
+/**
+ * `share_title_scope` JSON dizisini dogrular. Gecersiz/bos ise `null`: paylasim alanlari "yok"
+ * sayilir ve gizleme varken serit gosterilir -- bozuk veri HICBIR zaman unvanin gorunmesine yol
+ * acmaz (guvenli yon, katı goruntu kurali `domain/share-title.ts`).
+ */
+function parseShareScope(raw: string | null): Category[] | null {
+  if (!raw) {
+    return null;
+  }
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (
+      Array.isArray(parsed) &&
+      parsed.length > 0 &&
+      parsed.every((entry) => typeof entry === 'string' && VALID_CATEGORIES.includes(entry))
+    ) {
+      return parsed as Category[];
+    }
+  } catch {
+    // bilerek yutuldu: asagida null doner
+  }
+  return null;
 }
 
 function rowToCardSnapshot(row: WeeklyCardRow): CardSnapshot {
+  const shareScope = parseShareScope(row.share_title_scope);
   const lines: Record<Category, LineResult> = {
     movement: { id: row.line_movement_id, text: row.line_movement_text },
     sleep: { id: row.line_sleep_id, text: row.line_sleep_text },
@@ -60,6 +98,13 @@ function rowToCardSnapshot(row: WeeklyCardRow): CardSnapshot {
     deltas,
     summary: { id: row.summary_id, text: row.summary_text },
     contentVersion: row.content_version,
+    // v4 oncesi kartlarda alan HIC eklenmez (undefined = "yok"): eski kartin sekli degismez.
+    ...(shareScope && row.share_title_id && row.share_title_text
+      ? { shareTitle: { id: row.share_title_id, text: row.share_title_text, scope: shareScope } }
+      : {}),
+    ...(shareScope && row.share_summary_id && row.share_summary_text
+      ? { shareSummary: { id: row.share_summary_id, text: row.share_summary_text, scope: shareScope } }
+      : {}),
   };
 }
 
@@ -98,8 +143,10 @@ export async function saveCard(c: CardSnapshot): Promise<void> {
       line_spending_id, line_spending_text,
       line_social_id, line_social_text,
       delta_movement, delta_sleep, delta_spending, delta_social,
-      summary_id, summary_text, content_version
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      summary_id, summary_text, content_version,
+      share_title_id, share_title_text, share_title_scope,
+      share_summary_id, share_summary_text
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
     [
       c.weekStart,
@@ -123,6 +170,12 @@ export async function saveCard(c: CardSnapshot): Promise<void> {
       c.summary.id,
       c.summary.text,
       c.contentVersion,
+      c.shareTitle?.id ?? null,
+      c.shareTitle?.text ?? null,
+      // Kapsam unvan ve ozet icin ortaktir; ikisi de yoksa SQL NULL (JSON "null" degil).
+      shareScopeJson(c),
+      c.shareSummary?.id ?? null,
+      c.shareSummary?.text ?? null,
     ]
   );
 }

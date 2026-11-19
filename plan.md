@@ -375,3 +375,9 @@ Aynı anda en fazla 2 worktree; ilk iki aday (#1, #2) zaten farklı safhalardad�
 Onaydan sonra kod yazımı başlar. Bu dosya henüz commit edilmemiştir; **commit'i Batuhan atar.**
 
 **Kural:** Uygulama planından saparsa, `plan.md` aynı commit içinde güncellenir (yeni depoda kopyası `plan.md` olarak yaşar; iki kopya ayrışırsa yeni depodaki geçerlidir ve bu dosya arşiv olur).
+
+- **Uygulama notu (S21 kısmi: domain + veri, 2026-11-19):** Paylaşım unvanı ve özeti kodlandı (`src/domain/share-title.ts`,
+  migration v4, `CardSnapshot.shareTitle/shareSummary` isteğe bağlı, `copy.ts` içinde `classifyDeltaValues` /
+  `selectSummaryForBucket` çıkarıldı, davranış değişmedi). `CONTENT_VERSION` 2 → 3 (iki onaylı yeni unvan). **Sapma:** özet
+  için de ikinci bir paylaşım alanı eklendi (Karar 5, S2), roadmap S21 yalnız unvan diyordu. **UI bağlanmadı** (S19 `CardView` v2 /
+  P0 bekliyor); güvenlik kapısının ikinci adımı (bağımsız inceleme) açık. Karar kaydı: `docs/kararlar/2026-11-19-paylasim-unvani-tasarim.md`.

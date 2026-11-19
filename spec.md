@@ -144,6 +144,14 @@ Tek kaynak: cihazdaki SQLite dosyası. Tüm zamanlar **yerel saat dilimine göre
 | `delta_*` (4 alan) | INTEGER NULL | -1 / 0 / +1; geçen hafta yeterli veri yoksa NULL |
 | `summary_text` | TEXT | Değişim özet satırı |
 | `content_version` | INTEGER | Metin havuzu sürümü |
+| `share_title_id` / `share_title_text` | TEXT NULL | **v4 (S21).** Paylaşım unvanı: yalnızca `share_title_scope` kategorilerinden türer. v4 öncesi kartlarda NULL, geriye doldurma yok |
+| `share_title_scope` | TEXT NULL | **v4.** JSON dizi (ör. `["movement","social"]`); paylaşım unvanı ve özeti için ortak. Geçersizse okuma tarafı alanları "yok" sayar |
+| `share_summary_id` / `share_summary_text` | TEXT NULL | **v4.** Paylaşım özeti: yalnızca kapsam-içi deltalardan türer |
+
+`CardSnapshot` alanı → sütun eşlemesi (21 P-8): `title` → `title_*`; `summary` → `summary_*`;
+`shareTitle` → `share_title_*` (`scope` → `share_title_scope`); `shareSummary` → `share_summary_*`
+(kapsam ortak sütundan). Görüntü kuralı (katı): `src/domain/share-title.ts` `resolveVisibleTitle` /
+`resolveVisibleSummary`. Karar kaydı: `docs/kararlar/2026-11-19-paylasim-unvani-tasarim.md`.
 
 Neden dondurulur: metin havuzu güncellense de eski kart değişmesin; aynı hafta kart tekrar açıldığında
 aynı görsel çıkar (paylaşımın tekrarlanabilirliği).

@@ -40,6 +40,13 @@ baştan (aynı sürümden) yeniden dener. Test: `__tests__/data/migrations.test.
 simülasyonu)" — kasıtlı yarıda kesilen bir migration'ın hiçbir izi kalmadığını ve "düzeltilip yeniden denemenin"
 başarıyla tamamlandığını kanıtlar.
 
+**v4 (2026-11-19, S21): paylaşım unvanı/özeti sütunları.** `weekly_card`'a beş nullable sütun
+(`share_title_id/text/scope`, `share_summary_id/text`); yalnızca `ADD COLUMN`, yeni tablo yok, `delete-all` listesi
+değişmez. v4 öncesi kartlarda NULL kalır, geriye doldurma yapılmaz (dondurulmuş kart değişmez). Okuma tarafı bozuk
+`share_title_scope`'u (geçersiz JSON, bilinmeyen kategori, boş dizi) "paylaşım alanı yok" sayar: bozuk veri
+unvanın görünmesine yol açmaz. Kanıt: `__tests__/data/card-repo.share-title.test.ts` (v3 → v4, kesintide
+ROLLBACK, bozuk veri). Tasarım ve çıkarım analizi: `docs/kararlar/2026-11-19-paylasim-unvani-tasarim.md`.
+
 Ölçüm şeması genişletmesi (`metric_event`'in CHECK kısıtı yeni olay adı eklemeyi engelliyordu): **ekleme
 biçiminde** yeni bir `metric_counter` tablosu (v3, `src/data/migrations.ts`), CHECK kısıtı yok, `UPSERT`
 sayaç (`src/data/metric-counter-repo.ts` — `incrementCounter`/`getCounter`/`getAllCounters`, **henüz hiçbir
