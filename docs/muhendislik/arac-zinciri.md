@@ -35,6 +35,12 @@
   `npm ci`'ı `ERESOLVE` ile düşüyor. Override'sız kilit üretme; yeni Expo yama sürümünde bu çakışma yeniden çıkarsa
   override sürümlerini `react` ve `react-native-worklets` sürümüne göre güncelle. Kilidi CI'ın araçlarıyla doğrula:
   Node `.nvmrc` + `npm@11 ci`.
+- (2026-11-19, CI) Aynı döngü tekrarladı: `main` hiç değişmeden `expo-doctor` yeniden kırmızıya döndü (`expo` 57.0.33 vb.).
+  **Beklenen sürümleri API'siz bulma:** `npm view expo versions` ile en yeni `57.0.x`'i bul, `npm pack expo@<sürüm>` ve
+  tarball'daki `package/bundledNativeModules.json` ile kilitteki sürümleri `semver.satisfies` ile karşılaştır
+  (doktorun "Patch version mismatches" listesiyle aynı). Düzeltme yine tek `npm install` komutuyla, ardından
+  `npm@11 ci`, `npm run verify`, `expo export --platform ios|android`. Dependabot'un `expo-sdk` grubu bu işi haftalık
+  yapar; ama doğrudan merge etme (kilit/overrides uyumunu bozabilir), önce bu adımları uygula.
 
 ## eslint-config-expo tuzakları
 
