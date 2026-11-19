@@ -49,7 +49,7 @@ Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
 - Bildirim tıklaması sıcak/soğuk açılış (09 #1/#2/#5; kod/K2 testiyle doğrulandı, cihaz kanıtı kaldı).
 - API<31 exact alarm (R-23), kanal kapatma (R-25), Doze/standby turu; Pazar bildirimi gerçek teslim gecikmesi.
 - TZ/DST testleri (şu an `it.skip`).
-- iOS tümü: iCloud yedek hariç tutma, `cacheDirectory` süpürme, TestFlight turu.
+- iOS: iCloud yedek hariç tutma KODU yazıldı (K2, `bildirim-ve-izin.md` "iOS: iCloud/iTunes yedek hariç tutma"); Swift derlemesi ve cihaz kanıtı (K4/K5) kaldı. Ayrıca `cacheDirectory` süpürme ve TestFlight turu.
 - AAB + EAS `mapping.txt` saklama (`buildArtifactPaths` alan adı doğrulanmadı; yerelde
   `C:\dev\haftik-artifacts\`).
 - Takip: `docs/manual-checklist.md`, `docs/inceleme-2026-09-25/29-yol-haritasi.md` §6 (blokaj haritası).
