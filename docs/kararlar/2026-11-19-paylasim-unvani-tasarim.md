@@ -25,7 +25,7 @@ uyku ve harcamayı **taşımaz** (yapısal girişim-sızmazlık, 21 §2a).
   sosyali gizlerse unvan yerine şerit çıkar (bu kullanıcının kendi seçimidir, sızıntı değildir).
 - Mevcut metinle karşılanan: 9 seviye durumundan 7'si (hareket×sosyal: yüksek-yüksek, düşük-düşük, hareket yüksek/düşük
   + sosyal orta, sosyal yüksek/düşük + hareket orta, orta-orta). Karşılığı olmayan 2 durum: hareket yüksek + sosyal
-  düşük ve tersi (K1, `titles.ts`/`content/tr.ts` okuması). İçerik kararı sonraki turda.
+  düşük ve tersi (K1, `titles.ts`/`content/tr.ts` okuması). İçerik kararı: Karar 3.
 
 ## Karar 2 — Görüntü kuralı: katı (S-2 a)
 `resolveVisibleTitle(snapshot, hidden)` tek fonksiyondur, `CardView` ve önizleme aynısını çağırır:
@@ -80,17 +80,62 @@ harcama "yüksek" değildir).
 - Bağımsız inceleme (Karar 0, adım 2): açık Important = 0.
 
 ## Planlanan etki (henüz yazılmadı)
-`src/domain/share-title.ts` (yeni, saf), `src/domain/types.ts` (`CardSnapshot.shareTitle`), `src/domain/buildCard.ts`,
-`src/domain/content/tr.ts` (`CONTENT_VERSION`), `src/data/migrations.ts` (v4: `share_title_id/text/scope`, hepsi
+`src/domain/share-title.ts` (yeni, saf; unvan + özet seçicileri), `src/domain/types.ts` (`CardSnapshot.shareTitle`), `src/domain/buildCard.ts`,
+`src/domain/content/tr.ts` (`CONTENT_VERSION`), `src/data/migrations.ts` (v4: `share_title_id/text/scope` + `share_summary_id/text`, hepsi
 NULL olabilir), `src/data/card-repo.ts`, `src/card/title-visibility.ts` (→ `resolveVisibleTitle`),
 `spec.md` veri modeli (sütun tablosu, P-8), `plan.md` (sapma), `docs/muhendislik/kart-render.md`
 ("Unvan otomatik gizleme" notu). Yeni tablo yok, `delete-all` listesi değişmez (sütunlar `weekly_card`'da).
 
-## Sonraki turlara bırakılan kararlar
-1. İçerik: yalnız mevcut metin (0 yeni, 2 boşluk, tekrar riski) / yeni `share.*` havuzu (~18 metin, onay turu) / hibrit.
-2. Çeşitlilik: kapsam-içi delta ve gün sayısı kullanımı; ardışık hafta tekrar önleme (`prevShareTitleId`).
-3. Özet cümlesi sızıntısı (P-1): paylaşım özetine bağlamak / render'da nötrlemek / bilinçli kabul + kayıt.
-4. UI (paylaşım seçici, şerit, önizleme = ölçeklenmiş `CardView`): S19 `CardView` v2'ye, yani P0 ve F0-9'a bağlı.
+## Karar 3 — İçerik: mevcut metin + 2 boşluk metni (B)
+Yeni metin yalnızca iki boşluk durumu için: hareket yüksek + sosyal düşük, hareket düşük + sosyal yüksek. İki metin
+**kullanıcı onayından geçer** (S16a deseni) ve `content-lint` kurallarına uyar (unvan <= 28 karakter, rakamsız, yasak
+kök yok, imge kotaları). Mekanizma havuzu DİZİ olarak tutar: sonradan alternatif eklemek yalnızca içerik değişikliğidir
+(`CONTENT_VERSION` artar, dondurulmuş kartlara dokunmaz). Elenenler: A (0 metin, boşlukta yanlış okunan unvan),
+C (+9 alternatif, onay yükü, tekrarın gerçek sorun olup olmadığı E1 verisiyle belli olur), D (tam `share.*` havuzu).
+
+## Karar 4 — Çeşitlilik: kapsam-içi delta + gün sayısı, katmanlı kural (c)
+Tam matris (~81 hücre) her hücre için metin gerektireceğinden Karar 3 ile çelişirdi; çözüm, ana unvandaki gibi
+**öncelik sıralı katmanlı kural** ve kategori-bağımsız mevcut metinlerin yeniden kullanımı. Her kural yalnızca
+hareket+sosyal seviyesine/deltasına ve gün sayısına bakar (uyku/harcamayı tip gereği göremez):
+
+| Öncelik | Kural | Metin |
+|---|---|---|
+| 1 | 7/7 gün ve hareket+sosyal ikisi de yüksek | Hiç Boş Bırakmayan Hafta |
+| 2 | 7/7 gün ve ikisi de düşük | Yavaş Çekimde Bir Hafta |
+| 3 | 3 gün ve ikisi de yüksek | İlk Haftadan Sahnede |
+| 4 | ikisi de yükseldi | Geçen Haftayı Sollayan |
+| 5 | ikisi de geriledi | Yavaşlayan Hafta |
+| 6 | 9 seviye durumu (taban) | 7 mevcut + 2 yeni (Karar 3) |
+
+Eşleşen kurallar arasından "geçen haftakinden farklı olan ilk eşleşen" seçilir (`prevShareTitleId`), bu da alternatif
+metin yazmadan haftalar arası çeşitlilik sağlar. Dikkat: ana unvanda "dört kategoriden >= 3" aranırken burada "iki
+kategorinin ikisi" aranır; bu kurallar daha sık tetiklenir (sıklık ölçülmedi, K0). Beş kuralın hepsi dahil edildi;
+"Yavaşlayan Hafta"nın paylaşım kancası olarak zayıf olabileceği ve "yargısız dil" ilkesiyle gerilimli olduğu bilinerek
+(öneri 4 kuraldı, Batuhan 5'i seçti). E1 verisiyle gözden geçirilir.
+
+## Karar 5 — Özet cümlesi sızıntısı (P-1): kapsamlı paylaşım özeti (S2)
+Ölçüm (K2, 81 delta kombinasyonu × `classifySummaryBucket`, gizli = uyku + harcama):
+
+| Kova | Kombinasyon | (uyku, harcama) çifti | Anlamı |
+|---|---|---|---|
+| allStable | 1 | 1/9 | dört kategori sabit: uyku ve harcamanın sabit olduğu KESİN |
+| risingMajority | 31 | 8/9 | yalnızca "ikisi birden düştü" dışlanır |
+| fallingMajority | 31 | 8/9 | yalnızca "ikisi birden yükseldi" dışlanır |
+| balancedMixed | 18 | 9/9 | sızıntı yok |
+
+Karar: unvanla aynı tasarım. Kart üretilirken hareket+sosyal deltalarından ikinci bir özet (`share_summary_*`)
+dondurulur; `resolveVisibleSummary(snapshot, hidden)` aynı üç kuralı izler (hiçbiri gizli değilse asıl özet; gizli
+kapsamla kesişmiyorsa paylaşım özeti; aksi halde ya da NULL ise değişim satırı gizli). **Yeni metin yok:** mevcut
+dört kovanın (allStable, risingMajority, fallingMajority, balancedMixed) metinleri iki kategori üzerinden yeniden
+kullanılır; `firstCard` aynen. Elenenler: S1 (oldugu gibi, `allStable` kesin sızıntı, spec'ten bilinçli sapma
+kaydı gerekirdi), S3 (gizlemede sabit nötr cümle, paylaşılan kartlarda "geçen haftaya göre" vaadi kaybolur).
+Şema: v4'e iki ek nullable sütun (`share_summary_id`, `share_summary_text`); kapsam sütunu (`share_title_scope`)
+ikisi için ortaktır.
+
+## Sonraki turlara bırakılan
+1. İki yeni boşluk metni için kullanıcı onayı (aday metinler hazır, onay bekliyor).
+2. UI (paylaşım seçici, şerit, önizleme = ölçeklenmiş `CardView`): S19 `CardView` v2'ye, yani P0 ve F0-9'a bağlı.
+3. Bağımsız inceleme (Karar 0, adım 2): kod bittikten sonra.
 
 ## Geri alma maliyeti
 Düşük. v4 yalnızca nullable `ADD COLUMN`, veri kaybı yok; eski kod yeni sütunları yok sayar. B1'e göre ürün
