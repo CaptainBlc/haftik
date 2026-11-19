@@ -17,7 +17,8 @@ değişikliği onayı** bekleniyor (kontrol listesi: `docs/p0-gorsel-oturum-kont
 
 Karar A 18/18 ve Karar B 14/14 tamam — tam liste ve gerekçe `docs/kararlar/`:
 - Ayarlar'daki ayrı "Kart hazır" anahtarı (A12'nin UI tarafı, S23)
-- paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı)
+- paylaşım unvanı + security-reviewer görüşü (B1, S21'in girdi kapısı). **2026-11-19:** tasarım kararları ve çıkarım analizi
+  kayıtlı (`docs/kararlar/2026-11-19-paylasim-unvani-tasarim.md`); bağımsız inceleme kod sonrası, içerik/çeşitlilik/özet kararları açık
 - seviye/font/ikon/haptik/K3-banner/Kaydet-sonrası/9:16/rakam-kuralı (B2-B10, S19-S23)
 - 6 kişilik P0 görsel test oturumu (B12, S19'dan önce)
 - Maestro kurulumu (B14, çekirdek kapısında)

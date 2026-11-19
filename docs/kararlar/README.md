@@ -18,3 +18,4 @@ Aşağıdaki dosyalarda bir değişiklik, burada karşılık gelen kararın da g
 - [2026-10-01-taban-oncesi-kararlar-b.md](2026-10-01-taban-oncesi-kararlar-b.md) — Karar A, O grubu (11 madde) — **Karar A tamamlandı: 18/18**
 - [2026-10-01-kapsam-ios-dagitim.md](2026-10-01-kapsam-ios-dagitim.md) — Kapsam kararı: iOS eklendi, dağıtım yöntemi (geniş davetli)
 - [2026-10-01-cekirdekten-once-kararlar.md](2026-10-01-cekirdekten-once-kararlar.md) — Karar B (14 madde) — **Karar B tamamlandı: 14/14**
+- [2026-11-19-paylasim-unvani-tasarim.md](2026-11-19-paylasim-unvani-tasarim.md) — Paylaşım unvanı: kapsam (hareket+sosyal), katı görüntü kuralı, çıkarım analizi (S21 girdi kapısı, **yarım**: bağımsız inceleme bekliyor)
